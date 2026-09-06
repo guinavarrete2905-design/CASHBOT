@@ -160,7 +160,7 @@
 
   .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px;}
   table{width:100%; min-width:480px; border-collapse:collapse; margin-bottom:18px;}
-  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:280px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:190px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:130px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:150px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:60px;}
+  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:150px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:60px;}
   thead th{
     text-align:left; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;
     color:var(--muted); font-weight:700; padding:8px; border-bottom:2px solid var(--black);
@@ -168,6 +168,8 @@
   thead th.num{text-align:right;}
   tbody td{padding:10px 8px; border-bottom:1px solid var(--border); font-size:16px;}
   tbody td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  .valor-neg{color:var(--danger) !important;}
+  .valor-pos{color:var(--green-dark) !important;}
   tbody input, tbody select{
     width:100%; font-family:'Nunito', sans-serif; font-size:16px; padding:9px 10px;
     border:1px solid var(--border); border-radius:6px;
@@ -417,7 +419,7 @@
       <div id="preview-wrap" style="display:none;">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th>Data</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th></th></tr></thead>
           <tbody id="preview-tbody"></tbody>
         </table>
         </div>
@@ -501,9 +503,9 @@
       <div class="card wide">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th>Data</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th></th></tr></thead>
           <tbody id="resumo-tbody"></tbody>
-          <tfoot><tr><td colspan="3">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td colspan="2"></td></tr></tfoot>
+          <tfoot><tr><td colspan="4">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td></tr></tfoot>
         </table>
         </div>
         <p class="empty-msg" id="resumo-empty" style="display:none;">Nenhum lançamento ainda.</p>
@@ -1008,12 +1010,13 @@
     document.getElementById('preview-wrap').style.display = pendingImport.length ? 'block' : 'none';
     pendingImport.forEach((item, idx) => {
       const tr = document.createElement('tr');
+      const sinalClasse = (Number(item.valor) || 0) < 0 ? 'valor-neg' : 'valor-pos';
       tr.innerHTML = `
+        <td><input type="date" value="${escapeAttr(item.data)}" data-idx="${idx}" data-field="data"></td>
         <td><input type="text" value="${escapeAttr(item.nome)}" data-idx="${idx}" data-field="nome"></td>
         <td><select data-idx="${idx}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-idx="${idx}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
-        <td class="num"><input type="number" step="0.01" value="${item.valor}" data-idx="${idx}" data-field="valor" style="text-align:right;"></td>
-        <td><input type="date" value="${escapeAttr(item.data)}" data-idx="${idx}" data-field="data"></td>
+        <td class="num"><input type="number" step="0.01" value="${item.valor}" data-idx="${idx}" data-field="valor" class="${sinalClasse}" style="text-align:right;"></td>
         <td><button class="del-btn" data-idx="${idx}" aria-label="Remover linha">✕</button></td>`;
       tbody.appendChild(tr);
     });
@@ -1021,6 +1024,10 @@
       inp.addEventListener('input', () => {
         const idx = Number(inp.dataset.idx), field = inp.dataset.field;
         pendingImport[idx][field] = field === 'valor' ? parseFloat(inp.value) || 0 : inp.value;
+        if(field === 'valor'){
+          inp.classList.remove('valor-neg','valor-pos');
+          inp.classList.add((Number(inp.value) || 0) < 0 ? 'valor-neg' : 'valor-pos');
+        }
       });
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
@@ -1074,7 +1081,7 @@
         nome: kNome ? String(row[kNome]) : '',
         categoria: '',
         banco: bancoVal,
-        valor: kValor ? Math.abs(parseFloat(row[kValor])) || 0 : 0,
+        valor: kValor ? parseFloat(row[kValor]) || 0 : 0,
         data: dataVal
       };
     }).filter(r => r.nome || r.valor);
@@ -1091,7 +1098,7 @@
       const dtRaw = get('DTPOSTED');
       const data = dtRaw.length >= 8 ? `${dtRaw.slice(0,4)}-${dtRaw.slice(4,6)}-${dtRaw.slice(6,8)}` : '';
       const nome = get('NAME') || get('MEMO');
-      const valor = Math.abs(parseFloat(get('TRNAMT'))) || 0;
+      const valor = parseFloat(get('TRNAMT')) || 0;
       return {nome, categoria:'', banco:'', valor, data};
     }).filter(r => r.nome || r.valor);
   }
@@ -1106,22 +1113,26 @@
       fullText += content.items.map(it => it.str).join(' ') + '\n';
     }
     const lines = fullText.split('\n').map(l => l.trim()).filter(Boolean);
-    const dateRe = /(\d{2}\/\d{2}\/\d{4}|\d{2}\/\d{2})/;
-    const valueRe = /(-?R?\$?\s?\d{1,3}(?:\.\d{3})*,\d{2})(?!.*\d{1,3}(?:\.\d{3})*,\d{2})/;
+    const dateRe = /(\d{2}\/\d{2}\/\d{4}|\d{2}\/\d{2}\/\d{2}|\d{2}\/\d{2})/;
+    const valueRe = /-?R?\$?\s?\d{1,3}(?:\.\d{3})*,\d{2}/g;
     const results = [];
     lines.forEach(line => {
       const dMatch = line.match(dateRe);
-      const vMatch = line.match(valueRe);
-      if(dMatch && vMatch){
-        let nome = line.replace(dMatch[0],'').replace(vMatch[0],'').trim();
-        nome = nome.replace(/\s{2,}/g,' ').slice(0,80);
-        const valorNum = Math.abs(parseFloat(vMatch[0].replace(/[R$\s.]/g,'').replace(',','.'))) || 0;
+      const vMatches = line.match(valueRe);
+      if(dMatch && vMatches && vMatches.length){
+        const vRaw = vMatches[0];
+        let nome = line.replace(dMatch[0],'');
+        vMatches.forEach(v => { nome = nome.split(v).join(''); });
+        nome = nome.replace(/\d{2}:\d{2}:\d{2}/g,'').replace(/\s{2,}/g,' ').trim().slice(0,80);
+        const valorNum = parseFloat(vRaw.replace(/[R$\s.]/g,'').replace(',','.')) || 0;
         let dataIso = '';
         const dparts = dMatch[0].split('/');
         if(dparts.length === 3){
-          dataIso = `${dparts[2]}-${dparts[1]}-${dparts[0]}`;
+          let ano = dparts[2];
+          if(ano.length === 2) ano = '20' + ano;
+          dataIso = `${ano}-${dparts[1]}-${dparts[0]}`;
         }
-        if(valorNum > 0){
+        if(valorNum !== 0){
           results.push({nome: nome || '(sem descrição)', categoria:'', banco:'', valor: valorNum, data: dataIso});
         }
       }
@@ -1148,12 +1159,13 @@
     [...lancamentos].sort((a,b) => (a.data||'').localeCompare(b.data||'')).forEach(item => {
       total += Number(item.valor) || 0;
       const tr = document.createElement('tr');
+      const sinalClasse = (Number(item.valor) || 0) < 0 ? 'valor-neg' : 'valor-pos';
       tr.innerHTML = `
+        <td>${fmtDateBR(item.data)}</td>
         <td>${escapeAttr(item.nome)}</td>
         <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
-        <td class="num">${money(item.valor)}</td>
-        <td>${fmtDateBR(item.data)}</td>
+        <td class="num ${sinalClasse}">${money(item.valor)}</td>
         <td><button class="del-btn" data-id="${item.id}" aria-label="Excluir lançamento">✕</button></td>`;
       tbody.appendChild(tr);
     });
@@ -1234,7 +1246,7 @@
     let total = 0;
     lancamentos.forEach(item => {
       const chave = item.categoria || 'Sem categoria';
-      const valor = Number(item.valor) || 0;
+      const valor = Math.abs(Number(item.valor) || 0);
       total += valor;
       if(!grupos[chave]) grupos[chave] = {valor:0, cor: corParaCategoria(item.categoria)};
       grupos[chave].valor += valor;
@@ -1251,7 +1263,7 @@
     let total = 0;
     lancamentos.forEach(item => {
       const chave = item.banco || 'Sem banco';
-      const valor = Number(item.valor) || 0;
+      const valor = Math.abs(Number(item.valor) || 0);
       total += valor;
       if(!grupos[chave]) grupos[chave] = {valor:0, cor: corParaBanco(item.banco)};
       grupos[chave].valor += valor;
