@@ -51,6 +51,7 @@
 
   .topbar-right{display:flex; align-items:center; gap:10px;}
   .voltar-btn{
+    display:none;
     color:#DDEDE3; font-weight:700; font-size:16px;
     background:none; border:1px solid #2E5A45; padding:9px 16px; border-radius:999px; cursor:pointer;
   }
@@ -89,7 +90,7 @@
   }
 
   /* HOME */
-  .home-wrap{max-width:480px; width:100%; text-align:center;}
+  .home-wrap{max-width:1400px; width:100%; text-align:center;}
   .home-wrap h1{font-size:30px; font-weight:800; margin:0 0 10px;}
   .home-wrap p.sub{color:var(--muted); font-size:18px; margin:0 0 32px;}
   .group{margin-bottom:0;}
@@ -114,10 +115,11 @@
   /* Generic card / form */
   .card{
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
-    padding:32px; max-width:480px; width:100%; margin-bottom:20px;
+    padding:32px; max-width:1400px; width:100%; margin-bottom:20px;
   }
-  .card.wide{max-width:640px;}
+  .card.wide{max-width:1400px;}
   .card.full{max-width:1400px;}
+  .card.auth{max-width:480px;}
   .step-title{font-size:22px; font-weight:800; margin-bottom:20px;}
   .field-block{margin-bottom:22px;}
   .field-block label{display:block; font-weight:700; font-size:16px; margin-bottom:8px;}
@@ -161,7 +163,7 @@
 
   .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px;}
   table{width:100%; min-width:480px; border-collapse:collapse; margin-bottom:18px;}
-  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:150px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:60px;}
+  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:150px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:120px;} #preview-tbody td:nth-child(7), #resumo-tbody td:nth-child(7){min-width:60px;}
   thead th{
     text-align:left; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;
     color:var(--muted); font-weight:700; padding:8px; border-bottom:2px solid var(--black);
@@ -287,21 +289,22 @@
     display:none;
     position:fixed; top:0; left:0; width:240px; height:100vh;
     background:var(--card); border-right:1px solid var(--border);
-    flex-direction:column; z-index:40; overflow-y:auto;
+    flex-direction:column; z-index:40; overflow-y:auto; overflow-x:hidden;
+    transition:width .18s ease, padding .18s ease;
   }
-  #sidebar .sidebar-logo{padding:24px 20px 8px; text-align:center;}
+  #sidebar .sidebar-logo{padding:24px 20px 8px; text-align:center; white-space:nowrap;}
   #sidebar .sidebar-logo img{width:100%; max-width:170px; height:auto;}
   #sidebar nav{display:flex; flex-direction:column; padding:12px; gap:2px;}
   #sidebar nav button{
     text-align:left; background:none; border:none; border-radius:10px;
     font-family:'Nunito', sans-serif; font-size:16px; font-weight:700; color:var(--black);
-    padding:13px 16px; cursor:pointer;
+    padding:13px 16px; cursor:pointer; white-space:nowrap;
   }
   #sidebar nav button:hover{background:var(--green-soft);}
   #sidebar nav button.active{background:var(--green); color:#fff;}
   #sidebar-footer{
     margin-top:auto; padding:16px 20px; border-top:1px solid var(--border);
-    display:flex; flex-direction:column; gap:8px;
+    display:flex; flex-direction:column; gap:8px; white-space:nowrap;
   }
   #sidebar-footer .sidebar-user-nome{font-weight:800; font-size:15px;}
   #sidebar-footer button{
@@ -309,6 +312,22 @@
     font-size:15px; font-weight:700; text-align:left; padding:0; cursor:pointer;
   }
   #sidebar-footer button:hover{color:var(--danger);}
+
+  /* sidebar recolhido */
+  body.sidebar-collapsed #sidebar{width:0; border-right:none;}
+  body.sidebar-collapsed #sidebar .sidebar-logo,
+  body.sidebar-collapsed #sidebar nav,
+  body.sidebar-collapsed #sidebar-footer{opacity:0; pointer-events:none;}
+  .sidebar-toggle{
+    display:none; position:fixed; top:26px; left:224px; z-index:41;
+    width:28px; height:28px; border-radius:50%; border:1px solid var(--border);
+    background:var(--card); color:var(--muted); cursor:pointer;
+    align-items:center; justify-content:center; font-size:14px; line-height:1; padding:0;
+    box-shadow:0 2px 6px rgba(18,60,41,0.12);
+    transition:left .18s ease;
+  }
+  .sidebar-toggle:hover{color:var(--black); border-color:var(--green);}
+  body.sidebar-collapsed .sidebar-toggle{left:12px;}
 
   /* ---------- topo: entrar/inscrever-se x usuário logado ---------- */
   .menu-wrap{display:none;}
@@ -359,9 +378,11 @@
 
   @media(min-width:901px){
     body.logged-in #sidebar{display:flex;}
-    body.logged-in .screen{margin-left:240px;}
+    body.logged-in .screen{margin-left:240px; transition:margin-left .18s ease;}
+    body.logged-in.sidebar-collapsed .screen{margin-left:0;}
     body.logged-in .topbar .logo{display:none;}
     body.logged-in .menu-wrap{display:none;}
+    body.logged-in .sidebar-toggle{display:flex;}
   }
 </style>
 </head>
@@ -382,6 +403,9 @@
     <button type="button" onclick="handleLogout()">Sair</button>
   </div>
 </div>
+<button type="button" class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Recolher menu">‹</button>
+<datalist id="datalist-categorias"></datalist>
+<datalist id="datalist-bancos"></datalist>
 
 
 <!-- ===================== HOME ===================== -->
@@ -502,7 +526,7 @@
 
         <div class="field-block" id="fb-categoria" style="display:none;">
           <label for="in-categoria">Categoria</label>
-          <select id="in-categoria"></select>
+          <input type="text" id="in-categoria" list="datalist-categorias" placeholder="Digite ou escolha uma categoria" autocomplete="off">
           <div class="step-actions">
             <button type="button" class="btn-avancar" id="btn-categoria">AVANÇAR</button>
             <button type="button" class="btn-voltar-step" onclick="voltarStepManual('categoria')">‹ Voltar</button>
@@ -511,7 +535,7 @@
 
         <div class="field-block" id="fb-banco" style="display:none;">
           <label for="in-banco">Banco</label>
-          <select id="in-banco"><option>Sicredi</option><option>XP</option></select>
+          <input type="text" id="in-banco" list="datalist-bancos" placeholder="Digite ou escolha um banco" autocomplete="off">
           <div class="step-actions">
             <button type="button" class="btn-avancar" id="btn-banco">AVANÇAR</button>
             <button type="button" class="btn-voltar-step" onclick="voltarStepManual('banco')">‹ Voltar</button>
@@ -533,6 +557,18 @@
           <div class="step-actions">
             <button type="button" class="btn-avancar" id="btn-data">AVANÇAR</button>
             <button type="button" class="btn-voltar-step" onclick="voltarStepManual('data')">‹ Voltar</button>
+          </div>
+        </div>
+
+        <div class="field-block" id="fb-recorrente" style="display:none;">
+          <label for="in-recorrente">Recorrente?</label>
+          <select id="in-recorrente">
+            <option value="nao">Não</option>
+            <option value="sim">Sim</option>
+          </select>
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-recorrente">SALVAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepManual('recorrente')">‹ Voltar</button>
           </div>
         </div>
       </form>
@@ -576,7 +612,7 @@
       <div id="preview-wrap" style="display:none;">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="preview-tbody"></tbody>
         </table>
         </div>
@@ -668,9 +704,9 @@
       <div class="card wide">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="resumo-tbody"></tbody>
-          <tfoot><tr><td colspan="4">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td></tr></tfoot>
+          <tfoot><tr><td colspan="4">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td><td></td></tr></tfoot>
         </table>
         </div>
         <p class="empty-msg" id="resumo-empty" style="display:none;">Nenhum lançamento ainda.</p>
@@ -799,7 +835,7 @@
     <div class="logo"><span class="dot"></span>CashBot</div>
   </div>
   <div class="content">
-    <div class="card">
+    <div class="card auth">
       <div class="step-title">Entrar</div>
       <form id="form-login">
         <div class="field-block">
@@ -824,7 +860,7 @@
     <div class="logo"><span class="dot"></span>CashBot</div>
   </div>
   <div class="content">
-    <div class="card">
+    <div class="card auth">
       <div class="step-title">Criar conta</div>
       <form id="form-signup">
         <div class="field-block">
@@ -1000,6 +1036,21 @@
     ativarTela('login');
   };
 
+  function toggleSidebar(){
+    const collapsed = document.body.classList.toggle('sidebar-collapsed');
+    const btn = document.getElementById('sidebar-toggle');
+    if(btn) btn.textContent = collapsed ? '›' : '‹';
+    try{ localStorage.setItem('cb_sidebar_collapsed', collapsed ? '1' : '0'); }catch(e){}
+  }
+  window.toggleSidebar = toggleSidebar;
+  try{
+    if(localStorage.getItem('cb_sidebar_collapsed') === '1'){
+      document.body.classList.add('sidebar-collapsed');
+      const btn = document.getElementById('sidebar-toggle');
+      if(btn) btn.textContent = '›';
+    }
+  }catch(e){}
+
   async function initAuth(){
     const { data: { session } } = await db.auth.getSession();
     if(session){
@@ -1023,6 +1074,10 @@
   let pendingImport = [];
   let categorias = [];           // {id, nome}
   const BANCOS = ['Sicredi','XP'];
+  function populateBancoDatalist(){
+    const dl = document.getElementById('datalist-bancos');
+    if(dl) dl.innerHTML = BANCOS.map(b => `<option value="${escapeAttr(b)}"></option>`).join('');
+  }
   const CORES = ['#2E8B57','#5DA88A','#C9A227','#8B5E34','#4A6FA5','#A23B3B','#7C6FA5','#3E8E8E','#B5651D','#7FA653'];
   const COR_SEM_CATEGORIA = '#9AA69C';
   const BANCO_CORES = {Sicredi:'#4A6FA5', XP:'#C9A227'};
@@ -1154,14 +1209,12 @@
   });
 
   function populateCategoriaSelect(){
-    const sel = document.getElementById('in-categoria');
-    const current = sel.value;
-    sel.innerHTML = categorias.map(c => `<option value="${escapeAttr(c.nome)}">${escapeAttr(c.nome)}</option>`).join('');
-    if(categorias.some(c => c.nome === current)) sel.value = current;
+    const dl = document.getElementById('datalist-categorias');
+    if(dl) dl.innerHTML = categorias.map(c => `<option value="${escapeAttr(c.nome)}"></option>`).join('');
   }
 
   // ---------- LANÇAMENTO MANUAL (wizard progressivo) ----------
-  const PASSOS_MANUAL = ['nome','categoria','banco','valor','data'];
+  const PASSOS_MANUAL = ['nome','categoria','banco','valor','data','recorrente'];
 
   function resetWizard(){
     populateCategoriaSelect();
@@ -1190,8 +1243,8 @@
 
   function advanceStep(currentField, nextField, isLast){
     const input = document.getElementById('in-' + currentField);
-    const isSelectField = (currentField === 'categoria' || currentField === 'banco');
-    if(!isSelectField && (!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0))){
+    const isOpcional = (currentField === 'categoria' || currentField === 'banco' || currentField === 'recorrente');
+    if(!isOpcional && (!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0))){
       input.focus();
       return;
     }
@@ -1220,10 +1273,11 @@
   document.getElementById('btn-categoria').addEventListener('click', () => advanceStep('categoria','banco', false));
   document.getElementById('btn-banco').addEventListener('click', () => advanceStep('banco','valor', false));
   document.getElementById('btn-valor').addEventListener('click', () => advanceStep('valor','data', false));
-  document.getElementById('btn-data').addEventListener('click', () => advanceStep('data', null, true));
+  document.getElementById('btn-data').addEventListener('click', () => advanceStep('data','recorrente', false));
+  document.getElementById('btn-recorrente').addEventListener('click', () => advanceStep('recorrente', null, true));
 
   document.getElementById('form-manual').addEventListener('submit', (e) => e.preventDefault());
-  ['in-nome','in-valor','in-data'].forEach(id => {
+  ['in-nome','in-categoria','in-banco','in-valor','in-data'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', (e) => {
       if(e.key === 'Enter'){
         e.preventDefault();
@@ -1236,10 +1290,11 @@
   async function salvarLancamento(){
     const payload = {
       nome: document.getElementById('in-nome').value.trim(),
-      categoria: document.getElementById('in-categoria').value,
-      banco: document.getElementById('in-banco').value,
+      categoria: document.getElementById('in-categoria').value.trim() || null,
+      banco: document.getElementById('in-banco').value.trim() || null,
       valor: parseFloat(document.getElementById('in-valor').value) || 0,
       data: document.getElementById('in-data').value || null,
+      recorrente: document.getElementById('in-recorrente').value === 'sim',
       user_id: currentUser.id
     };
     const { data, error } = await db.from('lancamentos').insert(payload).select().single();
@@ -1402,19 +1457,27 @@
       tr.innerHTML = `
         <td><input type="date" value="${escapeAttr(item.data)}" data-idx="${idx}" data-field="data"></td>
         <td><input type="text" value="${escapeAttr(item.nome)}" data-idx="${idx}" data-field="nome"></td>
-        <td><select data-idx="${idx}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
-        <td><select data-idx="${idx}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
+        <td><input type="text" list="datalist-categorias" placeholder="(vazio)" value="${escapeAttr(item.categoria)}" data-idx="${idx}" data-field="categoria" autocomplete="off"></td>
+        <td><input type="text" list="datalist-bancos" placeholder="(vazio)" value="${escapeAttr(item.banco)}" data-idx="${idx}" data-field="banco" autocomplete="off"></td>
         <td class="num"><input type="number" step="0.01" value="${item.valor}" data-idx="${idx}" data-field="valor" class="${sinalClasse}" style="text-align:right;"></td>
+        <td><select data-idx="${idx}" data-field="recorrente">
+          <option value="nao" ${item.recorrente ? '' : 'selected'}>Não</option>
+          <option value="sim" ${item.recorrente ? 'selected' : ''}>Sim</option>
+        </select></td>
         <td><button class="del-btn" data-idx="${idx}" aria-label="Remover linha">✕</button></td>`;
       tbody.appendChild(tr);
     });
     tbody.querySelectorAll('input, select').forEach(inp => {
       inp.addEventListener('input', () => {
         const idx = Number(inp.dataset.idx), field = inp.dataset.field;
-        pendingImport[idx][field] = field === 'valor' ? parseFloat(inp.value) || 0 : inp.value;
         if(field === 'valor'){
+          pendingImport[idx][field] = parseFloat(inp.value) || 0;
           inp.classList.remove('valor-neg','valor-pos');
           inp.classList.add((Number(inp.value) || 0) < 0 ? 'valor-neg' : 'valor-pos');
+        } else if(field === 'recorrente'){
+          pendingImport[idx][field] = inp.value === 'sim';
+        } else {
+          pendingImport[idx][field] = inp.value;
         }
       });
     });
@@ -1434,6 +1497,7 @@
       banco: item.banco || null,
       valor: item.valor || 0,
       data: item.data || null,
+      recorrente: !!item.recorrente,
       user_id: currentUser.id
     }));
     const { data, error } = await db.from('lancamentos').insert(rows).select();
@@ -1471,7 +1535,8 @@
         categoria: '',
         banco: bancoVal,
         valor: kValor ? parseFloat(row[kValor]) || 0 : 0,
-        data: dataVal
+        data: dataVal,
+        recorrente: false
       };
     }).filter(r => r.nome || r.valor);
   }
@@ -1488,7 +1553,7 @@
       const data = dtRaw.length >= 8 ? `${dtRaw.slice(0,4)}-${dtRaw.slice(4,6)}-${dtRaw.slice(6,8)}` : '';
       const nome = get('NAME') || get('MEMO');
       const valor = parseFloat(get('TRNAMT')) || 0;
-      return {nome, categoria:'', banco:'', valor, data};
+      return {nome, categoria:'', banco:'', valor, data, recorrente:false};
     }).filter(r => r.nome || r.valor);
   }
 
@@ -1522,7 +1587,7 @@
           dataIso = `${ano}-${dparts[1]}-${dparts[0]}`;
         }
         if(valorNum !== 0){
-          results.push({nome: nome || '(sem descrição)', categoria:'', banco:'', valor: valorNum, data: dataIso});
+          results.push({nome: nome || '(sem descrição)', categoria:'', banco:'', valor: valorNum, data: dataIso, recorrente:false});
         }
       }
     });
@@ -1555,6 +1620,10 @@
         <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
         <td class="num ${sinalClasse}">${money(item.valor)}</td>
+        <td><select data-id="${item.id}" data-field="recorrente">
+          <option value="nao" ${item.recorrente ? '' : 'selected'}>Não</option>
+          <option value="sim" ${item.recorrente ? 'selected' : ''}>Sim</option>
+        </select></td>
         <td><button class="del-btn" data-id="${item.id}" aria-label="Excluir lançamento">✕</button></td>`;
       tbody.appendChild(tr);
     });
@@ -1565,11 +1634,12 @@
         if(!item) return;
         const field = sel.dataset.field;
         const valorAnterior = item[field];
-        item[field] = sel.value;
-        const { error } = await db.from('lancamentos').update({[field]: sel.value}).eq('id', item.id);
+        const novoValor = field === 'recorrente' ? (sel.value === 'sim') : sel.value;
+        item[field] = novoValor;
+        const { error } = await db.from('lancamentos').update({[field]: novoValor}).eq('id', item.id);
         if(error){
           item[field] = valorAnterior;
-          sel.value = valorAnterior;
+          sel.value = field === 'recorrente' ? (valorAnterior ? 'sim' : 'nao') : valorAnterior;
           alertaErro('Não foi possível atualizar o lançamento. Tente novamente.');
           return;
         }
@@ -1799,6 +1869,7 @@
     if(telaAtual === 'categorias') renderCategorias();
     if(telaAtual === 'patrimonio') renderPatrimonio();
   }
+  populateBancoDatalist();
   initAuth();
 })();
 </script>
