@@ -251,6 +251,11 @@
   .legend-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:15px;}
   .legend-row:last-child{border-bottom:none;}
   .legend-swatch{width:14px; height:14px; border-radius:4px; flex-shrink:0;}
+  .chart-card.small{gap:18px;}
+  .chart-card.small .pie{width:110px; height:110px;}
+  .chart-card.small .legend{min-width:160px;}
+  .chart-card.small .legend-row{padding:5px 0; font-size:13px;}
+  .chart-card.small .legend-swatch{width:11px; height:11px;}
   .legend-name{flex:1; font-weight:700;}
   .legend-value{font-variant-numeric:tabular-nums; color:var(--muted);}
   .legend-pct{font-variant-numeric:tabular-nums; font-weight:700; min-width:52px; text-align:right;}
@@ -619,14 +624,7 @@
           <label for="home-despesa-fixa-mes">Filtrar mês</label>
           <input type="month" id="home-despesa-fixa-mes">
         </div>
-        <div class="table-scroll">
-        <table>
-          <thead><tr><th>Nome</th><th class="num">Valor</th></tr></thead>
-          <tbody id="tbody-despesa-fixa"></tbody>
-          <tfoot><tr><td>Total</td><td class="num" id="total-despesa-fixa">R$ 0,00</td></tr></tfoot>
-        </table>
-        </div>
-        <p class="empty-msg" id="empty-despesa-fixa" style="display:none;">Nenhuma despesa fixa neste período.</p>
+        <div class="rel-chart-wrap" id="despesa-fixa-grafico"></div>
       </div>
 
       <div class="dash-grid dash-grid-3">
@@ -3064,19 +3062,14 @@
     }
     const mes = mesInput ? mesInput.value : '';
     const itens = lancamentos.filter(i => i.recorrente && (Number(i.valor)||0) < 0 && (!mes || (i.data||'').slice(0,7) === mes));
-    const tbody = document.getElementById('tbody-despesa-fixa');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    document.getElementById('empty-despesa-fixa').style.display = itens.length ? 'none' : 'block';
-    let total = 0;
-    [...itens].sort((a,b) => Math.abs(Number(b.valor)||0) - Math.abs(Number(a.valor)||0)).forEach(item => {
-      const valorAbs = Math.abs(Number(item.valor) || 0);
-      total += valorAbs;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${escapeAttr(item.nome)}</td><td class="num valor-neg">${money(valorAbs)}</td>`;
-      tbody.appendChild(tr);
+    const grupos = {};
+    itens.forEach(item => {
+      const chave = item.nome || 'Sem nome';
+      const valor = Math.abs(Number(item.valor) || 0);
+      if(!grupos[chave]) grupos[chave] = { valor: 0, cor: CORES[Object.keys(grupos).length % CORES.length] };
+      grupos[chave].valor += valor;
     });
-    document.getElementById('total-despesa-fixa').textContent = money(total);
+    renderGraficoContainer('despesa-fixa-grafico', grupos, true);
   }
   const homeDespesaFixaMesEl = document.getElementById('home-despesa-fixa-mes');
   if(homeDespesaFixaMesEl) homeDespesaFixaMesEl.addEventListener('change', renderDespesaFixa);
@@ -3260,7 +3253,7 @@
     sel.value = relEstado.dimensao;
   }
 
-  function renderGraficoContainer(containerId, grupos){
+  function renderGraficoContainer(containerId, grupos, small){
     const container = document.getElementById(containerId);
     if(!container) return;
     const entradas = Object.entries(grupos).sort((a,b) => b[1].valor - a[1].valor).slice(0, REL_LIMITE_ITENS);
@@ -3284,7 +3277,7 @@
         <span class="legend-pct">${pct.toFixed(1)}%</span>
       </div>`;
     }).join('');
-    container.innerHTML = `<div class="chart-card">
+    container.innerHTML = `<div class="chart-card${small ? ' small' : ''}">
       <div class="pie" style="background:conic-gradient(${stops.join(', ')})"></div>
       <div class="legend">${legendHtml}</div>
     </div>`;
