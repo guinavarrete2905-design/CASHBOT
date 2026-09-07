@@ -844,6 +844,14 @@
             <input type="text" id="filtro-nome" placeholder="Buscar por nome" autocomplete="off">
           </div>
           <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-tipo">Tipo</label>
+            <select id="filtro-tipo">
+              <option value="">Todos</option>
+              <option value="despesa">Despesa</option>
+              <option value="receita">Receita</option>
+            </select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
             <label for="filtro-categoria">Categoria</label>
             <select id="filtro-categoria"><option value="">Todas</option></select>
           </div>
@@ -1825,7 +1833,7 @@
     return '';
   }
   // ---------- RESUMO ----------
-  let resumoFiltros = { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
+  let resumoFiltros = { nome:'', tipo:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
 
   function popularFiltrosResumo(){
     const selCategoria = document.getElementById('filtro-categoria');
@@ -1849,6 +1857,11 @@
     const nomeBusca = resumoFiltros.nome.trim().toLowerCase();
     return lancamentos.filter(item => {
       if(nomeBusca && !String(item.nome || '').toLowerCase().includes(nomeBusca)) return false;
+      if(resumoFiltros.tipo){
+        const isDespesaItem = (Number(item.valor) || 0) < 0;
+        if(resumoFiltros.tipo === 'despesa' && !isDespesaItem) return false;
+        if(resumoFiltros.tipo === 'receita' && isDespesaItem) return false;
+      }
       if(resumoFiltros.categoria && item.categoria !== resumoFiltros.categoria) return false;
       if(resumoFiltros.banco && item.banco !== resumoFiltros.banco) return false;
       if(resumoFiltros.formaPagamento && item.forma_pagamento !== resumoFiltros.formaPagamento) return false;
@@ -1861,12 +1874,14 @@
   }
 
   window.limparFiltrosResumo = function(){
-    resumoFiltros = { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
+    resumoFiltros = { nome:'', tipo:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
     const elNome = document.getElementById('filtro-nome');
+    const elTipo = document.getElementById('filtro-tipo');
     const elDataDe = document.getElementById('filtro-data-de');
     const elDataAte = document.getElementById('filtro-data-ate');
     const elRecorrente = document.getElementById('filtro-recorrente');
     if(elNome) elNome.value = '';
+    if(elTipo) elTipo.value = '';
     if(elDataDe) elDataDe.value = '';
     if(elDataAte) elDataAte.value = '';
     if(elRecorrente) elRecorrente.value = '';
@@ -1874,6 +1889,7 @@
   };
 
   document.getElementById('filtro-nome').addEventListener('input', (e) => { resumoFiltros.nome = e.target.value; renderResumo(); });
+  document.getElementById('filtro-tipo').addEventListener('change', (e) => { resumoFiltros.tipo = e.target.value; renderResumo(); });
   document.getElementById('filtro-categoria').addEventListener('change', (e) => { resumoFiltros.categoria = e.target.value; renderResumo(); });
   document.getElementById('filtro-banco').addEventListener('change', (e) => { resumoFiltros.banco = e.target.value; renderResumo(); });
   document.getElementById('filtro-forma-pagamento').addEventListener('change', (e) => { resumoFiltros.formaPagamento = e.target.value; renderResumo(); });
