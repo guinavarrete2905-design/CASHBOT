@@ -109,6 +109,8 @@
   .big-btn.secondary:hover{background:#232f28;}
   .big-btn.patrimonio{background:var(--gold);}
   .big-btn.patrimonio:hover{background:var(--gold-dark);}
+  .big-btn.saldo{background:var(--green-dark);}
+  .big-btn.saldo:hover{background:#0d2e1f;}
   .btn-help{color:var(--muted); font-size:15px; margin:0 0 8px; padding:0 8px;}
 
   .filtro-toggle-row{display:flex; gap:12px; flex-wrap:wrap;}
@@ -442,13 +444,12 @@
   <div class="sidebar-logo"><img id="sidebar-logo-img" alt="CashBot" src="data:image/png;base64,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//////////////////////////////////////////////////////////////////////////////////////////////////8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMkPw7gAAF19JREFUeNrtnQd34siygJEEwkgCZaFEEGC8YC/gNPbYk+/e8N77///nde5WMky4Z9FAnd0xQRLqT1XV1a2uUqt1lrMcg6znX2Zf5utTRjDvdXpI/tc8VQTRoN3BED70el9OlEEHMKAUPvRmJwnhHjEg9gCU4RR1Ya5NCxRO0D1O20AECh8+nJ4q3HQhhPZU0IVedHrW0GYUKISTs4dE63a7zCIwiNODoBIIAoWTg/AEIYgUThGCDs2BUKAYTs4xtu4xBe4X/jjBmNFUu5wCxNDXTzBkTB+6mmARf8xPcexgTIeCW9AWJzqWnqhUFbRucqoTCi3zHruF6UJvnbDgcOGkEdA+4vEMods+QwCO0ThxCGBEffLmAOdWut3oxCGguZWzTzg7RlPVNO3UzQFCULsn1jsYUCIdyo0J5BmNHhYJkgWU2SxJ5qb+G3KJbDfdZe+gqGoYqkiGw+EDnlTQsODxZLvfByPr3mz+OwXThp2+u5Bl+eriYkiEUFBVMrskDKmn0w6beZ1d/ibOwrdCAOACCiUAReWiaQUMfA6+05n9BupgO5QAkUoKlRDoTZl5w7XBXknSGEoZgloPodMRKXzo9S4bjEDfSZJMRGSAMXBj0Goh0Ntzs8Yqw2jMEDAI1BYETdCYlCn0eg2/S2lJAgNoD1dUmEo85OwB9AvIG9yD/wkJDqGRJmGsFEENxjIgEjo7K03TzcZ1QVz08mLbtmne3KC4KYoeH0EQRXeO7uaTTl9kAPxj4xh8DLkajAGFd+noe0NAY82WtuF1LE2j8Ogp4Npje5Akb+P/YJg5FyziQ8MswvAUCYssKZ77E6OAaMYofPjQa9RaxxVnMHZ/8lhr0S80KHq0sC1AyX7+tKOZ4BiaEx9QPZAk95cckJtEY5yjMWbGYP+iQ874UseGGMSOMFCkm6r5FOMjCgx0H8iNCWKF0QuIGlwozyCKcBPzYwUFpgrNWMdhUwaKqAf6yHJCDwsOoK8ursgLWcZhJPgHTTqEWaLXU2hE/LylEEZc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"></div>
   <nav id="sidebar-nav">
     <button data-tela="home" onclick="goTo('home')">Início</button>
-    <button data-tela="manual" onclick="goTo('manual')">Lançamento manual</button>
-    <button data-tela="massa" onclick="goTo('massa')">Lançamento em massa</button>
-    <button data-tela="lancarBem" onclick="goTo('lancarBem')">Lançar bem</button>
+    <button data-tela="lancamentos" onclick="goTo('lancamentos')">Lançamentos</button>
     <button data-tela="cadastros" onclick="goTo('cadastros')">Cadastros</button>
     <button data-tela="despesas" onclick="goTo('despesas')">Despesas</button>
     <button data-tela="receitas" onclick="goTo('receitas')">Receitas</button>
     <button data-tela="bens" onclick="goTo('bens')">Bens</button>
+    <button data-tela="saldos" onclick="goTo('saldos')">Saldos</button>
     <button data-tela="patrimonio" onclick="goTo('patrimonio')">Patrimônio</button>
     <button data-tela="metas" onclick="goTo('metas')">Metas</button>
   </nav>
@@ -477,13 +478,12 @@
       <button class="hamburger-btn" id="menu-toggle-home" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-home">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -602,6 +602,104 @@
     </div>
   </div>
 </div>
+<!-- ===================== LANÇAMENTOS (hub) ===================== -->
+<div class="screen" id="screen-lancamentos">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-lancamentos" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-lancamentos">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="step-title">Lançamentos</div>
+      <button class="big-btn" onclick="goTo('escolhaDespesa')">Lançamento de despesa</button>
+      <button class="big-btn secondary" onclick="goTo('escolhaReceita')">Lançamento de receita</button>
+      <button class="big-btn patrimonio" onclick="goTo('lancarBem')">Lançamento de bem</button>
+      <button class="big-btn saldo" onclick="goTo('lancarSaldo')">Lançamento de saldo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ESCOLHA - LANÇAMENTO DE DESPESA ===================== -->
+<div class="screen" id="screen-escolhaDespesa">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-escolhaDespesa" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-escolhaDespesa">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="step-title">Lançamento de despesa</div>
+      <button class="big-btn" onclick="abrirLancamentoManual('despesa')">Lançamento manual</button>
+      <button class="big-btn secondary" onclick="goTo('massa')">Lançamento em massa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ESCOLHA - LANÇAMENTO DE RECEITA ===================== -->
+<div class="screen" id="screen-escolhaReceita">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-escolhaReceita" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-escolhaReceita">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="step-title">Lançamento de receita</div>
+      <button class="big-btn" onclick="abrirLancamentoManual('receita')">Lançamento manual</button>
+      <button class="big-btn secondary" onclick="goTo('massa')">Lançamento em massa</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== LANÇAMENTO MANUAL ===================== -->
 <div class="screen" id="screen-manual">
   <div class="topbar">
@@ -612,13 +710,12 @@
       <button class="hamburger-btn" id="menu-toggle-manual" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-manual">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -720,13 +817,12 @@
       <button class="hamburger-btn" id="menu-toggle-massa" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-massa">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -777,13 +873,12 @@
       <button class="hamburger-btn" id="menu-toggle-lancarBem" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-lancarBem">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -844,6 +939,63 @@
     </div>
   </div>
 </div>
+
+<!-- ===================== LANÇAMENTO DE SALDO ===================== -->
+<div class="screen" id="screen-lancarSaldo">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-lancarSaldo" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-lancarSaldo">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card" style="display:flex; flex-direction:column;">
+      <button class="voltar-home" type="button" onclick="resetWizardSaldo()">Excluir lançamento e recomeçar</button>
+      <div class="step-title">Novo saldo</div>
+      <form id="form-saldo">
+        <div class="field-block" id="fb-saldo-data">
+          <label for="in-saldo-data">Data</label>
+          <input type="date" id="in-saldo-data">
+          <div class="step-actions"><button type="button" class="btn-avancar" id="btn-saldo-data">AVANÇAR</button></div>
+        </div>
+
+        <div class="field-block" id="fb-saldo-banco" style="display:none;">
+          <label for="in-saldo-banco">Banco</label>
+          <input type="text" id="in-saldo-banco" list="datalist-bancos" placeholder="Digite ou escolha um banco" autocomplete="off">
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-saldo-banco">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepSaldo('banco')">‹ Voltar</button>
+          </div>
+        </div>
+
+        <div class="field-block" id="fb-saldo-valor" style="display:none;">
+          <label for="in-saldo-valor">Valor</label>
+          <input type="number" id="in-saldo-valor" placeholder="0,00" step="0.01" min="0" inputmode="decimal">
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-saldo-valor">SALVAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepSaldo('valor')">‹ Voltar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== CADASTROS (hub) ===================== -->
 <div class="screen" id="screen-cadastros">
   <div class="topbar">
@@ -854,13 +1006,12 @@
       <button class="hamburger-btn" id="menu-toggle-cadastros" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-cadastros">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -888,13 +1039,12 @@
       <button class="hamburger-btn" id="menu-toggle-categorias" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-categorias">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -925,13 +1075,12 @@
       <button class="hamburger-btn" id="menu-toggle-cadBanco" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-cadBanco">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -962,13 +1111,12 @@
       <button class="hamburger-btn" id="menu-toggle-cadFormaPagamento" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-cadFormaPagamento">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -999,13 +1147,12 @@
       <button class="hamburger-btn" id="menu-toggle-despesas" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-despesas">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1068,7 +1215,7 @@
         </div>
         <p class="empty-msg" id="empty-despesas" style="display:none;">Nenhuma despesa ainda.</p>
         <div class="actions-row">
-          <button class="big-btn" onclick="goTo('manual')">Novo lançamento manual</button>
+          <button class="big-btn" onclick="abrirLancamentoManual('despesa')">Novo lançamento manual</button>
           <button class="big-btn secondary" onclick="goTo('massa')">Novo lançamento em massa</button>
         </div>
       </div>
@@ -1086,13 +1233,12 @@
       <button class="hamburger-btn" id="menu-toggle-receitas" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-receitas">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1155,7 +1301,7 @@
         </div>
         <p class="empty-msg" id="empty-receitas" style="display:none;">Nenhuma receita ainda.</p>
         <div class="actions-row">
-          <button class="big-btn" onclick="goTo('manual')">Novo lançamento manual</button>
+          <button class="big-btn" onclick="abrirLancamentoManual('receita')">Novo lançamento manual</button>
           <button class="big-btn secondary" onclick="goTo('massa')">Novo lançamento em massa</button>
         </div>
       </div>
@@ -1173,13 +1319,12 @@
       <button class="hamburger-btn" id="menu-toggle-bens" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-bens">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1241,6 +1386,71 @@
   </div>
 </div>
 
+<!-- ===================== SALDOS ===================== -->
+<div class="screen" id="screen-saldos">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-saldos" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-saldos">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="resumo-wrap">
+      <h1>Saldos</h1>
+
+      <div class="card wide">
+        <div class="step-title" style="margin-bottom:14px;">Filtros</div>
+        <div class="filtros-grid">
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-banco-saldos">Banco</label>
+            <select id="filtro-banco-saldos"><option value="">Todos</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-de-saldos">Data de</label>
+            <input type="date" id="filtro-data-de-saldos">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-ate-saldos">Data até</label>
+            <input type="date" id="filtro-data-ate-saldos">
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px;">
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosSaldos()">Limpar filtros</button>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <div class="table-scroll">
+        <table>
+          <thead><tr><th>Data</th><th>Banco</th><th class="num">Valor</th><th></th></tr></thead>
+          <tbody id="tbody-saldos"></tbody>
+          <tfoot><tr><td>Total</td><td></td><td class="num" id="total-saldos">R$ 0,00</td><td></td></tr></tfoot>
+        </table>
+        </div>
+        <p class="empty-msg" id="empty-saldos" style="display:none;">Nenhum saldo cadastrado ainda.</p>
+        <div class="actions-row">
+          <button class="big-btn" onclick="goTo('lancarSaldo')">Novo saldo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== PATRIMÔNIO (painel) ===================== -->
 <div class="screen" id="screen-patrimonio">
   <div class="topbar">
@@ -1251,13 +1461,12 @@
       <button class="hamburger-btn" id="menu-toggle-patrimonio" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-patrimonio">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1283,6 +1492,7 @@
             <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-bens" onclick="toggleFiltroPatrimonio('bens')">Bens</button>
             <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-receitas" onclick="toggleFiltroPatrimonio('receitas')">Receitas</button>
             <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-despesas" onclick="toggleFiltroPatrimonio('despesas')">Despesas</button>
+            <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-saldos" onclick="toggleFiltroPatrimonio('saldos')">Saldos</button>
           </div>
         </div>
         <div class="actions-row" style="margin-top:16px;">
@@ -1297,6 +1507,7 @@
           <span id="hero-receitas-span">+ Receitas: <strong id="pat-total-receitas">R$ 0,00</strong></span>
           <span id="hero-despesas-span">− Despesas: <strong id="pat-total-despesas">R$ 0,00</strong></span>
           <span id="hero-bens-span">+ Bens: <strong id="pat-total-bens">R$ 0,00</strong></span>
+          <span id="hero-saldos-span">+ Saldos: <strong id="pat-total-saldos">R$ 0,00</strong></span>
         </div>
       </div>
 
@@ -1304,6 +1515,12 @@
         <div class="step-title">Bens por categoria</div>
         <div id="acc-bens"></div>
         <p class="empty-msg" id="acc-bens-empty" style="display:none;">Nenhum bem cadastrado ainda.</p>
+      </div>
+
+      <div class="card wide" id="acc-saldos-card">
+        <div class="step-title">Saldos por banco</div>
+        <div id="acc-saldos"></div>
+        <p class="empty-msg" id="acc-saldos-empty" style="display:none;">Nenhum saldo cadastrado ainda.</p>
       </div>
 
       <div class="card wide" id="acc-tipos-card">
@@ -1331,13 +1548,12 @@
       <button class="hamburger-btn" id="menu-toggle-metas" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-metas">
         <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1592,6 +1808,15 @@
   let bancos = [];                // {id, nome}
   let formasPagamento = [];       // {id, nome}
   let bens = [];                  // {id, nome, tipo ('movel'|'imovel'), categoria, valor, data} — bens móveis e imóveis, somados ao patrimônio à parte
+  let saldos = [];                // {id, banco, valor, data} — saldos de banco, somados ao patrimônio à parte
+
+  // ---------- LANÇAMENTOS (hub unificado) ----------
+  let pendingManualTipoPreset = null;
+  window.abrirLancamentoManual = function(tipoPreset){
+    pendingManualTipoPreset = tipoPreset || null;
+    goTo('manual');
+  };
+
   function populateBancoDatalist(){
     const dl = document.getElementById('datalist-bancos');
     if(dl) dl.innerHTML = bancos.map(b => `<option value="${escapeAttr(b.nome)}"></option>`).join('');
@@ -1627,9 +1852,13 @@
   // ---------- menu hamburguer (todas as telas) ----------
   const menuPairs = [
     ['menu-toggle-home','menu-dropdown-home'],
+    ['menu-toggle-lancamentos','menu-dropdown-lancamentos'],
+    ['menu-toggle-escolhaDespesa','menu-dropdown-escolhaDespesa'],
+    ['menu-toggle-escolhaReceita','menu-dropdown-escolhaReceita'],
     ['menu-toggle-manual','menu-dropdown-manual'],
     ['menu-toggle-massa','menu-dropdown-massa'],
     ['menu-toggle-lancarBem','menu-dropdown-lancarBem'],
+    ['menu-toggle-lancarSaldo','menu-dropdown-lancarSaldo'],
     ['menu-toggle-cadastros','menu-dropdown-cadastros'],
     ['menu-toggle-categorias','menu-dropdown-categorias'],
     ['menu-toggle-cadBanco','menu-dropdown-cadBanco'],
@@ -1637,6 +1866,7 @@
     ['menu-toggle-despesas','menu-dropdown-despesas'],
     ['menu-toggle-receitas','menu-dropdown-receitas'],
     ['menu-toggle-bens','menu-dropdown-bens'],
+    ['menu-toggle-saldos','menu-dropdown-saldos'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio'],
     ['menu-toggle-metas','menu-dropdown-metas']
   ];
@@ -1668,16 +1898,19 @@
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + name).classList.add('active');
     const grupoCadastros = ['cadastros','categorias','cadBanco','cadFormaPagamento'];
-    const telaAtivaNav = grupoCadastros.includes(name) ? 'cadastros' : name;
+    const grupoLancamentos = ['lancamentos','escolhaDespesa','escolhaReceita','manual','massa','lancarBem','lancarSaldo'];
+    const telaAtivaNav = grupoCadastros.includes(name) ? 'cadastros' : (grupoLancamentos.includes(name) ? 'lancamentos' : name);
     document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.toggle('active', b.dataset.tela === telaAtivaNav));
     document.querySelectorAll('.menu-dropdown').forEach(d => d.classList.remove('open'));
     if(name === 'home') renderHomeDashboard();
-    if(name === 'manual') resetWizard();
+    if(name === 'manual'){ resetWizard(pendingManualTipoPreset); pendingManualTipoPreset = null; }
     if(name === 'massa') resetUpload();
     if(name === 'lancarBem') resetWizardBem();
+    if(name === 'lancarSaldo') resetWizardSaldo();
     if(name === 'despesas') renderLista('despesa');
     if(name === 'receitas') renderLista('receita');
     if(name === 'bens') renderListaBens();
+    if(name === 'saldos') renderListaSaldos();
     if(name === 'categorias') renderCategorias();
     if(name === 'cadBanco') renderBancos();
     if(name === 'cadFormaPagamento') renderFormasPagamento();
@@ -1855,7 +2088,10 @@
     }
   }
 
-  function resetWizard(){
+  let manualTipoPresetAtual = null; // null = pergunta o tipo; 'despesa'/'receita' = veio da tela de Lançamentos já escolhido
+  function resetWizard(tipoPreset){
+    if(typeof tipoPreset !== 'undefined') manualTipoPresetAtual = tipoPreset;
+    const preset = manualTipoPresetAtual;
     populateCategoriaSelect();
     TODOS_CAMPOS_MANUAL.forEach(f => {
       document.getElementById('fb-' + f).style.display = 'none';
@@ -1864,11 +2100,18 @@
       if(input.tagName !== 'SELECT'){ input.value = ''; }
       input.disabled = false;
     });
-    manualTipoAtual = 'despesa';
-    document.getElementById('in-tipo').value = 'despesa';
+    manualTipoAtual = preset || 'despesa';
+    document.getElementById('in-tipo').value = manualTipoAtual;
     atualizarLabelNome();
-    document.getElementById('fb-tipo').style.display = 'block';
-    setTimeout(() => document.getElementById('in-tipo').focus(), 50);
+    if(preset){
+      document.getElementById('fb-tipo').classList.add('done');
+      document.getElementById('in-tipo').disabled = true;
+      document.getElementById('fb-nome').style.display = 'block';
+      setTimeout(() => document.getElementById('in-nome').focus(), 50);
+    } else {
+      document.getElementById('fb-tipo').style.display = 'block';
+      setTimeout(() => document.getElementById('in-tipo').focus(), 50);
+    }
   }
 
   window.voltarStepManual = function(currentField){
@@ -2044,6 +2287,89 @@
     const { data, error } = await db.from('bens').insert(payload).select().single();
     if(error){ alertaErro('Não foi possível salvar o bem. Tente novamente.'); return false; }
     bens.push(data);
+    return true;
+  }
+
+  // ---------- LANÇAMENTO DE SALDO (wizard progressivo) ----------
+  const PASSOS_SALDO = ['data','banco','valor'];
+
+  function resetWizardSaldo(){
+    PASSOS_SALDO.forEach(f => {
+      document.getElementById('fb-saldo-' + f).style.display = 'none';
+      document.getElementById('fb-saldo-' + f).classList.remove('done');
+      const input = document.getElementById('in-saldo-' + f);
+      input.value = '';
+      input.disabled = false;
+    });
+    document.getElementById('fb-saldo-data').style.display = 'block';
+    setTimeout(() => document.getElementById('in-saldo-data').focus(), 50);
+  }
+
+  window.voltarStepSaldo = function(currentField){
+    const idx = PASSOS_SALDO.indexOf(currentField);
+    if(idx <= 0) return;
+    const prevField = PASSOS_SALDO[idx - 1];
+    document.getElementById('fb-saldo-' + currentField).style.display = 'none';
+    const prevBlock = document.getElementById('fb-saldo-' + prevField);
+    prevBlock.classList.remove('done');
+    const prevInput = document.getElementById('in-saldo-' + prevField);
+    prevInput.disabled = false;
+    setTimeout(() => prevInput.focus(), 50);
+  };
+
+  function advanceStepSaldo(currentField, isLast){
+    const input = document.getElementById('in-saldo-' + currentField);
+    if(!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0)){
+      input.focus();
+      return;
+    }
+    document.getElementById('fb-saldo-' + currentField).classList.add('done');
+    input.disabled = true;
+    if(isLast){
+      const stepBtn = document.getElementById('btn-saldo-' + currentField);
+      const block = document.getElementById('fb-saldo-' + currentField);
+      stepBtn.disabled = true;
+      salvarSaldo().then(ok => {
+        stepBtn.disabled = false;
+        if(ok){
+          goTo('saldos');
+        } else {
+          block.classList.remove('done');
+          input.disabled = false;
+        }
+      });
+    } else {
+      const nextField = PASSOS_SALDO[PASSOS_SALDO.indexOf(currentField) + 1];
+      document.getElementById('fb-saldo-' + nextField).style.display = 'block';
+      setTimeout(() => document.getElementById('in-saldo-' + nextField).focus(), 50);
+    }
+  }
+
+  document.getElementById('btn-saldo-data').addEventListener('click', () => advanceStepSaldo('data', false));
+  document.getElementById('btn-saldo-banco').addEventListener('click', () => advanceStepSaldo('banco', false));
+  document.getElementById('btn-saldo-valor').addEventListener('click', () => advanceStepSaldo('valor', true));
+
+  document.getElementById('form-saldo').addEventListener('submit', (e) => e.preventDefault());
+  ['in-saldo-data','in-saldo-banco','in-saldo-valor'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        const field = id.replace('in-saldo-','');
+        document.getElementById('btn-saldo-' + field).click();
+      }
+    });
+  });
+
+  async function salvarSaldo(){
+    const payload = {
+      data: document.getElementById('in-saldo-data').value || null,
+      banco: document.getElementById('in-saldo-banco').value.trim(),
+      valor: Math.abs(parseFloat(document.getElementById('in-saldo-valor').value) || 0),
+      user_id: currentUser.id
+    };
+    const { data, error } = await db.from('saldos').insert(payload).select().single();
+    if(error){ alertaErro('Não foi possível salvar o saldo. Tente novamente.'); return false; }
+    saldos.push(data);
     return true;
   }
 
@@ -2572,6 +2898,88 @@
     });
   }
 
+  // ---------- SALDOS (listagem) ----------
+  let filtrosSaldos = { banco: '', dataDe: '', dataAte: '' };
+
+  function popularFiltrosSaldos(){
+    const sel = document.getElementById('filtro-banco-saldos');
+    if(sel){
+      sel.innerHTML = '<option value="">Todos</option>' + bancos.map(b =>
+        `<option value="${escapeAttr(b.nome)}" ${b.nome === filtrosSaldos.banco ? 'selected' : ''}>${escapeAttr(b.nome)}</option>`).join('');
+    }
+  }
+
+  function itensSaldosFiltrados(){
+    return saldos.filter(item => {
+      if(filtrosSaldos.banco && item.banco !== filtrosSaldos.banco) return false;
+      if(filtrosSaldos.dataDe && (item.data || '') < filtrosSaldos.dataDe) return false;
+      if(filtrosSaldos.dataAte && (item.data || '') > filtrosSaldos.dataAte) return false;
+      return true;
+    });
+  }
+
+  window.limparFiltrosSaldos = function(){
+    filtrosSaldos = { banco: '', dataDe: '', dataAte: '' };
+    ['filtro-banco-saldos','filtro-data-de-saldos','filtro-data-ate-saldos'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+    renderListaSaldos();
+  };
+
+  function wireFiltrosSaldos(){
+    document.getElementById('filtro-banco-saldos').addEventListener('change', (e) => { filtrosSaldos.banco = e.target.value; renderListaSaldos(); });
+    document.getElementById('filtro-data-de-saldos').addEventListener('change', (e) => { filtrosSaldos.dataDe = e.target.value; renderListaSaldos(); });
+    document.getElementById('filtro-data-ate-saldos').addEventListener('change', (e) => { filtrosSaldos.dataAte = e.target.value; renderListaSaldos(); });
+  }
+  wireFiltrosSaldos();
+
+  function renderListaSaldos(){
+    popularFiltrosSaldos();
+    const tbody = document.getElementById('tbody-saldos');
+    tbody.innerHTML = '';
+    const itens = itensSaldosFiltrados();
+    document.getElementById('empty-saldos').style.display = itens.length ? 'none' : 'block';
+    let total = 0;
+    [...itens].sort((a,b) => (a.data||'').localeCompare(b.data||'')).forEach(item => {
+      total += Number(item.valor) || 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fmtDateBR(item.data)}</td>
+        <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
+        <td class="num">${money(item.valor)}</td>
+        <td><button class="del-btn" data-id="${item.id}" aria-label="Excluir saldo">✕</button></td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('total-saldos').textContent = money(total);
+    tbody.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', async () => {
+        const item = saldos.find(i => i.id === sel.dataset.id);
+        if(!item) return;
+        const field = sel.dataset.field;
+        const valorAnterior = item[field];
+        const novoValor = sel.value;
+        item[field] = novoValor;
+        const { error } = await db.from('saldos').update({[field]: novoValor}).eq('id', item.id);
+        if(error){
+          item[field] = valorAnterior;
+          sel.value = valorAnterior || '';
+          alertaErro('Não foi possível atualizar o saldo. Tente novamente.');
+          return;
+        }
+      });
+    });
+    tbody.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const { error } = await db.from('saldos').delete().eq('id', btn.dataset.id);
+        if(error){ alertaErro('Não foi possível excluir o saldo. Tente novamente.'); btn.disabled = false; return; }
+        saldos = saldos.filter(i => i.id !== btn.dataset.id);
+        renderListaSaldos();
+      });
+    });
+  }
+
   function corParaCategoria(nome){
     if(!nome) return COR_SEM_CATEGORIA;
     const idx = categorias.findIndex(c => c.nome === nome);
@@ -2863,10 +3271,57 @@
     });
   }
 
-  let filtrosPatrimonio = { mes: '', bens: true, receitas: true, despesas: true };
+  // agrupa saldos por banco, para o acordeão de Saldos em Patrimônio (sem categoria, sem sinal)
+  function renderAccordionSaldos(containerId, emptyElId, itensSaldosList){
+    const container = document.getElementById(containerId);
+    const emptyEl = document.getElementById(emptyElId);
+    container.innerHTML = '';
+    emptyEl.style.display = itensSaldosList.length ? 'none' : 'block';
+    if(!itensSaldosList.length) return;
+
+    const grupos = {};
+    itensSaldosList.forEach(item => {
+      const chave = item.banco || 'Sem banco';
+      if(!grupos[chave]) grupos[chave] = [];
+      grupos[chave].push(item);
+    });
+    const chavesOrdenadas = Object.keys(grupos).sort((a,b) => {
+      const totalA = grupos[a].reduce((s,i) => s + (Number(i.valor)||0), 0);
+      const totalB = grupos[b].reduce((s,i) => s + (Number(i.valor)||0), 0);
+      return totalB - totalA;
+    });
+    chavesOrdenadas.forEach(banco => {
+      const itens = grupos[banco].sort((a,b) => (a.data||'').localeCompare(b.data||''));
+      const totalBanco = itens.reduce((s,i) => s + (Number(i.valor)||0), 0);
+      const cor = corGenerica(banco === 'Sem banco' ? '' : banco, bancos);
+      const div = document.createElement('div');
+      div.className = 'acc-item';
+      div.innerHTML = `
+        <button type="button" class="acc-header">
+          <span class="acc-color-dot" style="background:${cor}"></span>
+          <span class="acc-title">${escapeAttr(banco)}</span>
+          <span class="acc-total">${money(totalBanco)}</span>
+          <span class="acc-chevron">⌄</span>
+        </button>
+        <div class="acc-body">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th class="num">Valor</th><th>Data</th></tr></thead>
+            <tbody>
+              ${itens.map(i => `<tr><td class="num">${money(Number(i.valor)||0)}</td><td>${fmtDateBR(i.data)}</td></tr>`).join('')}
+            </tbody>
+          </table>
+          </div>
+        </div>`;
+      div.querySelector('.acc-header').addEventListener('click', (e) => toggleAcc(e.currentTarget));
+      container.appendChild(div);
+    });
+  }
+
+  let filtrosPatrimonio = { mes: '', bens: true, receitas: true, despesas: true, saldos: true };
 
   function atualizarBotoesFiltroPatrimonio(){
-    ['bens','receitas','despesas'].forEach(campo => {
+    ['bens','receitas','despesas','saldos'].forEach(campo => {
       const btn = document.getElementById('filtro-patrimonio-btn-' + campo);
       if(btn) btn.classList.toggle('off', !filtrosPatrimonio[campo]);
     });
@@ -2879,7 +3334,7 @@
   };
 
   window.limparFiltrosPatrimonio = function(){
-    filtrosPatrimonio = { mes: '', bens: true, receitas: true, despesas: true };
+    filtrosPatrimonio = { mes: '', bens: true, receitas: true, despesas: true, saldos: true };
     const mesEl = document.getElementById('filtro-patrimonio-mes');
     if(mesEl) mesEl.value = '';
     atualizarBotoesFiltroPatrimonio();
@@ -2897,17 +3352,20 @@
     const mes = filtrosPatrimonio.mes;
     const lancamentosPeriodo = mes ? lancamentos.filter(i => (i.data||'').slice(0,7) === mes) : lancamentos;
     const bensPeriodo = mes ? bens.filter(i => (i.data||'').slice(0,7) === mes) : bens;
+    const saldosPeriodo = mes ? saldos.filter(i => (i.data||'').slice(0,7) === mes) : saldos;
 
     const receitas = lancamentosPeriodo.filter(i => (Number(i.valor)||0) > 0);
     const despesas = lancamentosPeriodo.filter(i => (Number(i.valor)||0) < 0);
     const totalReceitas = filtrosPatrimonio.receitas ? receitas.reduce((s,i) => s + (Number(i.valor)||0), 0) : 0;
     const totalDespesas = filtrosPatrimonio.despesas ? despesas.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0) : 0;
     const totalBens = filtrosPatrimonio.bens ? bensPeriodo.reduce((s,i) => s + (Number(i.valor)||0), 0) : 0;
-    const resultado = totalReceitas - totalDespesas + totalBens;
+    const totalSaldos = filtrosPatrimonio.saldos ? saldosPeriodo.reduce((s,i) => s + (Number(i.valor)||0), 0) : 0;
+    const resultado = totalReceitas - totalDespesas + totalBens + totalSaldos;
 
     document.getElementById('pat-total-receitas').textContent = money(totalReceitas);
     document.getElementById('pat-total-despesas').textContent = money(totalDespesas);
     document.getElementById('pat-total-bens').textContent = money(totalBens);
+    document.getElementById('pat-total-saldos').textContent = money(totalSaldos);
     document.getElementById('pat-resultado').textContent = (resultado >= 0 ? '+ ' : '− ') + money(Math.abs(resultado));
 
     const heroEl = document.getElementById('hero-result');
@@ -2917,32 +3375,38 @@
     const heroReceitasSpan = document.getElementById('hero-receitas-span');
     const heroDespesasSpan = document.getElementById('hero-despesas-span');
     const heroBensSpan = document.getElementById('hero-bens-span');
+    const heroSaldosSpan = document.getElementById('hero-saldos-span');
     const accTiposCard = document.getElementById('acc-tipos-card');
     const accCategoriasCard = document.getElementById('acc-categorias-card');
     const accBensCard = document.getElementById('acc-bens-card');
+    const accSaldosCard = document.getElementById('acc-saldos-card');
     if(heroReceitasSpan) heroReceitasSpan.style.display = filtrosPatrimonio.receitas ? '' : 'none';
     if(heroDespesasSpan) heroDespesasSpan.style.display = filtrosPatrimonio.despesas ? '' : 'none';
     if(heroBensSpan) heroBensSpan.style.display = filtrosPatrimonio.bens ? '' : 'none';
+    if(heroSaldosSpan) heroSaldosSpan.style.display = filtrosPatrimonio.saldos ? '' : 'none';
     if(accTiposCard) accTiposCard.style.display = filtrosPatrimonio.receitas ? '' : 'none';
     if(accCategoriasCard) accCategoriasCard.style.display = filtrosPatrimonio.despesas ? '' : 'none';
     if(accBensCard) accBensCard.style.display = filtrosPatrimonio.bens ? '' : 'none';
+    if(accSaldosCard) accSaldosCard.style.display = filtrosPatrimonio.saldos ? '' : 'none';
 
     if(filtrosPatrimonio.receitas) renderAccordionPorCategoria('acc-tipos', 'acc-tipos-empty', receitas);
     if(filtrosPatrimonio.despesas) renderAccordionPorCategoria('acc-categorias', 'acc-categorias-empty', despesas);
     if(filtrosPatrimonio.bens) renderAccordionBens('acc-bens', 'acc-bens-empty', bensPeriodo);
+    if(filtrosPatrimonio.saldos) renderAccordionSaldos('acc-saldos', 'acc-saldos-empty', saldosPeriodo);
   }
 
   // ---------- init: carrega os dados do Supabase ----------
   async function loadAllData(){
-    const [catRes, bancoRes, formaPagRes, lanRes, bensRes] = await Promise.all([
+    const [catRes, bancoRes, formaPagRes, lanRes, bensRes, saldosRes] = await Promise.all([
       db.from('categorias').select('*').order('nome'),
       db.from('bancos').select('*').order('nome'),
       db.from('formas_pagamento').select('*').order('nome'),
       db.from('lancamentos').select('*').order('data', {ascending:true}),
-      db.from('bens').select('*').order('data', {ascending:true})
+      db.from('bens').select('*').order('data', {ascending:true}),
+      db.from('saldos').select('*').order('data', {ascending:true})
     ]);
-    if(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error || bensRes.error){
-      console.error(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error || bensRes.error);
+    if(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error || bensRes.error || saldosRes.error){
+      console.error(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error || bensRes.error || saldosRes.error);
       alertaErro('Não foi possível carregar seus dados. Verifique sua conexão e recarregue a página.');
     }
     categorias = catRes.data || [];
@@ -2950,6 +3414,7 @@
     formasPagamento = formaPagRes.data || [];
     lancamentos = lanRes.data || [];
     bens = bensRes.data || [];
+    saldos = saldosRes.data || [];
     populateCategoriaSelect();
     populateBancoDatalist();
     populateFormaPagamentoDatalist();
@@ -2957,6 +3422,7 @@
     if(telaAtual === 'despesas') renderLista('despesa');
     if(telaAtual === 'receitas') renderLista('receita');
     if(telaAtual === 'bens') renderListaBens();
+    if(telaAtual === 'saldos') renderListaSaldos();
     if(telaAtual === 'categorias') renderCategorias();
     if(telaAtual === 'cadBanco') renderBancos();
     if(telaAtual === 'cadFormaPagamento') renderFormasPagamento();
