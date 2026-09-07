@@ -185,7 +185,7 @@
   .actions-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px;}
   .actions-row .big-btn{width:auto; flex:1; min-width:200px; padding:16px 20px; font-size:17px;}
 
-  .resumo-wrap{max-width:640px; width:100%;}
+  .resumo-wrap{max-width:1400px; width:100%;}
   .resumo-wrap h1{font-size:26px; font-weight:800; margin-bottom:24px;}
 
   /* pie chart */
@@ -395,7 +395,6 @@
     <button data-tela="massa" onclick="goTo('massa')">Lançamento em massa</button>
     <button data-tela="categorias" onclick="goTo('categorias')">Cadastro de categoria</button>
     <button data-tela="resumo" onclick="goTo('resumo')">Resumo</button>
-    <button data-tela="lancarPatrimonio" onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
     <button data-tela="patrimonio" onclick="goTo('patrimonio')">Patrimônio</button>
   </nav>
   <div id="sidebar-footer">
@@ -426,7 +425,6 @@
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('categorias')">Cadastro de categoria</button>
         <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -506,7 +504,6 @@
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('categorias')">Cadastro de categoria</button>
         <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -590,7 +587,6 @@
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('categorias')">Cadastro de categoria</button>
         <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -638,7 +634,6 @@
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('categorias')">Cadastro de categoria</button>
         <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -672,7 +667,6 @@
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('categorias')">Cadastro de categoria</button>
         <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -719,64 +713,6 @@
   </div>
 </div>
 
-<!-- ===================== LANÇAR RECEITA/PATRIMÔNIO ===================== -->
-<div class="screen" id="screen-lancarPatrimonio">
-  <div class="topbar">
-    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
-    <div class="topbar-right">
-      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
-      <div class="menu-wrap">
-      <button class="hamburger-btn" id="menu-toggle-lancarPatrimonio" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
-      <div class="menu-dropdown" id="menu-dropdown-lancarPatrimonio">
-        <button onclick="goTo('home')">Início</button>
-        <button onclick="goTo('manual')">Lançamento manual</button>
-        <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
-        <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
-        <button onclick="goTo('patrimonio')">Patrimônio</button>
-        <button onclick="handleLogout()">Sair</button>
-      </div>
-    </div>
-    </div>
-  </div>
-  <div class="content">
-    <div class="card" style="display:flex; flex-direction:column;">
-      <button class="voltar-home" type="button" onclick="resetWizardPatrimonio()">Excluir lançamento e recomeçar</button>
-      <div class="step-title">Lançar Receita/Patrimônio</div>
-      <form id="form-patrimonio">
-        <div class="field-block" id="fbp-tipo">
-          <label for="in-tipo-pat">Tipo</label>
-          <input type="text" id="in-tipo-pat" list="tipos-patrimonio" placeholder="Ex: Salário" autocomplete="off">
-          <datalist id="tipos-patrimonio">
-            <option>Salário</option><option>Rendimento de Investimento</option>
-            <option>Poupança</option><option>Herança</option><option>Outros</option>
-          </datalist>
-          <div class="step-actions"><button type="button" class="btn-avancar" id="btn-tipo-pat">AVANÇAR</button></div>
-        </div>
-
-        <div class="field-block" id="fbp-valor" style="display:none;">
-          <label for="in-valor-pat">Valor</label>
-          <input type="number" id="in-valor-pat" placeholder="0,00" step="0.01" min="0" inputmode="decimal">
-          <div class="step-actions">
-            <button type="button" class="btn-avancar" id="btn-valor-pat">AVANÇAR</button>
-            <button type="button" class="btn-voltar-step" onclick="voltarStepPatrimonio('valor-pat')">‹ Voltar</button>
-          </div>
-        </div>
-
-        <div class="field-block" id="fbp-mes" style="display:none;">
-          <label for="in-mes-pat">Mês</label>
-          <input type="month" id="in-mes-pat">
-          <div class="step-actions">
-            <button type="button" class="btn-avancar" id="btn-mes-pat">AVANÇAR</button>
-            <button type="button" class="btn-voltar-step" onclick="voltarStepPatrimonio('mes-pat')">‹ Voltar</button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 <!-- ===================== PATRIMÔNIO (painel) ===================== -->
 <div class="screen" id="screen-patrimonio">
   <div class="topbar">
@@ -791,7 +727,6 @@
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('categorias')">Cadastro de categoria</button>
         <button onclick="goTo('resumo')">Resumo</button>
-        <button onclick="goTo('lancarPatrimonio')">Lançar Receita/Patrimônio</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -806,25 +741,21 @@
         <div class="hero-label">Resultado</div>
         <div class="hero-amount" id="pat-resultado">R$ 0,00</div>
         <div class="hero-sub">
-          <span>+ Receitas/Patrimônio: <strong id="pat-total-receitas">R$ 0,00</strong></span>
+          <span>+ Receitas: <strong id="pat-total-receitas">R$ 0,00</strong></span>
           <span>− Despesas: <strong id="pat-total-despesas">R$ 0,00</strong></span>
         </div>
       </div>
 
       <div class="card wide">
-        <div class="step-title">Receitas / Patrimônio por tipo</div>
+        <div class="step-title">Receitas por categoria</div>
         <div id="acc-tipos"></div>
-        <p class="empty-msg" id="acc-tipos-empty" style="display:none;">Nenhum lançamento de receita/patrimônio ainda.</p>
+        <p class="empty-msg" id="acc-tipos-empty" style="display:none;">Nenhum lançamento de receita ainda.</p>
       </div>
 
       <div class="card wide">
         <div class="step-title">Despesas por categoria</div>
         <div id="acc-categorias"></div>
         <p class="empty-msg" id="acc-categorias-empty" style="display:none;">Nenhuma despesa lançada ainda.</p>
-      </div>
-
-      <div class="actions-row">
-        <button class="big-btn patrimonio" onclick="goTo('lancarPatrimonio')">Novo lançamento de Receita/Patrimônio</button>
       </div>
     </div>
   </div>
@@ -942,7 +873,6 @@
     document.body.classList.remove('logged-in');
     categorias = [];
     lancamentos = [];
-    patrimonioLancamentos = [];
   }
 
   async function handleLogin(e){
@@ -1069,8 +999,7 @@
   document.getElementById('signup-cpf').addEventListener('input', (e) => { e.target.value = formatarCPF(e.target.value); });
   document.getElementById('signup-telefone').addEventListener('input', (e) => { e.target.value = formatarTelefone(e.target.value); });
 
-  let lancamentos = [];          // despesas: {id, nome, categoria, banco, valor, data}
-  let patrimonioLancamentos = []; // {id, tipo, valor, mes}
+  let lancamentos = [];          // {id, nome, categoria, banco, valor, data, recorrente} — valor>0 = receita, valor<0 = despesa
   let pendingImport = [];
   let categorias = [];           // {id, nome}
   const BANCOS = ['Sicredi','XP'];
@@ -1110,7 +1039,6 @@
     ['menu-toggle-massa','menu-dropdown-massa'],
     ['menu-toggle-categorias','menu-dropdown-categorias'],
     ['menu-toggle-resumo','menu-dropdown-resumo'],
-    ['menu-toggle-lancarPatrimonio','menu-dropdown-lancarPatrimonio'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio']
   ];
   menuPairs.forEach(([btnId, ddId]) => {
@@ -1146,7 +1074,6 @@
     if(name === 'massa') resetUpload();
     if(name === 'resumo') { renderResumo(); renderChartCategoria(); renderChartBanco(); }
     if(name === 'categorias') renderCategorias();
-    if(name === 'lancarPatrimonio') resetWizardPatrimonio();
     if(name === 'patrimonio') renderPatrimonio();
     window.scrollTo(0,0);
   }
@@ -1302,90 +1229,6 @@
     lancamentos.push(data);
     return true;
   }
-  // ---------- LANÇAR RECEITA/PATRIMÔNIO (wizard progressivo) ----------
-  const PASSOS_PATRIMONIO = ['tipo-pat','valor-pat','mes-pat'];
-  const BLOCO_PATRIMONIO = {'tipo-pat':'fbp-tipo','valor-pat':'fbp-valor','mes-pat':'fbp-mes'};
-
-  function resetWizardPatrimonio(){
-    ['fbp-tipo','fbp-valor','fbp-mes'].forEach(id => {
-      document.getElementById(id).style.display = 'none';
-      document.getElementById(id).classList.remove('done');
-    });
-    ['in-tipo-pat','in-valor-pat','in-mes-pat'].forEach(id => {
-      const el = document.getElementById(id);
-      el.value = ''; el.disabled = false;
-    });
-    document.getElementById('fbp-tipo').style.display = 'block';
-    setTimeout(() => document.getElementById('in-tipo-pat').focus(), 50);
-  }
-
-  window.voltarStepPatrimonio = function(currentField){
-    const idx = PASSOS_PATRIMONIO.indexOf(currentField);
-    if(idx <= 0) return;
-    const prevField = PASSOS_PATRIMONIO[idx - 1];
-    document.getElementById(BLOCO_PATRIMONIO[currentField]).style.display = 'none';
-    const prevBlock = document.getElementById(BLOCO_PATRIMONIO[prevField]);
-    prevBlock.classList.remove('done');
-    const prevInput = document.getElementById('in-' + prevField);
-    prevInput.disabled = false;
-    setTimeout(() => prevInput.focus(), 50);
-  };
-
-  function advanceStepPat(fieldId, blockId, nextBlockId, nextFocusId, isLast){
-    const input = document.getElementById(fieldId);
-    if(!input.value || (fieldId === 'in-valor-pat' && parseFloat(input.value) <= 0)){
-      input.focus();
-      return;
-    }
-    document.getElementById(blockId).classList.add('done');
-    input.disabled = true;
-    if(isLast){
-      const stepBtn = document.getElementById('btn-mes-pat');
-      stepBtn.disabled = true;
-      salvarPatrimonio().then(ok => {
-        stepBtn.disabled = false;
-        if(ok){
-          goTo('patrimonio');
-        } else {
-          document.getElementById(blockId).classList.remove('done');
-          input.disabled = false;
-        }
-      });
-    } else {
-      document.getElementById(nextBlockId).style.display = 'block';
-      setTimeout(() => document.getElementById(nextFocusId).focus(), 50);
-    }
-  }
-
-  document.getElementById('btn-tipo-pat').addEventListener('click', () => advanceStepPat('in-tipo-pat','fbp-tipo','fbp-valor','in-valor-pat', false));
-  document.getElementById('btn-valor-pat').addEventListener('click', () => advanceStepPat('in-valor-pat','fbp-valor','fbp-mes','in-mes-pat', false));
-  document.getElementById('btn-mes-pat').addEventListener('click', () => advanceStepPat('in-mes-pat','fbp-mes', null, null, true));
-
-  document.getElementById('form-patrimonio').addEventListener('submit', (e) => e.preventDefault());
-  ['in-tipo-pat','in-valor-pat','in-mes-pat'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', (e) => {
-      if(e.key === 'Enter'){
-        e.preventDefault();
-        const field = id.replace('in-','');
-        document.getElementById('btn-' + field).click();
-      }
-    });
-  });
-
-  async function salvarPatrimonio(){
-    const mesVal = document.getElementById('in-mes-pat').value; // "AAAA-MM"
-    const payload = {
-      tipo: document.getElementById('in-tipo-pat').value.trim(),
-      valor: parseFloat(document.getElementById('in-valor-pat').value) || 0,
-      mes: mesVal ? (mesVal + '-01') : null,
-      user_id: currentUser.id
-    };
-    const { data, error } = await db.from('patrimonio_lancamentos').insert(payload).select().single();
-    if(error){ alertaErro('Não foi possível salvar o lançamento. Tente novamente.'); return false; }
-    patrimonioLancamentos.push(data);
-    return true;
-  }
-
   // ---------- LANÇAMENTO EM MASSA ----------
   function resetUpload(){
     document.getElementById('file-input').value = '';
@@ -1735,79 +1578,28 @@
     headerEl.parentElement.classList.toggle('open');
   }
 
-  function renderAccordionTipos(){
-    const container = document.getElementById('acc-tipos');
-    const emptyEl = document.getElementById('acc-tipos-empty');
+  // agrupa lançamentos (filtrados por sinal do valor) por categoria, para os acordeões de Patrimônio
+  function renderAccordionPorCategoria(containerId, emptyElId, itensFiltrados){
+    const container = document.getElementById(containerId);
+    const emptyEl = document.getElementById(emptyElId);
     container.innerHTML = '';
-    emptyEl.style.display = patrimonioLancamentos.length ? 'none' : 'block';
-    if(!patrimonioLancamentos.length) return;
+    emptyEl.style.display = itensFiltrados.length ? 'none' : 'block';
+    if(!itensFiltrados.length) return;
 
     const grupos = {};
-    patrimonioLancamentos.forEach(item => {
-      const chave = item.tipo || 'Outros';
-      if(!grupos[chave]) grupos[chave] = [];
-      grupos[chave].push(item);
-    });
-    const tiposOrdenados = Object.keys(grupos).sort();
-    tiposOrdenados.forEach((tipo, idx) => {
-      const itens = grupos[tipo].sort((a,b) => (a.mes||'').localeCompare(b.mes||''));
-      const totalTipo = itens.reduce((s,i) => s + (Number(i.valor)||0), 0);
-      const cor = CORES[idx % CORES.length];
-      const div = document.createElement('div');
-      div.className = 'acc-item';
-      div.innerHTML = `
-        <button type="button" class="acc-header">
-          <span class="acc-color-dot" style="background:${cor}"></span>
-          <span class="acc-title">${escapeAttr(tipo)}</span>
-          <span class="acc-total">${money(totalTipo)}</span>
-          <span class="acc-chevron">⌄</span>
-        </button>
-        <div class="acc-body">
-          <div class="table-scroll">
-          <table>
-            <thead><tr><th>Mês</th><th class="num">Valor</th><th></th></tr></thead>
-            <tbody>
-              ${itens.map(i => `<tr><td>${fmtMesBR(i.mes)}</td><td class="num">${money(i.valor)}</td><td><button class="del-btn" data-id="${i.id}" aria-label="Excluir lançamento">✕</button></td></tr>`).join('')}
-            </tbody>
-          </table>
-          </div>
-        </div>`;
-      div.querySelector('.acc-header').addEventListener('click', (e) => toggleAcc(e.currentTarget));
-      div.querySelectorAll('.del-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-          e.stopPropagation();
-          btn.disabled = true;
-          const { error } = await db.from('patrimonio_lancamentos').delete().eq('id', btn.dataset.id);
-          if(error){ alertaErro('Não foi possível excluir o lançamento. Tente novamente.'); btn.disabled = false; return; }
-          patrimonioLancamentos = patrimonioLancamentos.filter(p => p.id !== btn.dataset.id);
-          renderPatrimonio();
-        });
-      });
-      container.appendChild(div);
-    });
-  }
-
-  function renderAccordionCategorias(){
-    const container = document.getElementById('acc-categorias');
-    const emptyEl = document.getElementById('acc-categorias-empty');
-    container.innerHTML = '';
-    emptyEl.style.display = lancamentos.length ? 'none' : 'block';
-    if(!lancamentos.length) return;
-
-    const grupos = {};
-    lancamentos.forEach(item => {
+    itensFiltrados.forEach(item => {
       const chave = item.categoria || 'Sem categoria';
       if(!grupos[chave]) grupos[chave] = [];
       grupos[chave].push(item);
     });
     const chavesOrdenadas = Object.keys(grupos).sort((a,b) => {
-      const totalA = grupos[a].reduce((s,i) => s + (Number(i.valor)||0), 0);
-      const totalB = grupos[b].reduce((s,i) => s + (Number(i.valor)||0), 0);
+      const totalA = grupos[a].reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
+      const totalB = grupos[b].reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
       return totalB - totalA;
     });
     chavesOrdenadas.forEach(categoria => {
       const itens = grupos[categoria].sort((a,b) => (a.data||'').localeCompare(b.data||''));
-      const totalCat = itens.reduce((s,i) => s + (Number(i.valor)||0), 0);
+      const totalCat = itens.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
       const cor = corParaCategoria(categoria === 'Sem categoria' ? '' : categoria);
       const div = document.createElement('div');
       div.className = 'acc-item';
@@ -1823,7 +1615,7 @@
           <table>
             <thead><tr><th>Nome</th><th>Banco</th><th class="num">Valor</th><th>Data</th></tr></thead>
             <tbody>
-              ${itens.map(i => `<tr><td>${escapeAttr(i.nome)}</td><td>${escapeAttr(i.banco) || '—'}</td><td class="num">${money(i.valor)}</td><td>${fmtDateBR(i.data)}</td></tr>`).join('')}
+              ${itens.map(i => `<tr><td>${escapeAttr(i.nome)}</td><td>${escapeAttr(i.banco) || '—'}</td><td class="num">${money(Math.abs(Number(i.valor)||0))}</td><td>${fmtDateBR(i.data)}</td></tr>`).join('')}
             </tbody>
           </table>
           </div>
@@ -1834,36 +1626,36 @@
   }
 
   function renderPatrimonio(){
-    const totalReceitas = patrimonioLancamentos.reduce((s,i) => s + (Number(i.valor)||0), 0);
-    const totalDespesas = lancamentos.reduce((s,i) => s + (Number(i.valor)||0), 0);
+    const receitas = lancamentos.filter(i => (Number(i.valor)||0) > 0);
+    const despesas = lancamentos.filter(i => (Number(i.valor)||0) < 0);
+    const totalReceitas = receitas.reduce((s,i) => s + (Number(i.valor)||0), 0);
+    const totalDespesas = despesas.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
     const resultado = totalReceitas - totalDespesas;
 
     document.getElementById('pat-total-receitas').textContent = money(totalReceitas);
     document.getElementById('pat-total-despesas').textContent = money(totalDespesas);
-    document.getElementById('pat-resultado').textContent = (resultado >= 0 ? '' : '− ') + money(Math.abs(resultado));
+    document.getElementById('pat-resultado').textContent = (resultado >= 0 ? '+ ' : '− ') + money(Math.abs(resultado));
 
     const heroEl = document.getElementById('hero-result');
     heroEl.classList.toggle('deficit', resultado < 0);
     document.querySelector('#hero-result .hero-label').textContent = resultado >= 0 ? 'Superávit' : 'Déficit';
 
-    renderAccordionTipos();
-    renderAccordionCategorias();
+    renderAccordionPorCategoria('acc-tipos', 'acc-tipos-empty', receitas);
+    renderAccordionPorCategoria('acc-categorias', 'acc-categorias-empty', despesas);
   }
 
   // ---------- init: carrega os dados do Supabase ----------
   async function loadAllData(){
-    const [catRes, lanRes, patRes] = await Promise.all([
+    const [catRes, lanRes] = await Promise.all([
       db.from('categorias').select('*').order('nome'),
-      db.from('lancamentos').select('*').order('data', {ascending:true}),
-      db.from('patrimonio_lancamentos').select('*').order('mes', {ascending:true})
+      db.from('lancamentos').select('*').order('data', {ascending:true})
     ]);
-    if(catRes.error || lanRes.error || patRes.error){
-      console.error(catRes.error || lanRes.error || patRes.error);
+    if(catRes.error || lanRes.error){
+      console.error(catRes.error || lanRes.error);
       alertaErro('Não foi possível carregar seus dados. Verifique sua conexão e recarregue a página.');
     }
     categorias = catRes.data || [];
     lancamentos = lanRes.data || [];
-    patrimonioLancamentos = patRes.data || [];
     populateCategoriaSelect();
     if(telaAtual === 'resumo'){ renderResumo(); renderChartCategoria(); renderChartBanco(); }
     if(telaAtual === 'categorias') renderCategorias();
