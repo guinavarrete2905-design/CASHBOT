@@ -928,7 +928,12 @@
     const { data, error } = await db.auth.signInWithPassword({email, password: senha});
     btn.disabled = false;
     if(error){
-      alertaErro('E-mail/telefone ou senha incorretos.');
+      const msg = (error.message || '').toLowerCase();
+      if(msg.includes('confirm')){
+        alertaErro('Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada (e o spam).');
+      } else {
+        alertaErro('E-mail/telefone ou senha incorretos.');
+      }
       return;
     }
     const { data: pessoa } = await db.from('pessoas').select('*').eq('id', data.user.id).single();
@@ -951,22 +956,30 @@
     if(senha.length < 6){ alertaErro('A senha precisa ter pelo menos 6 caracteres.'); return; }
     if(senha !== confirmar){ alertaErro('As senhas não conferem.'); return; }
     btn.disabled = true;
-    const { data, error } = await db.auth.signUp({email, password: senha});
+    // nome/cpf/telefone vão nos metadados do usuário: um gatilho no banco cria o
+    // registro em "pessoas" assim que a conta é criada, mesmo antes da confirmação
+    // de e-mail (nesse ponto ainda não existe sessão, então o client não teria
+    // permissão para gravar em "pessoas" diretamente).
+    const { data, error } = await db.auth.signUp({
+      email,
+      password: senha,
+      options: { data: { nome, cpf, telefone } }
+    });
+    btn.disabled = false;
     if(error){
-      btn.disabled = false;
-      alertaErro(error.message && error.message.includes('registered') ? 'Já existe uma conta com esse e-mail.' : 'Não foi possível criar a conta. Tente novamente.');
+      const msg = (error.message || '').toLowerCase();
+      if(msg.includes('registered')){
+        alertaErro('Já existe uma conta com esse e-mail.');
+      } else if(msg.includes('database') || msg.includes('duplicate') || msg.includes('unique')){
+        alertaErro('CPF, e-mail ou telefone já usados em outra conta.');
+      } else {
+        alertaErro('Não foi possível criar a conta. Tente novamente.');
+      }
       return;
     }
     const user = data.user;
     if(!user){
-      btn.disabled = false;
       alertaErro('Não foi possível criar a conta. Tente novamente.');
-      return;
-    }
-    const { error: perr } = await db.from('pessoas').insert({id: user.id, nome, cpf, email, telefone});
-    btn.disabled = false;
-    if(perr){
-      alertaErro('Conta criada, mas não foi possível salvar seus dados de cadastro (CPF, e-mail ou telefone já usados em outra conta).');
       return;
     }
     document.getElementById('form-signup').reset();
@@ -975,7 +988,7 @@
       ativarTela('home');
       loadAllData();
     } else {
-      alertaErro('Cadastro realizado! Confirme seu e-mail e depois faça login.');
+      alertaErro('Cadastro realizado! Confirme seu e-mail (verifique também o spam) e depois faça login.');
       ativarTela('login');
     }
   }
