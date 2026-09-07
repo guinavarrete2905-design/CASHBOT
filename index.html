@@ -506,18 +506,31 @@
             <label for="home-patrimonio-mes" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px;">Filtrar mês</label>
             <input type="month" id="home-patrimonio-mes">
           </div>
+          <div class="field-block" style="margin-bottom:18px;">
+            <label style="display:block; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px;">Considerar no patrimônio</label>
+            <div class="filtro-toggle-row">
+              <button type="button" class="filtro-toggle-btn" id="home-patrimonio-btn-bens" onclick="toggleFiltroHomePatrimonio('bens')">Bens</button>
+              <button type="button" class="filtro-toggle-btn" id="home-patrimonio-btn-receitas" onclick="toggleFiltroHomePatrimonio('receitas')">Receitas</button>
+              <button type="button" class="filtro-toggle-btn" id="home-patrimonio-btn-despesas" onclick="toggleFiltroHomePatrimonio('despesas')">Despesas</button>
+              <button type="button" class="filtro-toggle-btn" id="home-patrimonio-btn-saldos" onclick="toggleFiltroHomePatrimonio('saldos')">Saldos</button>
+            </div>
+          </div>
           <div class="rel-comp-totais">
-            <div class="rel-comp-total-card">
+            <div class="rel-comp-total-card" id="home-stat-receitas-card">
               <div class="rel-comp-total-label">Total de Receitas</div>
               <div class="rel-comp-total-value valor-pos" id="home-total-receitas-mes">R$ 0,00</div>
             </div>
-            <div class="rel-comp-total-card">
+            <div class="rel-comp-total-card" id="home-stat-despesas-card">
               <div class="rel-comp-total-label">Total de Despesas</div>
               <div class="rel-comp-total-value valor-neg" id="home-total-despesas-mes">R$ 0,00</div>
             </div>
-            <div class="rel-comp-total-card">
+            <div class="rel-comp-total-card" id="home-stat-bens-card">
               <div class="rel-comp-total-label">Total em Bens</div>
               <div class="rel-comp-total-value" id="home-total-bens-mes">R$ 0,00</div>
+            </div>
+            <div class="rel-comp-total-card" id="home-stat-saldos-card">
+              <div class="rel-comp-total-label">Total em Saldos</div>
+              <div class="rel-comp-total-value" id="home-total-saldos-mes">R$ 0,00</div>
             </div>
           </div>
 
@@ -579,6 +592,18 @@
               <option value="forma_pagamento">Forma de Pagamento</option>
               <option value="banco">Banco</option>
             </select>
+          </div>
+          <div class="field-block">
+            <label for="rel-data-de">De</label>
+            <input type="date" id="rel-data-de">
+          </div>
+          <div class="field-block">
+            <label for="rel-data-ate">Até</label>
+            <input type="date" id="rel-data-ate">
+          </div>
+          <div class="field-block">
+            <label>&nbsp;</label>
+            <button class="big-btn secondary" type="button" style="margin-bottom:0; padding:12px 20px; font-size:15px;" onclick="limparFiltroDataRelatorio()">Limpar datas</button>
           </div>
         </div>
 
@@ -2745,7 +2770,7 @@
       const isDespesa = (Number(item.valor) || 0) < 0;
       const sinalClasse = isDespesa ? 'valor-neg' : 'valor-pos';
       tr.innerHTML = `
-        <td>${fmtDateBR(item.data)}</td>
+        <td><input type="date" data-id="${item.id}" data-field="data" value="${item.data || ''}"></td>
         <td>${escapeAttr(item.nome)}</td>
         <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
@@ -2763,7 +2788,7 @@
       tbody.appendChild(tr);
     });
     document.getElementById('total-' + suf).textContent = money(total);
-    tbody.querySelectorAll('select').forEach(sel => {
+    tbody.querySelectorAll('select, input[type=date]').forEach(sel => {
       sel.addEventListener('change', async () => {
         const item = lancamentos.find(i => i.id === sel.dataset.id);
         if(!item) return;
@@ -2780,6 +2805,18 @@
           }
           renderLista('despesa');
           renderLista('receita');
+          return;
+        }
+        if(field === 'data'){
+          const valorAnterior = item.data;
+          const novoValor = sel.value || null;
+          item.data = novoValor;
+          const { error } = await db.from('lancamentos').update({data: novoValor}).eq('id', item.id);
+          if(error){
+            item.data = valorAnterior;
+            alertaErro('Não foi possível atualizar a data. Tente novamente.');
+          }
+          renderLista(tipo);
           return;
         }
         const valorAnterior = item[field];
@@ -2857,7 +2894,7 @@
       total += Number(item.valor) || 0;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${fmtDateBR(item.data)}</td>
+        <td><input type="date" data-id="${item.id}" data-field="data" value="${item.data || ''}"></td>
         <td>${escapeAttr(item.nome)}</td>
         <td><select data-id="${item.id}" data-field="tipo">
           <option value="movel" ${item.tipo === 'movel' ? 'selected' : ''}>Móvel</option>
@@ -2869,13 +2906,13 @@
       tbody.appendChild(tr);
     });
     document.getElementById('total-bens').textContent = money(total);
-    tbody.querySelectorAll('select').forEach(sel => {
+    tbody.querySelectorAll('select, input[type=date]').forEach(sel => {
       sel.addEventListener('change', async () => {
         const item = bens.find(i => i.id === sel.dataset.id);
         if(!item) return;
         const field = sel.dataset.field;
         const valorAnterior = item[field];
-        const novoValor = sel.value;
+        const novoValor = field === 'data' ? (sel.value || null) : sel.value;
         item[field] = novoValor;
         const { error } = await db.from('bens').update({[field]: novoValor}).eq('id', item.id);
         if(error){
@@ -2884,7 +2921,7 @@
           alertaErro('Não foi possível atualizar o bem. Tente novamente.');
           return;
         }
-        if(field === 'categoria') renderListaBens();
+        if(field === 'categoria' || field === 'data') renderListaBens();
       });
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
@@ -2945,20 +2982,20 @@
       total += Number(item.valor) || 0;
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${fmtDateBR(item.data)}</td>
+        <td><input type="date" data-id="${item.id}" data-field="data" value="${item.data || ''}"></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
         <td class="num">${money(item.valor)}</td>
         <td><button class="del-btn" data-id="${item.id}" aria-label="Excluir saldo">✕</button></td>`;
       tbody.appendChild(tr);
     });
     document.getElementById('total-saldos').textContent = money(total);
-    tbody.querySelectorAll('select').forEach(sel => {
+    tbody.querySelectorAll('select, input[type=date]').forEach(sel => {
       sel.addEventListener('change', async () => {
         const item = saldos.find(i => i.id === sel.dataset.id);
         if(!item) return;
         const field = sel.dataset.field;
         const valorAnterior = item[field];
-        const novoValor = sel.value;
+        const novoValor = field === 'data' ? (sel.value || null) : sel.value;
         item[field] = novoValor;
         const { error } = await db.from('saldos').update({[field]: novoValor}).eq('id', item.id);
         if(error){
@@ -2967,6 +3004,7 @@
           alertaErro('Não foi possível atualizar o saldo. Tente novamente.');
           return;
         }
+        if(field === 'data') renderListaSaldos();
       });
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
@@ -3028,6 +3066,38 @@
     return filtrados.reduce((s,i) => s + (Number(i.valor)||0), 0);
   }
 
+  // saldos também não seguem a convenção de sinal — valor sempre positivo e somado à parte
+  function totalSaldosPeriodo(de, ate, campoData){
+    const filtrados = de || ate
+      ? saldos.filter(i => {
+          const chave = campoData ? (i.data||'').slice(0,7) : (i.data||'');
+          if(de && chave < de) return false;
+          if(ate && chave > ate) return false;
+          return true;
+        })
+      : saldos;
+    return filtrados.reduce((s,i) => s + (Number(i.valor)||0), 0);
+  }
+
+  let filtrosHomePatrimonio = { bens: true, receitas: true, despesas: true, saldos: true };
+
+  function atualizarBotoesFiltroHomePatrimonio(){
+    ['bens','receitas','despesas','saldos'].forEach(campo => {
+      const btn = document.getElementById('home-patrimonio-btn-' + campo);
+      if(btn) btn.classList.toggle('off', !filtrosHomePatrimonio[campo]);
+      const card = document.getElementById('home-stat-' + campo + '-card');
+      if(card) card.style.display = filtrosHomePatrimonio[campo] ? '' : 'none';
+    });
+  }
+  atualizarBotoesFiltroHomePatrimonio();
+
+  window.toggleFiltroHomePatrimonio = function(campo){
+    filtrosHomePatrimonio[campo] = !filtrosHomePatrimonio[campo];
+    atualizarBotoesFiltroHomePatrimonio();
+    renderHomePatrimonio();
+    renderComparativoPatrimonio();
+  };
+
   function renderHomePatrimonio(){
     const mesInput = document.getElementById('home-patrimonio-mes');
     if(mesInput && !mesInput.value){
@@ -3037,7 +3107,12 @@
     const mes = mesInput ? mesInput.value : '';
     const { receitas: receitasMes, despesas: despesasMes } = resultadoPeriodo(lancamentos, mes, mes, true);
     const bensMes = totalBensPeriodo(mes, mes, true);
-    const patrimonioMes = receitasMes - despesasMes + bensMes;
+    const saldosMes = totalSaldosPeriodo(mes, mes, true);
+    const patrimonioMes =
+      (filtrosHomePatrimonio.receitas ? receitasMes : 0) -
+      (filtrosHomePatrimonio.despesas ? despesasMes : 0) +
+      (filtrosHomePatrimonio.bens ? bensMes : 0) +
+      (filtrosHomePatrimonio.saldos ? saldosMes : 0);
 
     const elTotal = document.getElementById('home-patrimonio-total');
     if(elTotal){
@@ -3048,6 +3123,7 @@
     document.getElementById('home-total-receitas-mes').textContent = money(receitasMes);
     document.getElementById('home-total-despesas-mes').textContent = money(despesasMes);
     document.getElementById('home-total-bens-mes').textContent = money(bensMes);
+    document.getElementById('home-total-saldos-mes').textContent = money(saldosMes);
   }
   const homeMesInputEl = document.getElementById('home-patrimonio-mes');
   if(homeMesInputEl) homeMesInputEl.addEventListener('change', renderHomePatrimonio);
@@ -3060,8 +3136,13 @@
     const p2 = elP2.value;
     const resP1 = resultadoPeriodo(lancamentos, p1, p1, true);
     const resP2 = resultadoPeriodo(lancamentos, p2, p2, true);
-    const patrimonioP1 = resP1.resultado + totalBensPeriodo(p1, p1, true);
-    const patrimonioP2 = resP2.resultado + totalBensPeriodo(p2, p2, true);
+    const calcPatrimonio = (res, de, ate) =>
+      (filtrosHomePatrimonio.receitas ? res.receitas : 0) -
+      (filtrosHomePatrimonio.despesas ? res.despesas : 0) +
+      (filtrosHomePatrimonio.bens ? totalBensPeriodo(de, ate, true) : 0) +
+      (filtrosHomePatrimonio.saldos ? totalSaldosPeriodo(de, ate, true) : 0);
+    const patrimonioP1 = calcPatrimonio(resP1, p1, p1);
+    const patrimonioP2 = calcPatrimonio(resP2, p2, p2);
 
     const elR1 = document.getElementById('home-pat-comp-p1-resultado');
     const elR2 = document.getElementById('home-pat-comp-p2-resultado');
@@ -3077,7 +3158,7 @@
     if(el) el.addEventListener('change', renderComparativoPatrimonio);
   });
 
-  let relEstado = { tipo: 'despesa', dimensao: 'categoria' };
+  let relEstado = { tipo: 'despesa', dimensao: 'categoria', dataDe: '', dataAte: '' };
   const REL_LIMITE_ITENS = 10;
   const REL_TITULOS_DIMENSAO = { categoria: 'Por categoria', forma_pagamento: 'Por forma de pagamento', banco: 'Por banco', tipo: 'Por tipo (Móvel/Imóvel)' };
   const REL_DIMENSOES_POR_TIPO = {
@@ -3087,10 +3168,18 @@
   };
 
   function itensRelatorio(){
-    if(relEstado.tipo === 'bens') return bens;
-    return lancamentos.filter(item => {
-      const isDespesaItem = (Number(item.valor) || 0) < 0;
-      return relEstado.tipo === 'despesa' ? isDespesaItem : !isDespesaItem;
+    const base = relEstado.tipo === 'bens'
+      ? bens
+      : lancamentos.filter(item => {
+          const isDespesaItem = (Number(item.valor) || 0) < 0;
+          return relEstado.tipo === 'despesa' ? isDespesaItem : !isDespesaItem;
+        });
+    if(!relEstado.dataDe && !relEstado.dataAte) return base;
+    return base.filter(item => {
+      const data = item.data || '';
+      if(relEstado.dataDe && data < relEstado.dataDe) return false;
+      if(relEstado.dataAte && data > relEstado.dataAte) return false;
+      return true;
     });
   }
 
@@ -3171,6 +3260,17 @@
   if(relTipoEl) relTipoEl.addEventListener('change', (e) => { relEstado.tipo = e.target.value; atualizarOpcoesDimensao(); renderRelatorios(); });
   const relDimensaoEl = document.getElementById('rel-dimensao');
   if(relDimensaoEl) relDimensaoEl.addEventListener('change', (e) => { relEstado.dimensao = e.target.value; renderRelatorios(); });
+  const relDataDeEl = document.getElementById('rel-data-de');
+  if(relDataDeEl) relDataDeEl.addEventListener('change', (e) => { relEstado.dataDe = e.target.value; renderRelatorios(); });
+  const relDataAteEl = document.getElementById('rel-data-ate');
+  if(relDataAteEl) relDataAteEl.addEventListener('change', (e) => { relEstado.dataAte = e.target.value; renderRelatorios(); });
+  window.limparFiltroDataRelatorio = function(){
+    relEstado.dataDe = '';
+    relEstado.dataAte = '';
+    if(relDataDeEl) relDataDeEl.value = '';
+    if(relDataAteEl) relDataAteEl.value = '';
+    renderRelatorios();
+  };
 
   // ---------- PATRIMÔNIO (painel) ----------
   function toggleAcc(headerEl){
