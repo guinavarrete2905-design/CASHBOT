@@ -434,9 +434,11 @@
     <button data-tela="home" onclick="goTo('home')">Início</button>
     <button data-tela="manual" onclick="goTo('manual')">Lançamento manual</button>
     <button data-tela="massa" onclick="goTo('massa')">Lançamento em massa</button>
+    <button data-tela="lancarBem" onclick="goTo('lancarBem')">Lançar bem</button>
     <button data-tela="cadastros" onclick="goTo('cadastros')">Cadastros</button>
     <button data-tela="despesas" onclick="goTo('despesas')">Despesas</button>
     <button data-tela="receitas" onclick="goTo('receitas')">Receitas</button>
+    <button data-tela="bens" onclick="goTo('bens')">Bens</button>
     <button data-tela="patrimonio" onclick="goTo('patrimonio')">Patrimônio</button>
     <button data-tela="metas" onclick="goTo('metas')">Metas</button>
   </nav>
@@ -467,9 +469,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -500,6 +504,10 @@
             <div class="rel-comp-total-card">
               <div class="rel-comp-total-label">Total de Despesas</div>
               <div class="rel-comp-total-value valor-neg" id="home-total-despesas-mes">R$ 0,00</div>
+            </div>
+            <div class="rel-comp-total-card">
+              <div class="rel-comp-total-label">Total em Bens</div>
+              <div class="rel-comp-total-value" id="home-total-bens-mes">R$ 0,00</div>
             </div>
           </div>
 
@@ -551,6 +559,7 @@
             <select id="rel-tipo">
               <option value="despesa">Despesa</option>
               <option value="receita">Receita</option>
+              <option value="bens">Bens</option>
             </select>
           </div>
           <div class="field-block">
@@ -560,13 +569,6 @@
               <option value="forma_pagamento">Forma de Pagamento</option>
               <option value="banco">Banco</option>
             </select>
-          </div>
-          <div class="field-block">
-            <label>Gráfico</label>
-            <div class="rel-toggle">
-              <button type="button" id="rel-grafico-pizza" class="active">Pizza</button>
-              <button type="button" id="rel-grafico-barras">Barras</button>
-            </div>
           </div>
         </div>
 
@@ -602,9 +604,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -708,9 +712,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -750,6 +756,84 @@
     </div>
   </div>
 </div>
+
+<!-- ===================== LANÇAMENTO DE BEM ===================== -->
+<div class="screen" id="screen-lancarBem">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-lancarBem" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-lancarBem">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('manual')">Lançamento manual</button>
+        <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card" style="display:flex; flex-direction:column;">
+      <button class="voltar-home" type="button" onclick="resetWizardBem()">Excluir lançamento e recomeçar</button>
+      <div class="step-title">Novo bem (móvel ou imóvel)</div>
+      <form id="form-bem">
+        <div class="field-block" id="fb-bem-nome">
+          <label for="in-bem-nome">Nome do bem</label>
+          <input type="text" id="in-bem-nome" placeholder="Ex: Apartamento, Carro..." autocomplete="off">
+          <div class="step-actions"><button type="button" class="btn-avancar" id="btn-bem-nome">AVANÇAR</button></div>
+        </div>
+
+        <div class="field-block" id="fb-bem-tipo" style="display:none;">
+          <label for="in-bem-tipo">É móvel ou imóvel?</label>
+          <select id="in-bem-tipo">
+            <option value="movel">Móvel</option>
+            <option value="imovel">Imóvel</option>
+          </select>
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-bem-tipo">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepBem('tipo')">‹ Voltar</button>
+          </div>
+        </div>
+
+        <div class="field-block" id="fb-bem-categoria" style="display:none;">
+          <label for="in-bem-categoria">Categoria</label>
+          <input type="text" id="in-bem-categoria" list="datalist-categorias" placeholder="Digite ou escolha uma categoria" autocomplete="off">
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-bem-categoria">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepBem('categoria')">‹ Voltar</button>
+          </div>
+        </div>
+
+        <div class="field-block" id="fb-bem-valor" style="display:none;">
+          <label for="in-bem-valor">Valor estimado</label>
+          <input type="number" id="in-bem-valor" placeholder="0,00" step="0.01" min="0" inputmode="decimal">
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-bem-valor">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepBem('valor')">‹ Voltar</button>
+          </div>
+        </div>
+
+        <div class="field-block" id="fb-bem-data" style="display:none;">
+          <label for="in-bem-data">Data de aquisição</label>
+          <input type="date" id="in-bem-data">
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-bem-data">SALVAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepBem('data')">‹ Voltar</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <!-- ===================== CADASTROS (hub) ===================== -->
 <div class="screen" id="screen-cadastros">
   <div class="topbar">
@@ -762,9 +846,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -794,9 +880,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -829,9 +917,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -864,9 +954,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -899,9 +991,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -984,9 +1078,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1057,6 +1153,84 @@
   </div>
 </div>
 
+<!-- ===================== BENS ===================== -->
+<div class="screen" id="screen-bens">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-bens" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-bens">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('manual')">Lançamento manual</button>
+        <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="resumo-wrap">
+      <h1>Bens</h1>
+
+      <div class="card wide">
+        <div class="step-title" style="margin-bottom:14px;">Filtros</div>
+        <div class="filtros-grid">
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-nome-bens">Nome</label>
+            <input type="text" id="filtro-nome-bens" placeholder="Buscar por nome" autocomplete="off">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-tipo-bens">Tipo</label>
+            <select id="filtro-tipo-bens">
+              <option value="">Todos</option>
+              <option value="movel">Móvel</option>
+              <option value="imovel">Imóvel</option>
+            </select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-categoria-bens">Categoria</label>
+            <select id="filtro-categoria-bens"><option value="">Todas</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-de-bens">Data de</label>
+            <input type="date" id="filtro-data-de-bens">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-ate-bens">Data até</label>
+            <input type="date" id="filtro-data-ate-bens">
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px;">
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosBens()">Limpar filtros</button>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <div class="table-scroll">
+        <table>
+          <thead><tr><th>Data</th><th>Nome</th><th>Tipo</th><th>Categoria</th><th class="num">Valor</th><th></th></tr></thead>
+          <tbody id="tbody-bens"></tbody>
+          <tfoot><tr><td colspan="4">Total</td><td class="num" id="total-bens">R$ 0,00</td><td></td></tr></tfoot>
+        </table>
+        </div>
+        <p class="empty-msg" id="empty-bens" style="display:none;">Nenhum bem cadastrado ainda.</p>
+        <div class="actions-row">
+          <button class="big-btn" onclick="goTo('lancarBem')">Novo bem</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== PATRIMÔNIO (painel) ===================== -->
 <div class="screen" id="screen-patrimonio">
   <div class="topbar">
@@ -1069,9 +1243,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1089,7 +1265,14 @@
         <div class="hero-sub">
           <span>+ Receitas: <strong id="pat-total-receitas">R$ 0,00</strong></span>
           <span>− Despesas: <strong id="pat-total-despesas">R$ 0,00</strong></span>
+          <span>+ Bens: <strong id="pat-total-bens">R$ 0,00</strong></span>
         </div>
+      </div>
+
+      <div class="card wide">
+        <div class="step-title">Bens por categoria</div>
+        <div id="acc-bens"></div>
+        <p class="empty-msg" id="acc-bens-empty" style="display:none;">Nenhum bem cadastrado ainda.</p>
       </div>
 
       <div class="card wide">
@@ -1119,9 +1302,11 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('lancarBem')">Lançar bem</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('despesas')">Despesas</button>
         <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
@@ -1375,6 +1560,7 @@
   let categorias = [];           // {id, nome}
   let bancos = [];                // {id, nome}
   let formasPagamento = [];       // {id, nome}
+  let bens = [];                  // {id, nome, tipo ('movel'|'imovel'), categoria, valor, data} — bens móveis e imóveis, somados ao patrimônio à parte
   function populateBancoDatalist(){
     const dl = document.getElementById('datalist-bancos');
     if(dl) dl.innerHTML = bancos.map(b => `<option value="${escapeAttr(b.nome)}"></option>`).join('');
@@ -1412,12 +1598,14 @@
     ['menu-toggle-home','menu-dropdown-home'],
     ['menu-toggle-manual','menu-dropdown-manual'],
     ['menu-toggle-massa','menu-dropdown-massa'],
+    ['menu-toggle-lancarBem','menu-dropdown-lancarBem'],
     ['menu-toggle-cadastros','menu-dropdown-cadastros'],
     ['menu-toggle-categorias','menu-dropdown-categorias'],
     ['menu-toggle-cadBanco','menu-dropdown-cadBanco'],
     ['menu-toggle-cadFormaPagamento','menu-dropdown-cadFormaPagamento'],
     ['menu-toggle-despesas','menu-dropdown-despesas'],
     ['menu-toggle-receitas','menu-dropdown-receitas'],
+    ['menu-toggle-bens','menu-dropdown-bens'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio'],
     ['menu-toggle-metas','menu-dropdown-metas']
   ];
@@ -1455,8 +1643,10 @@
     if(name === 'home') renderHomeDashboard();
     if(name === 'manual') resetWizard();
     if(name === 'massa') resetUpload();
+    if(name === 'lancarBem') resetWizardBem();
     if(name === 'despesas') renderLista('despesa');
     if(name === 'receitas') renderLista('receita');
+    if(name === 'bens') renderListaBens();
     if(name === 'categorias') renderCategorias();
     if(name === 'cadBanco') renderBancos();
     if(name === 'cadFormaPagamento') renderFormasPagamento();
@@ -1735,6 +1925,97 @@
     lancamentos.push(data);
     return true;
   }
+
+  // ---------- LANÇAMENTO DE BEM (wizard progressivo) ----------
+  const PASSOS_BEM = ['nome','tipo','categoria','valor','data'];
+
+  function resetWizardBem(){
+    populateCategoriaSelect();
+    PASSOS_BEM.forEach(f => {
+      document.getElementById('fb-bem-' + f).style.display = 'none';
+      document.getElementById('fb-bem-' + f).classList.remove('done');
+      const input = document.getElementById('in-bem-' + f);
+      if(input.tagName !== 'SELECT'){ input.value = ''; }
+      input.disabled = false;
+    });
+    document.getElementById('in-bem-tipo').value = 'movel';
+    document.getElementById('fb-bem-nome').style.display = 'block';
+    setTimeout(() => document.getElementById('in-bem-nome').focus(), 50);
+  }
+
+  window.voltarStepBem = function(currentField){
+    const idx = PASSOS_BEM.indexOf(currentField);
+    if(idx <= 0) return;
+    const prevField = PASSOS_BEM[idx - 1];
+    document.getElementById('fb-bem-' + currentField).style.display = 'none';
+    const prevBlock = document.getElementById('fb-bem-' + prevField);
+    prevBlock.classList.remove('done');
+    const prevInput = document.getElementById('in-bem-' + prevField);
+    prevInput.disabled = false;
+    setTimeout(() => prevInput.focus(), 50);
+  };
+
+  function advanceStepBem(currentField, isLast){
+    const input = document.getElementById('in-bem-' + currentField);
+    const isOpcional = (currentField === 'categoria');
+    if(!isOpcional && (!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0))){
+      input.focus();
+      return;
+    }
+    document.getElementById('fb-bem-' + currentField).classList.add('done');
+    input.disabled = true;
+    if(isLast){
+      const stepBtn = document.getElementById('btn-bem-' + currentField);
+      const block = document.getElementById('fb-bem-' + currentField);
+      stepBtn.disabled = true;
+      salvarBem().then(ok => {
+        stepBtn.disabled = false;
+        if(ok){
+          goTo('bens');
+        } else {
+          block.classList.remove('done');
+          input.disabled = false;
+        }
+      });
+    } else {
+      const nextField = PASSOS_BEM[PASSOS_BEM.indexOf(currentField) + 1];
+      document.getElementById('fb-bem-' + nextField).style.display = 'block';
+      setTimeout(() => document.getElementById('in-bem-' + nextField).focus(), 50);
+    }
+  }
+
+  document.getElementById('btn-bem-nome').addEventListener('click', () => advanceStepBem('nome', false));
+  document.getElementById('btn-bem-tipo').addEventListener('click', () => advanceStepBem('tipo', false));
+  document.getElementById('btn-bem-categoria').addEventListener('click', () => advanceStepBem('categoria', false));
+  document.getElementById('btn-bem-valor').addEventListener('click', () => advanceStepBem('valor', false));
+  document.getElementById('btn-bem-data').addEventListener('click', () => advanceStepBem('data', true));
+
+  document.getElementById('form-bem').addEventListener('submit', (e) => e.preventDefault());
+  ['in-bem-nome','in-bem-categoria','in-bem-valor','in-bem-data'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        const field = id.replace('in-bem-','');
+        document.getElementById('btn-bem-' + field).click();
+      }
+    });
+  });
+
+  async function salvarBem(){
+    const payload = {
+      nome: document.getElementById('in-bem-nome').value.trim(),
+      tipo: document.getElementById('in-bem-tipo').value,
+      categoria: document.getElementById('in-bem-categoria').value.trim() || null,
+      valor: Math.abs(parseFloat(document.getElementById('in-bem-valor').value) || 0),
+      data: document.getElementById('in-bem-data').value || null,
+      user_id: currentUser.id
+    };
+    const { data, error } = await db.from('bens').insert(payload).select().single();
+    if(error){ alertaErro('Não foi possível salvar o bem. Tente novamente.'); return false; }
+    bens.push(data);
+    return true;
+  }
+
   // ---------- LANÇAMENTO EM MASSA ----------
   function resetUpload(){
     document.getElementById('file-input').value = '';
@@ -2167,6 +2448,99 @@
     });
   }
 
+  // ---------- BENS (listagem) ----------
+  let filtrosBens = { nome:'', tipo:'', categoria:'', dataDe:'', dataAte:'' };
+
+  function popularFiltrosBens(){
+    const sel = document.getElementById('filtro-categoria-bens');
+    if(sel){
+      sel.innerHTML = '<option value="">Todas</option>' + categorias.map(c =>
+        `<option value="${escapeAttr(c.nome)}" ${c.nome === filtrosBens.categoria ? 'selected' : ''}>${escapeAttr(c.nome)}</option>`).join('');
+    }
+  }
+
+  function itensBensFiltrados(){
+    const nomeBusca = filtrosBens.nome.trim().toLowerCase();
+    return bens.filter(item => {
+      if(nomeBusca && !String(item.nome || '').toLowerCase().includes(nomeBusca)) return false;
+      if(filtrosBens.tipo && item.tipo !== filtrosBens.tipo) return false;
+      if(filtrosBens.categoria && item.categoria !== filtrosBens.categoria) return false;
+      if(filtrosBens.dataDe && (item.data || '') < filtrosBens.dataDe) return false;
+      if(filtrosBens.dataAte && (item.data || '') > filtrosBens.dataAte) return false;
+      return true;
+    });
+  }
+
+  window.limparFiltrosBens = function(){
+    filtrosBens = { nome:'', tipo:'', categoria:'', dataDe:'', dataAte:'' };
+    ['filtro-nome-bens','filtro-tipo-bens','filtro-data-de-bens','filtro-data-ate-bens'].forEach(id => {
+      const el = document.getElementById(id);
+      if(el) el.value = '';
+    });
+    renderListaBens();
+  };
+
+  function wireFiltrosBens(){
+    document.getElementById('filtro-nome-bens').addEventListener('input', (e) => { filtrosBens.nome = e.target.value; renderListaBens(); });
+    document.getElementById('filtro-tipo-bens').addEventListener('change', (e) => { filtrosBens.tipo = e.target.value; renderListaBens(); });
+    document.getElementById('filtro-categoria-bens').addEventListener('change', (e) => { filtrosBens.categoria = e.target.value; renderListaBens(); });
+    document.getElementById('filtro-data-de-bens').addEventListener('change', (e) => { filtrosBens.dataDe = e.target.value; renderListaBens(); });
+    document.getElementById('filtro-data-ate-bens').addEventListener('change', (e) => { filtrosBens.dataAte = e.target.value; renderListaBens(); });
+  }
+  wireFiltrosBens();
+
+  function renderListaBens(){
+    popularFiltrosBens();
+    const tbody = document.getElementById('tbody-bens');
+    tbody.innerHTML = '';
+    const itens = itensBensFiltrados();
+    document.getElementById('empty-bens').style.display = itens.length ? 'none' : 'block';
+    let total = 0;
+    [...itens].sort((a,b) => (a.data||'').localeCompare(b.data||'')).forEach(item => {
+      total += Number(item.valor) || 0;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${fmtDateBR(item.data)}</td>
+        <td>${escapeAttr(item.nome)}</td>
+        <td><select data-id="${item.id}" data-field="tipo">
+          <option value="movel" ${item.tipo === 'movel' ? 'selected' : ''}>Móvel</option>
+          <option value="imovel" ${item.tipo === 'imovel' ? 'selected' : ''}>Imóvel</option>
+        </select></td>
+        <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
+        <td class="num">${money(item.valor)}</td>
+        <td><button class="del-btn" data-id="${item.id}" aria-label="Excluir bem">✕</button></td>`;
+      tbody.appendChild(tr);
+    });
+    document.getElementById('total-bens').textContent = money(total);
+    tbody.querySelectorAll('select').forEach(sel => {
+      sel.addEventListener('change', async () => {
+        const item = bens.find(i => i.id === sel.dataset.id);
+        if(!item) return;
+        const field = sel.dataset.field;
+        const valorAnterior = item[field];
+        const novoValor = sel.value;
+        item[field] = novoValor;
+        const { error } = await db.from('bens').update({[field]: novoValor}).eq('id', item.id);
+        if(error){
+          item[field] = valorAnterior;
+          sel.value = valorAnterior || '';
+          alertaErro('Não foi possível atualizar o bem. Tente novamente.');
+          return;
+        }
+        if(field === 'categoria') renderListaBens();
+      });
+    });
+    tbody.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        btn.disabled = true;
+        const { error } = await db.from('bens').delete().eq('id', btn.dataset.id);
+        if(error){ alertaErro('Não foi possível excluir o bem. Tente novamente.'); btn.disabled = false; return; }
+        bens = bens.filter(i => i.id !== btn.dataset.id);
+        renderListaBens();
+      });
+    });
+  }
+
   function corParaCategoria(nome){
     if(!nome) return COR_SEM_CATEGORIA;
     const idx = categorias.findIndex(c => c.nome === nome);
@@ -2202,6 +2576,19 @@
     return { receitas, despesas, resultado: receitas - despesas };
   }
 
+  // bens não seguem a convenção de sinal de receitas/despesas — valor é sempre positivo e somado à parte
+  function totalBensPeriodo(de, ate, campoData){
+    const filtrados = de || ate
+      ? bens.filter(i => {
+          const chave = campoData ? (i.data||'').slice(0,7) : (i.data||'');
+          if(de && chave < de) return false;
+          if(ate && chave > ate) return false;
+          return true;
+        })
+      : bens;
+    return filtrados.reduce((s,i) => s + (Number(i.valor)||0), 0);
+  }
+
   function renderHomePatrimonio(){
     const mesInput = document.getElementById('home-patrimonio-mes');
     if(mesInput && !mesInput.value){
@@ -2209,7 +2596,9 @@
       mesInput.value = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0');
     }
     const mes = mesInput ? mesInput.value : '';
-    const { receitas: receitasMes, despesas: despesasMes, resultado: patrimonioMes } = resultadoPeriodo(lancamentos, mes, mes, true);
+    const { receitas: receitasMes, despesas: despesasMes } = resultadoPeriodo(lancamentos, mes, mes, true);
+    const bensMes = totalBensPeriodo(mes, mes, true);
+    const patrimonioMes = receitasMes - despesasMes + bensMes;
 
     const elTotal = document.getElementById('home-patrimonio-total');
     if(elTotal){
@@ -2219,6 +2608,7 @@
     }
     document.getElementById('home-total-receitas-mes').textContent = money(receitasMes);
     document.getElementById('home-total-despesas-mes').textContent = money(despesasMes);
+    document.getElementById('home-total-bens-mes').textContent = money(bensMes);
   }
   const homeMesInputEl = document.getElementById('home-patrimonio-mes');
   if(homeMesInputEl) homeMesInputEl.addEventListener('change', renderHomePatrimonio);
@@ -2231,26 +2621,34 @@
     const p2 = elP2.value;
     const resP1 = resultadoPeriodo(lancamentos, p1, p1, true);
     const resP2 = resultadoPeriodo(lancamentos, p2, p2, true);
+    const patrimonioP1 = resP1.resultado + totalBensPeriodo(p1, p1, true);
+    const patrimonioP2 = resP2.resultado + totalBensPeriodo(p2, p2, true);
 
     const elR1 = document.getElementById('home-pat-comp-p1-resultado');
     const elR2 = document.getElementById('home-pat-comp-p2-resultado');
-    elR1.textContent = money(resP1.resultado);
-    elR1.classList.toggle('valor-neg', resP1.resultado < 0);
-    elR1.classList.toggle('valor-pos', resP1.resultado >= 0);
-    elR2.textContent = money(resP2.resultado);
-    elR2.classList.toggle('valor-neg', resP2.resultado < 0);
-    elR2.classList.toggle('valor-pos', resP2.resultado >= 0);
+    elR1.textContent = money(patrimonioP1);
+    elR1.classList.toggle('valor-neg', patrimonioP1 < 0);
+    elR1.classList.toggle('valor-pos', patrimonioP1 >= 0);
+    elR2.textContent = money(patrimonioP2);
+    elR2.classList.toggle('valor-neg', patrimonioP2 < 0);
+    elR2.classList.toggle('valor-pos', patrimonioP2 >= 0);
   }
   ['home-pat-comp-p1-data','home-pat-comp-p2-data'].forEach(id => {
     const el = document.getElementById(id);
     if(el) el.addEventListener('change', renderComparativoPatrimonio);
   });
 
-  let relEstado = { tipo: 'despesa', dimensao: 'categoria', grafico: 'pizza' };
+  let relEstado = { tipo: 'despesa', dimensao: 'categoria' };
   const REL_LIMITE_ITENS = 10;
-  const REL_TITULOS_DIMENSAO = { categoria: 'Por categoria', forma_pagamento: 'Por forma de pagamento', banco: 'Por banco' };
+  const REL_TITULOS_DIMENSAO = { categoria: 'Por categoria', forma_pagamento: 'Por forma de pagamento', banco: 'Por banco', tipo: 'Por tipo (Móvel/Imóvel)' };
+  const REL_DIMENSOES_POR_TIPO = {
+    despesa: [{value:'categoria', label:'Categoria'}, {value:'forma_pagamento', label:'Forma de Pagamento'}, {value:'banco', label:'Banco'}],
+    receita: [{value:'categoria', label:'Categoria'}, {value:'forma_pagamento', label:'Forma de Pagamento'}, {value:'banco', label:'Banco'}],
+    bens: [{value:'categoria', label:'Categoria'}, {value:'tipo', label:'Tipo (Móvel/Imóvel)'}]
+  };
 
   function itensRelatorio(){
+    if(relEstado.tipo === 'bens') return bens;
     return lancamentos.filter(item => {
       const isDespesaItem = (Number(item.valor) || 0) < 0;
       return relEstado.tipo === 'despesa' ? isDespesaItem : !isDespesaItem;
@@ -2267,16 +2665,32 @@
     const grupos = {};
     itens.forEach(item => {
       const bruto = item[campo];
-      const rotuloVazio = campo === 'forma_pagamento' ? 'Sem forma de pagamento' : (campo === 'banco' ? 'Sem banco' : 'Sem categoria');
-      const chave = bruto || rotuloVazio;
+      let chave, cor;
+      if(campo === 'tipo'){
+        chave = bruto === 'imovel' ? 'Imóvel' : 'Móvel';
+        cor = bruto === 'imovel' ? CORES[1] : CORES[0];
+      } else {
+        const rotuloVazio = campo === 'forma_pagamento' ? 'Sem forma de pagamento' : (campo === 'banco' ? 'Sem banco' : 'Sem categoria');
+        chave = bruto || rotuloVazio;
+        cor = corGenerica(bruto, lista);
+      }
       const valor = Math.abs(Number(item.valor) || 0);
-      if(!grupos[chave]) grupos[chave] = { valor: 0, cor: corGenerica(bruto, lista) };
+      if(!grupos[chave]) grupos[chave] = { valor: 0, cor };
       grupos[chave].valor += valor;
     });
     return grupos;
   }
 
-  function renderGraficoContainer(containerId, grupos, tipoGrafico){
+  function atualizarOpcoesDimensao(){
+    const sel = document.getElementById('rel-dimensao');
+    if(!sel) return;
+    const opcoes = REL_DIMENSOES_POR_TIPO[relEstado.tipo] || REL_DIMENSOES_POR_TIPO.despesa;
+    sel.innerHTML = opcoes.map(o => `<option value="${o.value}">${o.label}</option>`).join('');
+    relEstado.dimensao = opcoes[0].value;
+    sel.value = relEstado.dimensao;
+  }
+
+  function renderGraficoContainer(containerId, grupos){
     const container = document.getElementById(containerId);
     if(!container) return;
     const entradas = Object.entries(grupos).sort((a,b) => b[1].valor - a[1].valor).slice(0, REL_LIMITE_ITENS);
@@ -2285,37 +2699,25 @@
       container.innerHTML = '<p class="empty-msg">Sem lançamentos para exibir.</p>';
       return;
     }
-    if(tipoGrafico === 'barras'){
-      const maxValor = Math.max(...entradas.map(([,info]) => info.valor));
-      container.innerHTML = entradas.map(([nome, info]) => {
-        const largura = maxValor ? (info.valor / maxValor) * 100 : 0;
-        return `<div class="bar-row">
-          <span class="bar-label" title="${escapeAttr(nome)}">${escapeAttr(nome)}</span>
-          <span class="bar-track"><span class="bar-fill" style="width:${largura}%; background:${info.cor}"></span></span>
-          <span class="bar-value">${money(info.valor)}</span>
-        </div>`;
-      }).join('');
-    } else {
-      let acc = 0;
-      const stops = entradas.map(([, info]) => {
-        const pct = (info.valor / totalGeral) * 100;
-        const from = acc; acc += pct;
-        return `${info.cor} ${from}% ${acc}%`;
-      });
-      const legendHtml = entradas.map(([nome, info]) => {
-        const pct = (info.valor / totalGeral) * 100;
-        return `<div class="legend-row">
-          <span class="legend-swatch" style="background:${info.cor}"></span>
-          <span class="legend-name">${escapeAttr(nome)}</span>
-          <span class="legend-value">${money(info.valor)}</span>
-          <span class="legend-pct">${pct.toFixed(1)}%</span>
-        </div>`;
-      }).join('');
-      container.innerHTML = `<div class="chart-card">
-        <div class="pie" style="background:conic-gradient(${stops.join(', ')})"></div>
-        <div class="legend">${legendHtml}</div>
+    let acc = 0;
+    const stops = entradas.map(([, info]) => {
+      const pct = (info.valor / totalGeral) * 100;
+      const from = acc; acc += pct;
+      return `${info.cor} ${from}% ${acc}%`;
+    });
+    const legendHtml = entradas.map(([nome, info]) => {
+      const pct = (info.valor / totalGeral) * 100;
+      return `<div class="legend-row">
+        <span class="legend-swatch" style="background:${info.cor}"></span>
+        <span class="legend-name">${escapeAttr(nome)}</span>
+        <span class="legend-value">${money(info.valor)}</span>
+        <span class="legend-pct">${pct.toFixed(1)}%</span>
       </div>`;
-    }
+    }).join('');
+    container.innerHTML = `<div class="chart-card">
+      <div class="pie" style="background:conic-gradient(${stops.join(', ')})"></div>
+      <div class="legend">${legendHtml}</div>
+    </div>`;
   }
 
   function renderRelatorios(){
@@ -2323,24 +2725,13 @@
     const campo = relEstado.dimensao;
     const titulo = document.getElementById('rel-block-title');
     if(titulo) titulo.textContent = REL_TITULOS_DIMENSAO[campo] || 'Por categoria';
-    renderGraficoContainer('rel-grafico', agruparPorCampo(itens, campo, listaParaCampo(campo)), relEstado.grafico);
-  }
-
-  function atualizarToggleGraficoRel(){
-    const btnPizza = document.getElementById('rel-grafico-pizza');
-    const btnBarras = document.getElementById('rel-grafico-barras');
-    if(btnPizza) btnPizza.classList.toggle('active', relEstado.grafico === 'pizza');
-    if(btnBarras) btnBarras.classList.toggle('active', relEstado.grafico === 'barras');
+    renderGraficoContainer('rel-grafico', agruparPorCampo(itens, campo, listaParaCampo(campo)));
   }
 
   const relTipoEl = document.getElementById('rel-tipo');
-  if(relTipoEl) relTipoEl.addEventListener('change', (e) => { relEstado.tipo = e.target.value; renderRelatorios(); });
+  if(relTipoEl) relTipoEl.addEventListener('change', (e) => { relEstado.tipo = e.target.value; atualizarOpcoesDimensao(); renderRelatorios(); });
   const relDimensaoEl = document.getElementById('rel-dimensao');
   if(relDimensaoEl) relDimensaoEl.addEventListener('change', (e) => { relEstado.dimensao = e.target.value; renderRelatorios(); });
-  const relPizzaBtn = document.getElementById('rel-grafico-pizza');
-  if(relPizzaBtn) relPizzaBtn.addEventListener('click', () => { relEstado.grafico = 'pizza'; atualizarToggleGraficoRel(); renderRelatorios(); });
-  const relBarrasBtn = document.getElementById('rel-grafico-barras');
-  if(relBarrasBtn) relBarrasBtn.addEventListener('click', () => { relEstado.grafico = 'barras'; atualizarToggleGraficoRel(); renderRelatorios(); });
 
   // ---------- PATRIMÔNIO (painel) ----------
   function toggleAcc(headerEl){
@@ -2394,15 +2785,64 @@
     });
   }
 
+  // agrupa bens por categoria, para o acordeão de Bens em Patrimônio (sem sinal, sem banco/forma de pagamento)
+  function renderAccordionBens(containerId, emptyElId, itensBensList){
+    const container = document.getElementById(containerId);
+    const emptyEl = document.getElementById(emptyElId);
+    container.innerHTML = '';
+    emptyEl.style.display = itensBensList.length ? 'none' : 'block';
+    if(!itensBensList.length) return;
+
+    const grupos = {};
+    itensBensList.forEach(item => {
+      const chave = item.categoria || 'Sem categoria';
+      if(!grupos[chave]) grupos[chave] = [];
+      grupos[chave].push(item);
+    });
+    const chavesOrdenadas = Object.keys(grupos).sort((a,b) => {
+      const totalA = grupos[a].reduce((s,i) => s + (Number(i.valor)||0), 0);
+      const totalB = grupos[b].reduce((s,i) => s + (Number(i.valor)||0), 0);
+      return totalB - totalA;
+    });
+    chavesOrdenadas.forEach(categoria => {
+      const itens = grupos[categoria].sort((a,b) => (a.data||'').localeCompare(b.data||''));
+      const totalCat = itens.reduce((s,i) => s + (Number(i.valor)||0), 0);
+      const cor = corParaCategoria(categoria === 'Sem categoria' ? '' : categoria);
+      const div = document.createElement('div');
+      div.className = 'acc-item';
+      div.innerHTML = `
+        <button type="button" class="acc-header">
+          <span class="acc-color-dot" style="background:${cor}"></span>
+          <span class="acc-title">${escapeAttr(categoria)}</span>
+          <span class="acc-total">${money(totalCat)}</span>
+          <span class="acc-chevron">⌄</span>
+        </button>
+        <div class="acc-body">
+          <div class="table-scroll">
+          <table>
+            <thead><tr><th>Nome</th><th>Tipo</th><th class="num">Valor</th><th>Data</th></tr></thead>
+            <tbody>
+              ${itens.map(i => `<tr><td>${escapeAttr(i.nome)}</td><td>${i.tipo === 'imovel' ? 'Imóvel' : 'Móvel'}</td><td class="num">${money(Number(i.valor)||0)}</td><td>${fmtDateBR(i.data)}</td></tr>`).join('')}
+            </tbody>
+          </table>
+          </div>
+        </div>`;
+      div.querySelector('.acc-header').addEventListener('click', (e) => toggleAcc(e.currentTarget));
+      container.appendChild(div);
+    });
+  }
+
   function renderPatrimonio(){
     const receitas = lancamentos.filter(i => (Number(i.valor)||0) > 0);
     const despesas = lancamentos.filter(i => (Number(i.valor)||0) < 0);
     const totalReceitas = receitas.reduce((s,i) => s + (Number(i.valor)||0), 0);
     const totalDespesas = despesas.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
-    const resultado = totalReceitas - totalDespesas;
+    const totalBens = bens.reduce((s,i) => s + (Number(i.valor)||0), 0);
+    const resultado = totalReceitas - totalDespesas + totalBens;
 
     document.getElementById('pat-total-receitas').textContent = money(totalReceitas);
     document.getElementById('pat-total-despesas').textContent = money(totalDespesas);
+    document.getElementById('pat-total-bens').textContent = money(totalBens);
     document.getElementById('pat-resultado').textContent = (resultado >= 0 ? '+ ' : '− ') + money(Math.abs(resultado));
 
     const heroEl = document.getElementById('hero-result');
@@ -2411,30 +2851,34 @@
 
     renderAccordionPorCategoria('acc-tipos', 'acc-tipos-empty', receitas);
     renderAccordionPorCategoria('acc-categorias', 'acc-categorias-empty', despesas);
+    renderAccordionBens('acc-bens', 'acc-bens-empty', bens);
   }
 
   // ---------- init: carrega os dados do Supabase ----------
   async function loadAllData(){
-    const [catRes, bancoRes, formaPagRes, lanRes] = await Promise.all([
+    const [catRes, bancoRes, formaPagRes, lanRes, bensRes] = await Promise.all([
       db.from('categorias').select('*').order('nome'),
       db.from('bancos').select('*').order('nome'),
       db.from('formas_pagamento').select('*').order('nome'),
-      db.from('lancamentos').select('*').order('data', {ascending:true})
+      db.from('lancamentos').select('*').order('data', {ascending:true}),
+      db.from('bens').select('*').order('data', {ascending:true})
     ]);
-    if(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error){
-      console.error(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error);
+    if(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error || bensRes.error){
+      console.error(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error || bensRes.error);
       alertaErro('Não foi possível carregar seus dados. Verifique sua conexão e recarregue a página.');
     }
     categorias = catRes.data || [];
     bancos = bancoRes.data || [];
     formasPagamento = formaPagRes.data || [];
     lancamentos = lanRes.data || [];
+    bens = bensRes.data || [];
     populateCategoriaSelect();
     populateBancoDatalist();
     populateFormaPagamentoDatalist();
     if(telaAtual === 'home') renderHomeDashboard();
     if(telaAtual === 'despesas') renderLista('despesa');
     if(telaAtual === 'receitas') renderLista('receita');
+    if(telaAtual === 'bens') renderListaBens();
     if(telaAtual === 'categorias') renderCategorias();
     if(telaAtual === 'cadBanco') renderBancos();
     if(telaAtual === 'cadFormaPagamento') renderFormasPagamento();
