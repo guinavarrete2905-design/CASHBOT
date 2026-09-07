@@ -1259,17 +1259,37 @@
     <div class="resumo-wrap">
       <h1>Patrimônio</h1>
 
+      <div class="card wide">
+        <div class="step-title" style="margin-bottom:14px;">Filtros</div>
+        <div class="filtros-grid">
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-patrimonio-mes">Filtrar por mês</label>
+            <input type="month" id="filtro-patrimonio-mes">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label>Bens</label>
+            <label style="display:flex; align-items:center; gap:10px; font-weight:600; font-size:16px; cursor:pointer; padding-top:10px;">
+              <input type="checkbox" id="filtro-patrimonio-excluir-bens" style="width:auto; padding:0;">
+              Não considerar bens no patrimônio
+            </label>
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px;">
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosPatrimonio()">Limpar filtros</button>
+        </div>
+      </div>
+
       <div class="hero-result" id="hero-result">
         <div class="hero-label">Resultado</div>
         <div class="hero-amount" id="pat-resultado">R$ 0,00</div>
         <div class="hero-sub">
           <span>+ Receitas: <strong id="pat-total-receitas">R$ 0,00</strong></span>
           <span>− Despesas: <strong id="pat-total-despesas">R$ 0,00</strong></span>
-          <span>+ Bens: <strong id="pat-total-bens">R$ 0,00</strong></span>
+          <span id="hero-bens-span">+ Bens: <strong id="pat-total-bens">R$ 0,00</strong></span>
         </div>
       </div>
 
-      <div class="card wide">
+      <div class="card wide" id="acc-bens-card">
         <div class="step-title">Bens por categoria</div>
         <div id="acc-bens"></div>
         <p class="empty-msg" id="acc-bens-empty" style="display:none;">Nenhum bem cadastrado ainda.</p>
@@ -2832,12 +2852,35 @@
     });
   }
 
+  let filtrosPatrimonio = { mes: '', excluirBens: false };
+
+  window.limparFiltrosPatrimonio = function(){
+    filtrosPatrimonio = { mes: '', excluirBens: false };
+    const mesEl = document.getElementById('filtro-patrimonio-mes');
+    const excluirEl = document.getElementById('filtro-patrimonio-excluir-bens');
+    if(mesEl) mesEl.value = '';
+    if(excluirEl) excluirEl.checked = false;
+    renderPatrimonio();
+  };
+
+  function wireFiltrosPatrimonio(){
+    const mesEl = document.getElementById('filtro-patrimonio-mes');
+    const excluirEl = document.getElementById('filtro-patrimonio-excluir-bens');
+    if(mesEl) mesEl.addEventListener('change', (e) => { filtrosPatrimonio.mes = e.target.value; renderPatrimonio(); });
+    if(excluirEl) excluirEl.addEventListener('change', (e) => { filtrosPatrimonio.excluirBens = e.target.checked; renderPatrimonio(); });
+  }
+  wireFiltrosPatrimonio();
+
   function renderPatrimonio(){
-    const receitas = lancamentos.filter(i => (Number(i.valor)||0) > 0);
-    const despesas = lancamentos.filter(i => (Number(i.valor)||0) < 0);
+    const mes = filtrosPatrimonio.mes;
+    const lancamentosPeriodo = mes ? lancamentos.filter(i => (i.data||'').slice(0,7) === mes) : lancamentos;
+    const bensPeriodo = mes ? bens.filter(i => (i.data||'').slice(0,7) === mes) : bens;
+
+    const receitas = lancamentosPeriodo.filter(i => (Number(i.valor)||0) > 0);
+    const despesas = lancamentosPeriodo.filter(i => (Number(i.valor)||0) < 0);
     const totalReceitas = receitas.reduce((s,i) => s + (Number(i.valor)||0), 0);
     const totalDespesas = despesas.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
-    const totalBens = bens.reduce((s,i) => s + (Number(i.valor)||0), 0);
+    const totalBens = filtrosPatrimonio.excluirBens ? 0 : bensPeriodo.reduce((s,i) => s + (Number(i.valor)||0), 0);
     const resultado = totalReceitas - totalDespesas + totalBens;
 
     document.getElementById('pat-total-receitas').textContent = money(totalReceitas);
@@ -2849,9 +2892,14 @@
     heroEl.classList.toggle('deficit', resultado < 0);
     document.querySelector('#hero-result .hero-label').textContent = resultado >= 0 ? 'Superávit' : 'Déficit';
 
+    const heroBensSpan = document.getElementById('hero-bens-span');
+    const accBensCard = document.getElementById('acc-bens-card');
+    if(heroBensSpan) heroBensSpan.style.display = filtrosPatrimonio.excluirBens ? 'none' : '';
+    if(accBensCard) accBensCard.style.display = filtrosPatrimonio.excluirBens ? 'none' : '';
+
     renderAccordionPorCategoria('acc-tipos', 'acc-tipos-empty', receitas);
     renderAccordionPorCategoria('acc-categorias', 'acc-categorias-empty', despesas);
-    renderAccordionBens('acc-bens', 'acc-bens-empty', bens);
+    if(!filtrosPatrimonio.excluirBens) renderAccordionBens('acc-bens', 'acc-bens-empty', bensPeriodo);
   }
 
   // ---------- init: carrega os dados do Supabase ----------
