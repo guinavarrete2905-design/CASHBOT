@@ -486,7 +486,7 @@
 
       <div class="dash-grid">
         <div class="dash-card">
-          <div class="dash-card-title">Patrimônio total atual</div>
+          <div class="dash-card-title">Patrimônio total</div>
           <div class="dash-placeholder-value" id="home-patrimonio-total" style="color:var(--green-dark);">R$ 0,00</div>
           <div class="field-block" style="margin:2px 0 18px; max-width:220px;">
             <label for="home-patrimonio-mes" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px;">Filtrar mês</label>
@@ -500,6 +500,30 @@
             <div class="rel-comp-total-card">
               <div class="rel-comp-total-label">Total de Despesas</div>
               <div class="rel-comp-total-value valor-neg" id="home-total-despesas-mes">R$ 0,00</div>
+            </div>
+          </div>
+
+          <div class="rel-divider"></div>
+
+          <div class="dash-card-title">Comparativo por período</div>
+          <div class="filtros-grid" style="margin-bottom:16px;">
+            <div class="field-block" style="margin-bottom:0;">
+              <label for="home-pat-comp-p1-data">Data</label>
+              <input type="month" id="home-pat-comp-p1-data">
+            </div>
+            <div class="field-block" style="margin-bottom:0;">
+              <label for="home-pat-comp-p2-data">Data</label>
+              <input type="month" id="home-pat-comp-p2-data">
+            </div>
+          </div>
+          <div class="rel-comp-totais">
+            <div class="rel-comp-total-card">
+              <div class="rel-comp-total-label">Patrimônio período 1</div>
+              <div class="rel-comp-total-value" id="home-pat-comp-p1-resultado">R$ 0,00</div>
+            </div>
+            <div class="rel-comp-total-card">
+              <div class="rel-comp-total-label">Patrimônio período 2</div>
+              <div class="rel-comp-total-value" id="home-pat-comp-p2-resultado">R$ 0,00</div>
             </div>
           </div>
         </div>
@@ -530,6 +554,14 @@
             </select>
           </div>
           <div class="field-block">
+            <label for="rel-dimensao">Ver por</label>
+            <select id="rel-dimensao">
+              <option value="categoria">Categoria</option>
+              <option value="forma_pagamento">Forma de Pagamento</option>
+              <option value="banco">Banco</option>
+            </select>
+          </div>
+          <div class="field-block">
             <label>Gráfico</label>
             <div class="rel-toggle">
               <button type="button" id="rel-grafico-pizza" class="active">Pizza</button>
@@ -538,52 +570,9 @@
           </div>
         </div>
 
-        <div class="rel-grid">
-          <div class="rel-block">
-            <div class="rel-block-title">Por categoria</div>
-            <div class="rel-chart-wrap" id="rel-categoria"></div>
-          </div>
-          <div class="rel-block">
-            <div class="rel-block-title">Por banco</div>
-            <div class="rel-chart-wrap" id="rel-banco"></div>
-          </div>
-          <div class="rel-block">
-            <div class="rel-block-title">Por forma de pagamento</div>
-            <div class="rel-chart-wrap" id="rel-forma-pagamento"></div>
-          </div>
-        </div>
-
-        <div class="rel-divider"></div>
-
-        <div class="step-title" style="margin-bottom:14px;">Comparativo por período</div>
-        <div class="filtros-grid" style="margin-bottom:18px;">
-          <div class="field-block" style="margin-bottom:0;">
-            <label for="rel-comp-p1-de">Período 1 — Data de</label>
-            <input type="date" id="rel-comp-p1-de">
-          </div>
-          <div class="field-block" style="margin-bottom:0;">
-            <label for="rel-comp-p1-ate">Período 1 — Data até</label>
-            <input type="date" id="rel-comp-p1-ate">
-          </div>
-          <div class="field-block" style="margin-bottom:0;">
-            <label for="rel-comp-p2-de">Período 2 — Data de</label>
-            <input type="date" id="rel-comp-p2-de">
-          </div>
-          <div class="field-block" style="margin-bottom:0;">
-            <label for="rel-comp-p2-ate">Período 2 — Data até</label>
-            <input type="date" id="rel-comp-p2-ate">
-          </div>
-        </div>
-        <div class="rel-chart-wrap" id="rel-comparativo"></div>
-        <div class="rel-comp-totais">
-          <div class="rel-comp-total-card">
-            <div class="rel-comp-total-label">Total período 1</div>
-            <div class="rel-comp-total-value" id="rel-comp-p1-total">R$ 0,00</div>
-          </div>
-          <div class="rel-comp-total-card">
-            <div class="rel-comp-total-label">Total período 2</div>
-            <div class="rel-comp-total-value" id="rel-comp-p2-total">R$ 0,00</div>
-          </div>
+        <div class="rel-block">
+          <div class="rel-block-title" id="rel-block-title">Por categoria</div>
+          <div class="rel-chart-wrap" id="rel-grafico"></div>
         </div>
       </div>
 
@@ -2195,42 +2184,83 @@
   // ---------- TELA DE INÍCIO: patrimônio + relatórios ----------
   function renderHomeDashboard(){
     renderHomePatrimonio();
+    renderComparativoPatrimonio();
     renderRelatorios();
   }
 
-  function renderHomePatrimonio(){
-    const totalReceitas = lancamentos.filter(i => (Number(i.valor)||0) > 0).reduce((s,i) => s + Number(i.valor), 0);
-    const totalDespesas = lancamentos.filter(i => (Number(i.valor)||0) < 0).reduce((s,i) => s + Math.abs(Number(i.valor)), 0);
-    const patrimonioTotal = totalReceitas - totalDespesas;
-    const elTotal = document.getElementById('home-patrimonio-total');
-    if(elTotal){
-      elTotal.textContent = money(patrimonioTotal);
-      elTotal.classList.toggle('valor-neg', patrimonioTotal < 0);
-      elTotal.classList.toggle('valor-pos', patrimonioTotal >= 0);
-    }
+  function resultadoPeriodo(itens, de, ate, campoData){
+    const filtrados = de || ate
+      ? itens.filter(i => {
+          const chave = campoData ? (i.data||'').slice(0,7) : (i.data||'');
+          if(de && chave < de) return false;
+          if(ate && chave > ate) return false;
+          return true;
+        })
+      : itens;
+    const receitas = filtrados.filter(i => (Number(i.valor)||0) > 0).reduce((s,i) => s + Number(i.valor), 0);
+    const despesas = filtrados.filter(i => (Number(i.valor)||0) < 0).reduce((s,i) => s + Math.abs(Number(i.valor)), 0);
+    return { receitas, despesas, resultado: receitas - despesas };
+  }
 
+  function renderHomePatrimonio(){
     const mesInput = document.getElementById('home-patrimonio-mes');
     if(mesInput && !mesInput.value){
       const hoje = new Date();
       mesInput.value = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0');
     }
     const mes = mesInput ? mesInput.value : '';
-    const itensMes = mes ? lancamentos.filter(i => (i.data||'').slice(0,7) === mes) : lancamentos;
-    const receitasMes = itensMes.filter(i => (Number(i.valor)||0) > 0).reduce((s,i) => s + Number(i.valor), 0);
-    const despesasMes = itensMes.filter(i => (Number(i.valor)||0) < 0).reduce((s,i) => s + Math.abs(Number(i.valor)), 0);
+    const { receitas: receitasMes, despesas: despesasMes, resultado: patrimonioMes } = resultadoPeriodo(lancamentos, mes, mes, true);
+
+    const elTotal = document.getElementById('home-patrimonio-total');
+    if(elTotal){
+      elTotal.textContent = money(patrimonioMes);
+      elTotal.classList.toggle('valor-neg', patrimonioMes < 0);
+      elTotal.classList.toggle('valor-pos', patrimonioMes >= 0);
+    }
     document.getElementById('home-total-receitas-mes').textContent = money(receitasMes);
     document.getElementById('home-total-despesas-mes').textContent = money(despesasMes);
   }
   const homeMesInputEl = document.getElementById('home-patrimonio-mes');
   if(homeMesInputEl) homeMesInputEl.addEventListener('change', renderHomePatrimonio);
 
-  let relEstado = { tipo: 'despesa', grafico: 'pizza' };
+  function renderComparativoPatrimonio(){
+    const elP1 = document.getElementById('home-pat-comp-p1-data');
+    const elP2 = document.getElementById('home-pat-comp-p2-data');
+    if(!elP1 || !elP2) return;
+    const p1 = elP1.value;
+    const p2 = elP2.value;
+    const resP1 = resultadoPeriodo(lancamentos, p1, p1, true);
+    const resP2 = resultadoPeriodo(lancamentos, p2, p2, true);
+
+    const elR1 = document.getElementById('home-pat-comp-p1-resultado');
+    const elR2 = document.getElementById('home-pat-comp-p2-resultado');
+    elR1.textContent = money(resP1.resultado);
+    elR1.classList.toggle('valor-neg', resP1.resultado < 0);
+    elR1.classList.toggle('valor-pos', resP1.resultado >= 0);
+    elR2.textContent = money(resP2.resultado);
+    elR2.classList.toggle('valor-neg', resP2.resultado < 0);
+    elR2.classList.toggle('valor-pos', resP2.resultado >= 0);
+  }
+  ['home-pat-comp-p1-data','home-pat-comp-p2-data'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('change', renderComparativoPatrimonio);
+  });
+
+  let relEstado = { tipo: 'despesa', dimensao: 'categoria', grafico: 'pizza' };
+  const REL_LIMITE_ITENS = 10;
+  const REL_TITULOS_DIMENSAO = { categoria: 'Por categoria', forma_pagamento: 'Por forma de pagamento', banco: 'Por banco' };
 
   function itensRelatorio(){
     return lancamentos.filter(item => {
       const isDespesaItem = (Number(item.valor) || 0) < 0;
       return relEstado.tipo === 'despesa' ? isDespesaItem : !isDespesaItem;
     });
+  }
+
+  function listaParaCampo(campo){
+    if(campo === 'banco') return bancos;
+    if(campo === 'forma_pagamento') return formasPagamento;
+    return categorias;
   }
 
   function agruparPorCampo(itens, campo, lista){
@@ -2249,7 +2279,7 @@
   function renderGraficoContainer(containerId, grupos, tipoGrafico){
     const container = document.getElementById(containerId);
     if(!container) return;
-    const entradas = Object.entries(grupos).sort((a,b) => b[1].valor - a[1].valor);
+    const entradas = Object.entries(grupos).sort((a,b) => b[1].valor - a[1].valor).slice(0, REL_LIMITE_ITENS);
     const totalGeral = entradas.reduce((s,[,info]) => s + info.valor, 0);
     if(!entradas.length || totalGeral <= 0){
       container.innerHTML = '<p class="empty-msg">Sem lançamentos para exibir.</p>';
@@ -2290,38 +2320,10 @@
 
   function renderRelatorios(){
     const itens = itensRelatorio();
-    renderGraficoContainer('rel-categoria', agruparPorCampo(itens, 'categoria', categorias), relEstado.grafico);
-    renderGraficoContainer('rel-banco', agruparPorCampo(itens, 'banco', bancos), relEstado.grafico);
-    renderGraficoContainer('rel-forma-pagamento', agruparPorCampo(itens, 'forma_pagamento', formasPagamento), relEstado.grafico);
-    renderComparativo();
-  }
-
-  function renderComparativo(){
-    const elP1De = document.getElementById('rel-comp-p1-de');
-    if(!elP1De) return;
-    const p1de = elP1De.value;
-    const p1ate = document.getElementById('rel-comp-p1-ate').value;
-    const p2de = document.getElementById('rel-comp-p2-de').value;
-    const p2ate = document.getElementById('rel-comp-p2-ate').value;
-
-    const itensBase = itensRelatorio();
-    const somaPeriodo = (de, ate) => itensBase.filter(item => {
-      if(de && (item.data||'') < de) return false;
-      if(ate && (item.data||'') > ate) return false;
-      return true;
-    }).reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
-
-    const totalP1 = somaPeriodo(p1de, p1ate);
-    const totalP2 = somaPeriodo(p2de, p2ate);
-
-    document.getElementById('rel-comp-p1-total').textContent = money(totalP1);
-    document.getElementById('rel-comp-p2-total').textContent = money(totalP2);
-
-    const grupos = {
-      'Período 1': { valor: totalP1, cor: CORES[0] },
-      'Período 2': { valor: totalP2, cor: CORES[4] }
-    };
-    renderGraficoContainer('rel-comparativo', grupos, relEstado.grafico);
+    const campo = relEstado.dimensao;
+    const titulo = document.getElementById('rel-block-title');
+    if(titulo) titulo.textContent = REL_TITULOS_DIMENSAO[campo] || 'Por categoria';
+    renderGraficoContainer('rel-grafico', agruparPorCampo(itens, campo, listaParaCampo(campo)), relEstado.grafico);
   }
 
   function atualizarToggleGraficoRel(){
@@ -2333,14 +2335,12 @@
 
   const relTipoEl = document.getElementById('rel-tipo');
   if(relTipoEl) relTipoEl.addEventListener('change', (e) => { relEstado.tipo = e.target.value; renderRelatorios(); });
+  const relDimensaoEl = document.getElementById('rel-dimensao');
+  if(relDimensaoEl) relDimensaoEl.addEventListener('change', (e) => { relEstado.dimensao = e.target.value; renderRelatorios(); });
   const relPizzaBtn = document.getElementById('rel-grafico-pizza');
   if(relPizzaBtn) relPizzaBtn.addEventListener('click', () => { relEstado.grafico = 'pizza'; atualizarToggleGraficoRel(); renderRelatorios(); });
   const relBarrasBtn = document.getElementById('rel-grafico-barras');
   if(relBarrasBtn) relBarrasBtn.addEventListener('click', () => { relEstado.grafico = 'barras'; atualizarToggleGraficoRel(); renderRelatorios(); });
-  ['rel-comp-p1-de','rel-comp-p1-ate','rel-comp-p2-de','rel-comp-p2-ate'].forEach(id => {
-    const el = document.getElementById(id);
-    if(el) el.addEventListener('change', renderComparativo);
-  });
 
   // ---------- PATRIMÔNIO (painel) ----------
   function toggleAcc(headerEl){
