@@ -163,7 +163,7 @@
 
   .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px;}
   table{width:100%; min-width:480px; border-collapse:collapse; margin-bottom:18px;}
-  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:150px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:120px;} #preview-tbody td:nth-child(7), #resumo-tbody td:nth-child(7){min-width:60px;}
+  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:150px;} #preview-tbody td:nth-child(7), #resumo-tbody td:nth-child(7){min-width:120px;} #preview-tbody td:nth-child(8), #resumo-tbody td:nth-child(8){min-width:60px;}
   thead th{
     text-align:left; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;
     color:var(--muted); font-weight:700; padding:8px; border-bottom:2px solid var(--black);
@@ -350,7 +350,7 @@
   body.logged-in .user-chip{display:flex;}
 
   /* ---------- dashboard em branco (por enquanto) ---------- */
-  .dashboard-placeholder{max-width:1100px; width:100%; text-align:left; padding-top:0;}
+  .dashboard-placeholder{max-width:1400px; width:100%; text-align:left; padding-top:0;}
   .dash-header{margin-bottom:26px;}
   .dash-header h1{font-size:26px; font-weight:800; margin:0 0 6px;}
   .dash-header .sub{margin:0;}
@@ -393,7 +393,7 @@
     <button data-tela="home" onclick="goTo('home')">Início</button>
     <button data-tela="manual" onclick="goTo('manual')">Lançamento manual</button>
     <button data-tela="massa" onclick="goTo('massa')">Lançamento em massa</button>
-    <button data-tela="categorias" onclick="goTo('categorias')">Cadastro de categoria</button>
+    <button data-tela="cadastros" onclick="goTo('cadastros')">Cadastros</button>
     <button data-tela="resumo" onclick="goTo('resumo')">Resumo</button>
     <button data-tela="patrimonio" onclick="goTo('patrimonio')">Patrimônio</button>
   </nav>
@@ -405,6 +405,7 @@
 <button type="button" class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()" aria-label="Recolher menu">‹</button>
 <datalist id="datalist-categorias"></datalist>
 <datalist id="datalist-bancos"></datalist>
+<datalist id="datalist-formas-pagamento"></datalist>
 
 
 <!-- ===================== HOME ===================== -->
@@ -423,7 +424,7 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('resumo')">Resumo</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
@@ -502,7 +503,7 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('resumo')">Resumo</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
@@ -536,6 +537,15 @@
           <div class="step-actions">
             <button type="button" class="btn-avancar" id="btn-banco">AVANÇAR</button>
             <button type="button" class="btn-voltar-step" onclick="voltarStepManual('banco')">‹ Voltar</button>
+          </div>
+        </div>
+
+        <div class="field-block" id="fb-formaPagamento" style="display:none;">
+          <label for="in-formaPagamento">Forma de pagamento</label>
+          <input type="text" id="in-formaPagamento" list="datalist-formas-pagamento" placeholder="Digite ou escolha uma forma de pagamento" autocomplete="off">
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-formaPagamento">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepManual('formaPagamento')">‹ Voltar</button>
           </div>
         </div>
 
@@ -585,7 +595,7 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('resumo')">Resumo</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
@@ -608,7 +618,7 @@
       <div id="preview-wrap" style="display:none;">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="preview-tbody"></tbody>
         </table>
         </div>
@@ -620,6 +630,36 @@
     </div>
   </div>
 </div>
+<!-- ===================== CADASTROS (hub) ===================== -->
+<div class="screen" id="screen-cadastros">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-cadastros" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-cadastros">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('manual')">Lançamento manual</button>
+        <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="step-title">Cadastros</div>
+      <button class="big-btn" onclick="goTo('categorias')">Cadastro de categoria</button>
+      <button class="big-btn secondary" onclick="goTo('cadBanco')">Cadastro de banco</button>
+      <button class="big-btn patrimonio" onclick="goTo('cadFormaPagamento')">Cadastro de forma de pagamento</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== CADASTRO DE CATEGORIA ===================== -->
 <div class="screen" id="screen-categorias">
   <div class="topbar">
@@ -632,7 +672,7 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('resumo')">Resumo</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
@@ -653,6 +693,72 @@
   </div>
 </div>
 
+<!-- ===================== CADASTRO DE BANCO ===================== -->
+<div class="screen" id="screen-cadBanco">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-cadBanco" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-cadBanco">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('manual')">Lançamento manual</button>
+        <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="step-title">Cadastro de banco</div>
+      <form id="form-banco" class="cat-add-row">
+        <input type="text" id="in-novo-banco" placeholder="Nome do banco" autocomplete="off">
+        <button type="submit" class="btn-avancar">Adicionar</button>
+      </form>
+      <ul class="cat-list" id="lista-bancos"></ul>
+      <p class="empty-msg" id="bancos-empty" style="display:none;">Nenhum banco cadastrado ainda.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== CADASTRO DE FORMA DE PAGAMENTO ===================== -->
+<div class="screen" id="screen-cadFormaPagamento">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-cadFormaPagamento" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-cadFormaPagamento">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('manual')">Lançamento manual</button>
+        <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="step-title">Cadastro de forma de pagamento</div>
+      <form id="form-forma-pagamento" class="cat-add-row">
+        <input type="text" id="in-nova-forma-pagamento" placeholder="Ex: Cartão de crédito, Pix, Boleto" autocomplete="off">
+        <button type="submit" class="btn-avancar">Adicionar</button>
+      </form>
+      <ul class="cat-list" id="lista-formas-pagamento"></ul>
+      <p class="empty-msg" id="formas-pagamento-empty" style="display:none;">Nenhuma forma de pagamento cadastrada ainda.</p>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== RESUMO ===================== -->
 <div class="screen" id="screen-resumo">
   <div class="topbar">
@@ -665,7 +771,7 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('resumo')">Resumo</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
@@ -698,9 +804,9 @@
       <div class="card wide">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="resumo-tbody"></tbody>
-          <tfoot><tr><td colspan="4">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td><td></td></tr></tfoot>
+          <tfoot><tr><td colspan="5">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td><td></td></tr></tfoot>
         </table>
         </div>
         <p class="empty-msg" id="resumo-empty" style="display:none;">Nenhum lançamento ainda.</p>
@@ -725,7 +831,7 @@
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
-        <button onclick="goTo('categorias')">Cadastro de categoria</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
         <button onclick="goTo('resumo')">Resumo</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
@@ -872,6 +978,8 @@
     currentPessoa = null;
     document.body.classList.remove('logged-in');
     categorias = [];
+    bancos = [];
+    formasPagamento = [];
     lancamentos = [];
   }
 
@@ -1002,14 +1110,18 @@
   let lancamentos = [];          // {id, nome, categoria, banco, valor, data, recorrente} — valor>0 = receita, valor<0 = despesa
   let pendingImport = [];
   let categorias = [];           // {id, nome}
-  const BANCOS = ['Sicredi','XP'];
+  let bancos = [];                // {id, nome}
+  let formasPagamento = [];       // {id, nome}
   function populateBancoDatalist(){
     const dl = document.getElementById('datalist-bancos');
-    if(dl) dl.innerHTML = BANCOS.map(b => `<option value="${escapeAttr(b)}"></option>`).join('');
+    if(dl) dl.innerHTML = bancos.map(b => `<option value="${escapeAttr(b.nome)}"></option>`).join('');
+  }
+  function populateFormaPagamentoDatalist(){
+    const dl = document.getElementById('datalist-formas-pagamento');
+    if(dl) dl.innerHTML = formasPagamento.map(f => `<option value="${escapeAttr(f.nome)}"></option>`).join('');
   }
   const CORES = ['#2E8B57','#5DA88A','#C9A227','#8B5E34','#4A6FA5','#A23B3B','#7C6FA5','#3E8E8E','#B5651D','#7FA653'];
   const COR_SEM_CATEGORIA = '#9AA69C';
-  const BANCO_CORES = {Sicredi:'#4A6FA5', XP:'#C9A227'};
 
   const money = (v) => (Number(v)||0).toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
   const fmtDateBR = (iso) => {
@@ -1037,7 +1149,10 @@
     ['menu-toggle-home','menu-dropdown-home'],
     ['menu-toggle-manual','menu-dropdown-manual'],
     ['menu-toggle-massa','menu-dropdown-massa'],
+    ['menu-toggle-cadastros','menu-dropdown-cadastros'],
     ['menu-toggle-categorias','menu-dropdown-categorias'],
+    ['menu-toggle-cadBanco','menu-dropdown-cadBanco'],
+    ['menu-toggle-cadFormaPagamento','menu-dropdown-cadFormaPagamento'],
     ['menu-toggle-resumo','menu-dropdown-resumo'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio']
   ];
@@ -1068,12 +1183,16 @@
   function ativarTela(name){
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById('screen-' + name).classList.add('active');
-    document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.toggle('active', b.dataset.tela === name));
+    const grupoCadastros = ['cadastros','categorias','cadBanco','cadFormaPagamento'];
+    const telaAtivaNav = grupoCadastros.includes(name) ? 'cadastros' : name;
+    document.querySelectorAll('#sidebar-nav button').forEach(b => b.classList.toggle('active', b.dataset.tela === telaAtivaNav));
     document.querySelectorAll('.menu-dropdown').forEach(d => d.classList.remove('open'));
     if(name === 'manual') resetWizard();
     if(name === 'massa') resetUpload();
     if(name === 'resumo') { renderResumo(); renderChartCategoria(); renderChartBanco(); }
     if(name === 'categorias') renderCategorias();
+    if(name === 'cadBanco') renderBancos();
+    if(name === 'cadFormaPagamento') renderFormasPagamento();
     if(name === 'patrimonio') renderPatrimonio();
     window.scrollTo(0,0);
   }
@@ -1135,13 +1254,99 @@
     input.focus();
   });
 
+  // ---------- CADASTRO DE BANCO ----------
+  function renderBancos(){
+    const ul = document.getElementById('lista-bancos');
+    ul.innerHTML = '';
+    document.getElementById('bancos-empty').style.display = bancos.length ? 'none' : 'block';
+    bancos.forEach((b) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${escapeAttr(b.nome)}</span><button class="del-btn" data-id="${b.id}" aria-label="Remover banco">✕</button>`;
+      ul.appendChild(li);
+    });
+    ul.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        btn.disabled = true;
+        const { error } = await db.from('bancos').delete().eq('id', id);
+        if(error){ alertaErro('Não foi possível remover o banco. Tente novamente.'); btn.disabled = false; return; }
+        bancos = bancos.filter(b => b.id !== id);
+        renderBancos();
+      });
+    });
+    populateBancoDatalist();
+  }
+
+  document.getElementById('form-banco').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('in-novo-banco');
+    const nome = input.value.trim();
+    if(!nome) return;
+    if(bancos.some(b => b.nome.toLowerCase() === nome.toLowerCase())){
+      input.value = '';
+      return;
+    }
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true;
+    const { data, error } = await db.from('bancos').insert({nome}).select().single();
+    btn.disabled = false;
+    if(error){ alertaErro('Não foi possível salvar o banco. Tente novamente.'); return; }
+    bancos.push(data);
+    input.value = '';
+    renderBancos();
+    input.focus();
+  });
+
+  // ---------- CADASTRO DE FORMA DE PAGAMENTO ----------
+  function renderFormasPagamento(){
+    const ul = document.getElementById('lista-formas-pagamento');
+    ul.innerHTML = '';
+    document.getElementById('formas-pagamento-empty').style.display = formasPagamento.length ? 'none' : 'block';
+    formasPagamento.forEach((f) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${escapeAttr(f.nome)}</span><button class="del-btn" data-id="${f.id}" aria-label="Remover forma de pagamento">✕</button>`;
+      ul.appendChild(li);
+    });
+    ul.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        btn.disabled = true;
+        const { error } = await db.from('formas_pagamento').delete().eq('id', id);
+        if(error){ alertaErro('Não foi possível remover a forma de pagamento. Tente novamente.'); btn.disabled = false; return; }
+        formasPagamento = formasPagamento.filter(f => f.id !== id);
+        renderFormasPagamento();
+      });
+    });
+    populateFormaPagamentoDatalist();
+  }
+
+  document.getElementById('form-forma-pagamento').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('in-nova-forma-pagamento');
+    const nome = input.value.trim();
+    if(!nome) return;
+    if(formasPagamento.some(f => f.nome.toLowerCase() === nome.toLowerCase())){
+      input.value = '';
+      return;
+    }
+    const btn = e.target.querySelector('button[type=submit]');
+    btn.disabled = true;
+    const { data, error } = await db.from('formas_pagamento').insert({nome}).select().single();
+    btn.disabled = false;
+    if(error){ alertaErro('Não foi possível salvar a forma de pagamento. Tente novamente.'); return; }
+    formasPagamento.push(data);
+    input.value = '';
+    renderFormasPagamento();
+    input.focus();
+  });
+
   function populateCategoriaSelect(){
     const dl = document.getElementById('datalist-categorias');
     if(dl) dl.innerHTML = categorias.map(c => `<option value="${escapeAttr(c.nome)}"></option>`).join('');
   }
 
   // ---------- LANÇAMENTO MANUAL (wizard progressivo) ----------
-  const PASSOS_MANUAL = ['nome','categoria','banco','valor','data','recorrente'];
+  const PASSOS_MANUAL = ['nome','categoria','banco','formaPagamento','valor','data','recorrente'];
 
   function resetWizard(){
     populateCategoriaSelect();
@@ -1170,7 +1375,7 @@
 
   function advanceStep(currentField, nextField, isLast){
     const input = document.getElementById('in-' + currentField);
-    const isOpcional = (currentField === 'categoria' || currentField === 'banco' || currentField === 'recorrente');
+    const isOpcional = (currentField === 'categoria' || currentField === 'banco' || currentField === 'formaPagamento' || currentField === 'recorrente');
     if(!isOpcional && (!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0))){
       input.focus();
       return;
@@ -1198,13 +1403,14 @@
 
   document.getElementById('btn-nome').addEventListener('click', () => advanceStep('nome','categoria', false));
   document.getElementById('btn-categoria').addEventListener('click', () => advanceStep('categoria','banco', false));
-  document.getElementById('btn-banco').addEventListener('click', () => advanceStep('banco','valor', false));
+  document.getElementById('btn-banco').addEventListener('click', () => advanceStep('banco','formaPagamento', false));
+  document.getElementById('btn-formaPagamento').addEventListener('click', () => advanceStep('formaPagamento','valor', false));
   document.getElementById('btn-valor').addEventListener('click', () => advanceStep('valor','data', false));
   document.getElementById('btn-data').addEventListener('click', () => advanceStep('data','recorrente', false));
   document.getElementById('btn-recorrente').addEventListener('click', () => advanceStep('recorrente', null, true));
 
   document.getElementById('form-manual').addEventListener('submit', (e) => e.preventDefault());
-  ['in-nome','in-categoria','in-banco','in-valor','in-data'].forEach(id => {
+  ['in-nome','in-categoria','in-banco','in-formaPagamento','in-valor','in-data'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', (e) => {
       if(e.key === 'Enter'){
         e.preventDefault();
@@ -1219,6 +1425,7 @@
       nome: document.getElementById('in-nome').value.trim(),
       categoria: document.getElementById('in-categoria').value.trim() || null,
       banco: document.getElementById('in-banco').value.trim() || null,
+      forma_pagamento: document.getElementById('in-formaPagamento').value.trim() || null,
       valor: parseFloat(document.getElementById('in-valor').value) || 0,
       data: document.getElementById('in-data').value || null,
       recorrente: document.getElementById('in-recorrente').value === 'sim',
@@ -1284,8 +1491,16 @@
 
   function bancoOptionsHtml(selected){
     let html = `<option value="" ${selected ? '' : 'selected'}>(vazio)</option>`;
-    BANCOS.forEach(b => {
-      html += `<option value="${escapeAttr(b)}" ${b === selected ? 'selected' : ''}>${escapeAttr(b)}</option>`;
+    bancos.forEach(b => {
+      html += `<option value="${escapeAttr(b.nome)}" ${b.nome === selected ? 'selected' : ''}>${escapeAttr(b.nome)}</option>`;
+    });
+    return html;
+  }
+
+  function formaPagamentoOptionsHtml(selected){
+    let html = `<option value="" ${selected ? '' : 'selected'}>(vazio)</option>`;
+    formasPagamento.forEach(f => {
+      html += `<option value="${escapeAttr(f.nome)}" ${f.nome === selected ? 'selected' : ''}>${escapeAttr(f.nome)}</option>`;
     });
     return html;
   }
@@ -1302,6 +1517,7 @@
         <td><input type="text" value="${escapeAttr(item.nome)}" data-idx="${idx}" data-field="nome"></td>
         <td><input type="text" list="datalist-categorias" placeholder="(vazio)" value="${escapeAttr(item.categoria)}" data-idx="${idx}" data-field="categoria" autocomplete="off"></td>
         <td><input type="text" list="datalist-bancos" placeholder="(vazio)" value="${escapeAttr(item.banco)}" data-idx="${idx}" data-field="banco" autocomplete="off"></td>
+        <td><input type="text" list="datalist-formas-pagamento" placeholder="(vazio)" value="${escapeAttr(item.forma_pagamento)}" data-idx="${idx}" data-field="forma_pagamento" autocomplete="off"></td>
         <td class="num"><input type="number" step="0.01" value="${item.valor}" data-idx="${idx}" data-field="valor" class="${sinalClasse}" style="text-align:right;"></td>
         <td><select data-idx="${idx}" data-field="recorrente">
           <option value="nao" ${item.recorrente ? '' : 'selected'}>Não</option>
@@ -1338,6 +1554,7 @@
       nome: item.nome,
       categoria: item.categoria || null,
       banco: item.banco || null,
+      forma_pagamento: item.forma_pagamento || null,
       valor: item.valor || 0,
       data: item.data || null,
       recorrente: !!item.recorrente,
@@ -1369,14 +1586,15 @@
       let dataVal = kData ? row[kData] : '';
       dataVal = normalizeDate(dataVal);
       let bancoVal = kBanco ? String(row[kBanco]).trim() : '';
-      if(bancoVal && !BANCOS.includes(bancoVal)){
-        const found = BANCOS.find(b => b.toLowerCase() === bancoVal.toLowerCase());
-        bancoVal = found || '';
+      if(bancoVal && !bancos.some(b => b.nome === bancoVal)){
+        const found = bancos.find(b => b.nome.toLowerCase() === bancoVal.toLowerCase());
+        bancoVal = found ? found.nome : '';
       }
       return {
         nome: kNome ? String(row[kNome]) : '',
         categoria: '',
         banco: bancoVal,
+        forma_pagamento: '',
         valor: kValor ? parseFloat(row[kValor]) || 0 : 0,
         data: dataVal,
         recorrente: false
@@ -1396,7 +1614,7 @@
       const data = dtRaw.length >= 8 ? `${dtRaw.slice(0,4)}-${dtRaw.slice(4,6)}-${dtRaw.slice(6,8)}` : '';
       const nome = get('NAME') || get('MEMO');
       const valor = parseFloat(get('TRNAMT')) || 0;
-      return {nome, categoria:'', banco:'', valor, data, recorrente:false};
+      return {nome, categoria:'', banco:'', forma_pagamento:'', valor, data, recorrente:false};
     }).filter(r => r.nome || r.valor);
   }
 
@@ -1430,7 +1648,7 @@
           dataIso = `${ano}-${dparts[1]}-${dparts[0]}`;
         }
         if(valorNum !== 0){
-          results.push({nome: nome || '(sem descrição)', categoria:'', banco:'', valor: valorNum, data: dataIso, recorrente:false});
+          results.push({nome: nome || '(sem descrição)', categoria:'', banco:'', forma_pagamento:'', valor: valorNum, data: dataIso, recorrente:false});
         }
       }
     });
@@ -1462,6 +1680,7 @@
         <td>${escapeAttr(item.nome)}</td>
         <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
+        <td><select data-id="${item.id}" data-field="forma_pagamento">${formaPagamentoOptionsHtml(item.forma_pagamento)}</select></td>
         <td class="num ${sinalClasse}">${money(item.valor)}</td>
         <td><select data-id="${item.id}" data-field="recorrente">
           <option value="nao" ${item.recorrente ? '' : 'selected'}>Não</option>
@@ -1508,7 +1727,10 @@
     return CORES[idx % CORES.length];
   }
   function corParaBanco(nome){
-    return BANCO_CORES[nome] || COR_SEM_CATEGORIA;
+    if(!nome) return COR_SEM_CATEGORIA;
+    const idx = bancos.findIndex(b => b.nome === nome);
+    if(idx === -1) return COR_SEM_CATEGORIA;
+    return CORES[idx % CORES.length];
   }
 
   function renderPieGeneric(pieEl, legendEl, emptyEl, cardEl, grupos, totalGeral){
@@ -1613,9 +1835,9 @@
         <div class="acc-body">
           <div class="table-scroll">
           <table>
-            <thead><tr><th>Nome</th><th>Banco</th><th class="num">Valor</th><th>Data</th></tr></thead>
+            <thead><tr><th>Nome</th><th>Banco</th><th>Forma de Pagamento</th><th class="num">Valor</th><th>Data</th></tr></thead>
             <tbody>
-              ${itens.map(i => `<tr><td>${escapeAttr(i.nome)}</td><td>${escapeAttr(i.banco) || '—'}</td><td class="num">${money(Math.abs(Number(i.valor)||0))}</td><td>${fmtDateBR(i.data)}</td></tr>`).join('')}
+              ${itens.map(i => `<tr><td>${escapeAttr(i.nome)}</td><td>${escapeAttr(i.banco) || '—'}</td><td>${escapeAttr(i.forma_pagamento) || '—'}</td><td class="num">${money(Math.abs(Number(i.valor)||0))}</td><td>${fmtDateBR(i.data)}</td></tr>`).join('')}
             </tbody>
           </table>
           </div>
@@ -1646,22 +1868,29 @@
 
   // ---------- init: carrega os dados do Supabase ----------
   async function loadAllData(){
-    const [catRes, lanRes] = await Promise.all([
+    const [catRes, bancoRes, formaPagRes, lanRes] = await Promise.all([
       db.from('categorias').select('*').order('nome'),
+      db.from('bancos').select('*').order('nome'),
+      db.from('formas_pagamento').select('*').order('nome'),
       db.from('lancamentos').select('*').order('data', {ascending:true})
     ]);
-    if(catRes.error || lanRes.error){
-      console.error(catRes.error || lanRes.error);
+    if(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error){
+      console.error(catRes.error || bancoRes.error || formaPagRes.error || lanRes.error);
       alertaErro('Não foi possível carregar seus dados. Verifique sua conexão e recarregue a página.');
     }
     categorias = catRes.data || [];
+    bancos = bancoRes.data || [];
+    formasPagamento = formaPagRes.data || [];
     lancamentos = lanRes.data || [];
     populateCategoriaSelect();
+    populateBancoDatalist();
+    populateFormaPagamentoDatalist();
     if(telaAtual === 'resumo'){ renderResumo(); renderChartCategoria(); renderChartBanco(); }
     if(telaAtual === 'categorias') renderCategorias();
+    if(telaAtual === 'cadBanco') renderBancos();
+    if(telaAtual === 'cadFormaPagamento') renderFormasPagamento();
     if(telaAtual === 'patrimonio') renderPatrimonio();
   }
-  populateBancoDatalist();
   initAuth();
 })();
 </script>
