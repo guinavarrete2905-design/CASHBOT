@@ -111,6 +111,16 @@
   .big-btn.patrimonio:hover{background:var(--gold-dark);}
   .btn-help{color:var(--muted); font-size:15px; margin:0 0 8px; padding:0 8px;}
 
+  .filtro-toggle-row{display:flex; gap:12px; flex-wrap:wrap;}
+  .filtro-toggle-btn{
+    padding:12px 26px; border-radius:999px; border:2px solid var(--green); background:var(--green); color:#fff;
+    font-family:'Nunito', sans-serif; font-weight:800; font-size:16px; cursor:pointer;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .filtro-toggle-btn:hover{background:#256F46;}
+  .filtro-toggle-btn.off{background:#fff; border-color:var(--border); color:var(--muted);}
+  .filtro-toggle-btn.off:hover{border-color:var(--muted);}
+
   /* Generic card / form */
   .card{
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
@@ -1266,12 +1276,13 @@
             <label for="filtro-patrimonio-mes">Filtrar por mês</label>
             <input type="month" id="filtro-patrimonio-mes">
           </div>
-          <div class="field-block" style="margin-bottom:0;">
-            <label>Bens</label>
-            <label style="display:flex; align-items:center; gap:10px; font-weight:600; font-size:16px; cursor:pointer; padding-top:10px;">
-              <input type="checkbox" id="filtro-patrimonio-excluir-bens" style="width:auto; padding:0;">
-              Não considerar bens no patrimônio
-            </label>
+        </div>
+        <div class="field-block" style="margin-bottom:0; margin-top:22px;">
+          <label>Considerar no patrimônio</label>
+          <div class="filtro-toggle-row">
+            <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-bens" onclick="toggleFiltroPatrimonio('bens')">Bens</button>
+            <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-receitas" onclick="toggleFiltroPatrimonio('receitas')">Receitas</button>
+            <button type="button" class="filtro-toggle-btn" id="filtro-patrimonio-btn-despesas" onclick="toggleFiltroPatrimonio('despesas')">Despesas</button>
           </div>
         </div>
         <div class="actions-row" style="margin-top:16px;">
@@ -1283,8 +1294,8 @@
         <div class="hero-label">Resultado</div>
         <div class="hero-amount" id="pat-resultado">R$ 0,00</div>
         <div class="hero-sub">
-          <span>+ Receitas: <strong id="pat-total-receitas">R$ 0,00</strong></span>
-          <span>− Despesas: <strong id="pat-total-despesas">R$ 0,00</strong></span>
+          <span id="hero-receitas-span">+ Receitas: <strong id="pat-total-receitas">R$ 0,00</strong></span>
+          <span id="hero-despesas-span">− Despesas: <strong id="pat-total-despesas">R$ 0,00</strong></span>
           <span id="hero-bens-span">+ Bens: <strong id="pat-total-bens">R$ 0,00</strong></span>
         </div>
       </div>
@@ -1295,13 +1306,13 @@
         <p class="empty-msg" id="acc-bens-empty" style="display:none;">Nenhum bem cadastrado ainda.</p>
       </div>
 
-      <div class="card wide">
+      <div class="card wide" id="acc-tipos-card">
         <div class="step-title">Receitas por categoria</div>
         <div id="acc-tipos"></div>
         <p class="empty-msg" id="acc-tipos-empty" style="display:none;">Nenhum lançamento de receita ainda.</p>
       </div>
 
-      <div class="card wide">
+      <div class="card wide" id="acc-categorias-card">
         <div class="step-title">Despesas por categoria</div>
         <div id="acc-categorias"></div>
         <p class="empty-msg" id="acc-categorias-empty" style="display:none;">Nenhuma despesa lançada ainda.</p>
@@ -2852,22 +2863,33 @@
     });
   }
 
-  let filtrosPatrimonio = { mes: '', excluirBens: false };
+  let filtrosPatrimonio = { mes: '', bens: true, receitas: true, despesas: true };
+
+  function atualizarBotoesFiltroPatrimonio(){
+    ['bens','receitas','despesas'].forEach(campo => {
+      const btn = document.getElementById('filtro-patrimonio-btn-' + campo);
+      if(btn) btn.classList.toggle('off', !filtrosPatrimonio[campo]);
+    });
+  }
+
+  window.toggleFiltroPatrimonio = function(campo){
+    filtrosPatrimonio[campo] = !filtrosPatrimonio[campo];
+    atualizarBotoesFiltroPatrimonio();
+    renderPatrimonio();
+  };
 
   window.limparFiltrosPatrimonio = function(){
-    filtrosPatrimonio = { mes: '', excluirBens: false };
+    filtrosPatrimonio = { mes: '', bens: true, receitas: true, despesas: true };
     const mesEl = document.getElementById('filtro-patrimonio-mes');
-    const excluirEl = document.getElementById('filtro-patrimonio-excluir-bens');
     if(mesEl) mesEl.value = '';
-    if(excluirEl) excluirEl.checked = false;
+    atualizarBotoesFiltroPatrimonio();
     renderPatrimonio();
   };
 
   function wireFiltrosPatrimonio(){
     const mesEl = document.getElementById('filtro-patrimonio-mes');
-    const excluirEl = document.getElementById('filtro-patrimonio-excluir-bens');
     if(mesEl) mesEl.addEventListener('change', (e) => { filtrosPatrimonio.mes = e.target.value; renderPatrimonio(); });
-    if(excluirEl) excluirEl.addEventListener('change', (e) => { filtrosPatrimonio.excluirBens = e.target.checked; renderPatrimonio(); });
+    atualizarBotoesFiltroPatrimonio();
   }
   wireFiltrosPatrimonio();
 
@@ -2878,9 +2900,9 @@
 
     const receitas = lancamentosPeriodo.filter(i => (Number(i.valor)||0) > 0);
     const despesas = lancamentosPeriodo.filter(i => (Number(i.valor)||0) < 0);
-    const totalReceitas = receitas.reduce((s,i) => s + (Number(i.valor)||0), 0);
-    const totalDespesas = despesas.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0);
-    const totalBens = filtrosPatrimonio.excluirBens ? 0 : bensPeriodo.reduce((s,i) => s + (Number(i.valor)||0), 0);
+    const totalReceitas = filtrosPatrimonio.receitas ? receitas.reduce((s,i) => s + (Number(i.valor)||0), 0) : 0;
+    const totalDespesas = filtrosPatrimonio.despesas ? despesas.reduce((s,i) => s + Math.abs(Number(i.valor)||0), 0) : 0;
+    const totalBens = filtrosPatrimonio.bens ? bensPeriodo.reduce((s,i) => s + (Number(i.valor)||0), 0) : 0;
     const resultado = totalReceitas - totalDespesas + totalBens;
 
     document.getElementById('pat-total-receitas').textContent = money(totalReceitas);
@@ -2892,14 +2914,22 @@
     heroEl.classList.toggle('deficit', resultado < 0);
     document.querySelector('#hero-result .hero-label').textContent = resultado >= 0 ? 'Superávit' : 'Déficit';
 
+    const heroReceitasSpan = document.getElementById('hero-receitas-span');
+    const heroDespesasSpan = document.getElementById('hero-despesas-span');
     const heroBensSpan = document.getElementById('hero-bens-span');
+    const accTiposCard = document.getElementById('acc-tipos-card');
+    const accCategoriasCard = document.getElementById('acc-categorias-card');
     const accBensCard = document.getElementById('acc-bens-card');
-    if(heroBensSpan) heroBensSpan.style.display = filtrosPatrimonio.excluirBens ? 'none' : '';
-    if(accBensCard) accBensCard.style.display = filtrosPatrimonio.excluirBens ? 'none' : '';
+    if(heroReceitasSpan) heroReceitasSpan.style.display = filtrosPatrimonio.receitas ? '' : 'none';
+    if(heroDespesasSpan) heroDespesasSpan.style.display = filtrosPatrimonio.despesas ? '' : 'none';
+    if(heroBensSpan) heroBensSpan.style.display = filtrosPatrimonio.bens ? '' : 'none';
+    if(accTiposCard) accTiposCard.style.display = filtrosPatrimonio.receitas ? '' : 'none';
+    if(accCategoriasCard) accCategoriasCard.style.display = filtrosPatrimonio.despesas ? '' : 'none';
+    if(accBensCard) accBensCard.style.display = filtrosPatrimonio.bens ? '' : 'none';
 
-    renderAccordionPorCategoria('acc-tipos', 'acc-tipos-empty', receitas);
-    renderAccordionPorCategoria('acc-categorias', 'acc-categorias-empty', despesas);
-    if(!filtrosPatrimonio.excluirBens) renderAccordionBens('acc-bens', 'acc-bens-empty', bensPeriodo);
+    if(filtrosPatrimonio.receitas) renderAccordionPorCategoria('acc-tipos', 'acc-tipos-empty', receitas);
+    if(filtrosPatrimonio.despesas) renderAccordionPorCategoria('acc-categorias', 'acc-categorias-empty', despesas);
+    if(filtrosPatrimonio.bens) renderAccordionBens('acc-bens', 'acc-bens-empty', bensPeriodo);
   }
 
   // ---------- init: carrega os dados do Supabase ----------
