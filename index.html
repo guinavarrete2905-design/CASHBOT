@@ -534,10 +534,22 @@
       <button class="voltar-home" type="button" onclick="resetWizard()">Excluir lançamento e recomeçar</button>
       <div class="step-title">Novo lançamento</div>
       <form id="form-manual">
-        <div class="field-block" id="fb-nome">
-          <label for="in-nome">Nome da Despesa</label>
+        <div class="field-block" id="fb-tipo">
+          <label for="in-tipo">É despesa ou receita?</label>
+          <select id="in-tipo">
+            <option value="despesa">Despesa</option>
+            <option value="receita">Receita</option>
+          </select>
+          <div class="step-actions"><button type="button" class="btn-avancar" id="btn-tipo">AVANÇAR</button></div>
+        </div>
+
+        <div class="field-block" id="fb-nome" style="display:none;">
+          <label for="in-nome" id="label-nome">Nome da Despesa</label>
           <input type="text" id="in-nome" placeholder="Ex: Supermercado" autocomplete="off">
-          <div class="step-actions"><button type="button" class="btn-avancar" id="btn-nome">AVANÇAR</button></div>
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-nome">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepManual('nome')">‹ Voltar</button>
+          </div>
         </div>
 
         <div class="field-block" id="fb-categoria" style="display:none;">
@@ -564,18 +576,6 @@
           <div class="step-actions">
             <button type="button" class="btn-avancar" id="btn-formaPagamento">AVANÇAR</button>
             <button type="button" class="btn-voltar-step" onclick="voltarStepManual('formaPagamento')">‹ Voltar</button>
-          </div>
-        </div>
-
-        <div class="field-block" id="fb-tipo" style="display:none;">
-          <label for="in-tipo">É despesa ou receita?</label>
-          <select id="in-tipo">
-            <option value="despesa">Despesa</option>
-            <option value="receita">Receita</option>
-          </select>
-          <div class="step-actions">
-            <button type="button" class="btn-avancar" id="btn-tipo">AVANÇAR</button>
-            <button type="button" class="btn-voltar-step" onclick="voltarStepManual('tipo')">‹ Voltar</button>
           </div>
         </div>
 
@@ -1418,25 +1418,48 @@
   }
 
   // ---------- LANÇAMENTO MANUAL (wizard progressivo) ----------
-  const PASSOS_MANUAL = ['nome','categoria','banco','formaPagamento','tipo','valor','data','recorrente'];
+  const TODOS_CAMPOS_MANUAL = ['tipo','nome','categoria','banco','formaPagamento','valor','data','recorrente'];
+  const PASSOS_DESPESA = ['tipo','nome','categoria','banco','formaPagamento','valor','data','recorrente'];
+  const PASSOS_RECEITA = ['tipo','nome','banco','categoria','valor','data','recorrente'];
+  let manualTipoAtual = 'despesa';
+
+  function passosAtuais(){
+    return manualTipoAtual === 'receita' ? PASSOS_RECEITA : PASSOS_DESPESA;
+  }
+
+  function atualizarLabelNome(){
+    const label = document.getElementById('label-nome');
+    const input = document.getElementById('in-nome');
+    if(manualTipoAtual === 'receita'){
+      label.textContent = 'Nome da Receita';
+      input.placeholder = 'Ex: Salário';
+    } else {
+      label.textContent = 'Nome da Despesa';
+      input.placeholder = 'Ex: Supermercado';
+    }
+  }
 
   function resetWizard(){
     populateCategoriaSelect();
-    PASSOS_MANUAL.forEach(f => {
+    TODOS_CAMPOS_MANUAL.forEach(f => {
       document.getElementById('fb-' + f).style.display = 'none';
       document.getElementById('fb-' + f).classList.remove('done');
       const input = document.getElementById('in-' + f);
       if(input.tagName !== 'SELECT'){ input.value = ''; }
       input.disabled = false;
     });
-    document.getElementById('fb-nome').style.display = 'block';
-    setTimeout(() => document.getElementById('in-nome').focus(), 50);
+    manualTipoAtual = 'despesa';
+    document.getElementById('in-tipo').value = 'despesa';
+    atualizarLabelNome();
+    document.getElementById('fb-tipo').style.display = 'block';
+    setTimeout(() => document.getElementById('in-tipo').focus(), 50);
   }
 
   window.voltarStepManual = function(currentField){
-    const idx = PASSOS_MANUAL.indexOf(currentField);
+    const passos = passosAtuais();
+    const idx = passos.indexOf(currentField);
     if(idx <= 0) return;
-    const prevField = PASSOS_MANUAL[idx - 1];
+    const prevField = passos[idx - 1];
     document.getElementById('fb-' + currentField).style.display = 'none';
     const prevBlock = document.getElementById('fb-' + prevField);
     prevBlock.classList.remove('done');
@@ -1445,12 +1468,16 @@
     setTimeout(() => prevInput.focus(), 50);
   };
 
-  function advanceStep(currentField, nextField, isLast){
+  function advanceStep(currentField, isLast){
     const input = document.getElementById('in-' + currentField);
     const isOpcional = (currentField === 'categoria' || currentField === 'banco' || currentField === 'formaPagamento' || currentField === 'recorrente');
     if(!isOpcional && (!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0))){
       input.focus();
       return;
+    }
+    if(currentField === 'tipo'){
+      manualTipoAtual = input.value;
+      atualizarLabelNome();
     }
     document.getElementById('fb-' + currentField).classList.add('done');
     input.disabled = true;
@@ -1468,19 +1495,21 @@
         }
       });
     } else {
+      const passos = passosAtuais();
+      const nextField = passos[passos.indexOf(currentField) + 1];
       document.getElementById('fb-' + nextField).style.display = 'block';
       setTimeout(() => document.getElementById('in-' + nextField).focus(), 50);
     }
   }
 
-  document.getElementById('btn-nome').addEventListener('click', () => advanceStep('nome','categoria', false));
-  document.getElementById('btn-categoria').addEventListener('click', () => advanceStep('categoria','banco', false));
-  document.getElementById('btn-banco').addEventListener('click', () => advanceStep('banco','formaPagamento', false));
-  document.getElementById('btn-formaPagamento').addEventListener('click', () => advanceStep('formaPagamento','tipo', false));
-  document.getElementById('btn-tipo').addEventListener('click', () => advanceStep('tipo','valor', false));
-  document.getElementById('btn-valor').addEventListener('click', () => advanceStep('valor','data', false));
-  document.getElementById('btn-data').addEventListener('click', () => advanceStep('data','recorrente', false));
-  document.getElementById('btn-recorrente').addEventListener('click', () => advanceStep('recorrente', null, true));
+  document.getElementById('btn-tipo').addEventListener('click', () => advanceStep('tipo', false));
+  document.getElementById('btn-nome').addEventListener('click', () => advanceStep('nome', false));
+  document.getElementById('btn-categoria').addEventListener('click', () => advanceStep('categoria', false));
+  document.getElementById('btn-banco').addEventListener('click', () => advanceStep('banco', false));
+  document.getElementById('btn-formaPagamento').addEventListener('click', () => advanceStep('formaPagamento', false));
+  document.getElementById('btn-valor').addEventListener('click', () => advanceStep('valor', false));
+  document.getElementById('btn-data').addEventListener('click', () => advanceStep('data', false));
+  document.getElementById('btn-recorrente').addEventListener('click', () => advanceStep('recorrente', true));
 
   document.getElementById('form-manual').addEventListener('submit', (e) => e.preventDefault());
   ['in-nome','in-categoria','in-banco','in-formaPagamento','in-valor','in-data'].forEach(id => {
@@ -1500,7 +1529,7 @@
       nome: document.getElementById('in-nome').value.trim(),
       categoria: document.getElementById('in-categoria').value.trim() || null,
       banco: document.getElementById('in-banco').value.trim() || null,
-      forma_pagamento: document.getElementById('in-formaPagamento').value.trim() || null,
+      forma_pagamento: tipoManual === 'receita' ? null : (document.getElementById('in-formaPagamento').value.trim() || null),
       valor: tipoManual === 'receita' ? magnitude : -magnitude,
       data: document.getElementById('in-data').value || null,
       recorrente: document.getElementById('in-recorrente').value === 'sim',
