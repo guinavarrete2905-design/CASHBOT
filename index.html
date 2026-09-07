@@ -174,7 +174,7 @@
 
   .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px;}
   table{width:100%; min-width:480px; border-collapse:collapse; margin-bottom:18px;}
-  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:150px;} #preview-tbody td:nth-child(7), #resumo-tbody td:nth-child(7){min-width:120px;} #preview-tbody td:nth-child(8), #resumo-tbody td:nth-child(8){min-width:60px;}
+  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:130px;} #preview-tbody td:nth-child(7), #resumo-tbody td:nth-child(7){min-width:150px;} #preview-tbody td:nth-child(8), #resumo-tbody td:nth-child(8){min-width:120px;} #preview-tbody td:nth-child(9), #resumo-tbody td:nth-child(9){min-width:60px;}
   thead th{
     text-align:left; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;
     color:var(--muted); font-weight:700; padding:8px; border-bottom:2px solid var(--black);
@@ -195,6 +195,13 @@
 
   .actions-row{display:flex; gap:12px; flex-wrap:wrap; margin-top:6px;}
   .actions-row .big-btn{width:auto; flex:1; min-width:200px; padding:16px 20px; font-size:17px;}
+
+  .filtros-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:16px;}
+  .filtros-grid input, .filtros-grid select{
+    width:100%; font-family:'Nunito', sans-serif; font-size:15px; padding:10px 12px;
+    border:1px solid var(--border); border-radius:8px; background:#fff;
+  }
+  .filtros-grid label{display:block; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px;}
 
   .resumo-wrap{max-width:1400px; width:100%;}
   .resumo-wrap h1{font-size:26px; font-weight:800; margin-bottom:24px;}
@@ -560,6 +567,18 @@
           </div>
         </div>
 
+        <div class="field-block" id="fb-tipo" style="display:none;">
+          <label for="in-tipo">É despesa ou receita?</label>
+          <select id="in-tipo">
+            <option value="despesa">Despesa</option>
+            <option value="receita">Receita</option>
+          </select>
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-tipo">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepManual('tipo')">‹ Voltar</button>
+          </div>
+        </div>
+
         <div class="field-block" id="fb-valor" style="display:none;">
           <label for="in-valor">Valor</label>
           <input type="number" id="in-valor" placeholder="0,00" step="0.01" min="0" inputmode="decimal">
@@ -634,7 +653,7 @@
       <div id="preview-wrap" style="display:none;">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="preview-tbody"></tbody>
         </table>
         </div>
@@ -817,12 +836,53 @@
         <p class="empty-msg" id="chart-banco-empty" style="display:none;">Sem lançamentos para exibir no gráfico ainda.</p>
       </div>
 
+      <div class="card wide" id="resumo-filtros-card">
+        <div class="step-title" style="margin-bottom:14px;">Filtros</div>
+        <div class="filtros-grid">
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-nome">Nome</label>
+            <input type="text" id="filtro-nome" placeholder="Buscar por nome" autocomplete="off">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-categoria">Categoria</label>
+            <select id="filtro-categoria"><option value="">Todas</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-banco">Banco</label>
+            <select id="filtro-banco"><option value="">Todos</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-forma-pagamento">Forma de Pagamento</label>
+            <select id="filtro-forma-pagamento"><option value="">Todas</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-de">Data de</label>
+            <input type="date" id="filtro-data-de">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-ate">Data até</label>
+            <input type="date" id="filtro-data-ate">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-recorrente">Despesa recorrente</label>
+            <select id="filtro-recorrente">
+              <option value="">Todos</option>
+              <option value="sim">Sim</option>
+              <option value="nao">Não</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px;">
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosResumo()">Limpar filtros</button>
+        </div>
+      </div>
+
       <div class="card wide">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="resumo-tbody"></tbody>
-          <tfoot><tr><td colspan="5">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td><td></td></tr></tfoot>
+          <tfoot><tr><td colspan="6">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td><td></td></tr></tfoot>
         </table>
         </div>
         <p class="empty-msg" id="resumo-empty" style="display:none;">Nenhum lançamento ainda.</p>
@@ -982,7 +1042,7 @@
     document.body.classList.add('logged-in');
     document.getElementById('user-chip-nome').textContent = 'Olá, ' + (pessoa ? pessoa.nome.split(' ')[0] : '') + '!';
     document.getElementById('sidebar-user-nome').textContent = pessoa ? pessoa.nome : '';
-    document.getElementById('home-saudacao').textContent = 'Bem-vindo(a) de volta' + (pessoa ? ', ' + pessoa.nome.split(' ')[0] : '') + '!';
+    document.getElementById('home-saudacao').textContent = 'Olá' + (pessoa ? ', ' + pessoa.nome.split(' ')[0] : '') + '!';
   }
 
   function setLoggedOut(){
@@ -1358,7 +1418,7 @@
   }
 
   // ---------- LANÇAMENTO MANUAL (wizard progressivo) ----------
-  const PASSOS_MANUAL = ['nome','categoria','banco','formaPagamento','valor','data','recorrente'];
+  const PASSOS_MANUAL = ['nome','categoria','banco','formaPagamento','tipo','valor','data','recorrente'];
 
   function resetWizard(){
     populateCategoriaSelect();
@@ -1416,7 +1476,8 @@
   document.getElementById('btn-nome').addEventListener('click', () => advanceStep('nome','categoria', false));
   document.getElementById('btn-categoria').addEventListener('click', () => advanceStep('categoria','banco', false));
   document.getElementById('btn-banco').addEventListener('click', () => advanceStep('banco','formaPagamento', false));
-  document.getElementById('btn-formaPagamento').addEventListener('click', () => advanceStep('formaPagamento','valor', false));
+  document.getElementById('btn-formaPagamento').addEventListener('click', () => advanceStep('formaPagamento','tipo', false));
+  document.getElementById('btn-tipo').addEventListener('click', () => advanceStep('tipo','valor', false));
   document.getElementById('btn-valor').addEventListener('click', () => advanceStep('valor','data', false));
   document.getElementById('btn-data').addEventListener('click', () => advanceStep('data','recorrente', false));
   document.getElementById('btn-recorrente').addEventListener('click', () => advanceStep('recorrente', null, true));
@@ -1433,12 +1494,14 @@
   });
 
   async function salvarLancamento(){
+    const tipoManual = document.getElementById('in-tipo').value;
+    const magnitude = Math.abs(parseFloat(document.getElementById('in-valor').value) || 0);
     const payload = {
       nome: document.getElementById('in-nome').value.trim(),
       categoria: document.getElementById('in-categoria').value.trim() || null,
       banco: document.getElementById('in-banco').value.trim() || null,
       forma_pagamento: document.getElementById('in-formaPagamento').value.trim() || null,
-      valor: parseFloat(document.getElementById('in-valor').value) || 0,
+      valor: tipoManual === 'receita' ? magnitude : -magnitude,
       data: document.getElementById('in-data').value || null,
       recorrente: document.getElementById('in-recorrente').value === 'sim',
       user_id: currentUser.id
@@ -1530,6 +1593,10 @@
         <td><input type="text" list="datalist-categorias" placeholder="(vazio)" value="${escapeAttr(item.categoria)}" data-idx="${idx}" data-field="categoria" autocomplete="off"></td>
         <td><input type="text" list="datalist-bancos" placeholder="(vazio)" value="${escapeAttr(item.banco)}" data-idx="${idx}" data-field="banco" autocomplete="off"></td>
         <td><input type="text" list="datalist-formas-pagamento" placeholder="(vazio)" value="${escapeAttr(item.forma_pagamento)}" data-idx="${idx}" data-field="forma_pagamento" autocomplete="off"></td>
+        <td><select data-idx="${idx}" data-field="tipo">
+          <option value="despesa" ${(Number(item.valor) || 0) < 0 ? 'selected' : ''}>Despesa</option>
+          <option value="receita" ${(Number(item.valor) || 0) < 0 ? '' : 'selected'}>Receita</option>
+        </select></td>
         <td class="num"><input type="number" step="0.01" value="${item.valor}" data-idx="${idx}" data-field="valor" class="${sinalClasse}" style="text-align:right;"></td>
         <td><select data-idx="${idx}" data-field="recorrente">
           <option value="nao" ${item.recorrente ? '' : 'selected'}>Não</option>
@@ -1544,7 +1611,19 @@
         if(field === 'valor'){
           pendingImport[idx][field] = parseFloat(inp.value) || 0;
           inp.classList.remove('valor-neg','valor-pos');
-          inp.classList.add((Number(inp.value) || 0) < 0 ? 'valor-neg' : 'valor-pos');
+          const isNeg = (Number(inp.value) || 0) < 0;
+          inp.classList.add(isNeg ? 'valor-neg' : 'valor-pos');
+          const tipoSelect = tbody.querySelector('select[data-idx="' + idx + '"][data-field="tipo"]');
+          if(tipoSelect) tipoSelect.value = isNeg ? 'despesa' : 'receita';
+        } else if(field === 'tipo'){
+          const magnitude = Math.abs(Number(pendingImport[idx].valor) || 0);
+          pendingImport[idx].valor = inp.value === 'receita' ? magnitude : -magnitude;
+          const valorInput = tbody.querySelector('input[data-idx="' + idx + '"][data-field="valor"]');
+          if(valorInput){
+            valorInput.value = pendingImport[idx].valor;
+            valorInput.classList.remove('valor-neg','valor-pos');
+            valorInput.classList.add(pendingImport[idx].valor < 0 ? 'valor-neg' : 'valor-pos');
+          }
         } else if(field === 'recorrente'){
           pendingImport[idx][field] = inp.value === 'sim';
         } else {
@@ -1717,21 +1796,84 @@
     return '';
   }
   // ---------- RESUMO ----------
+  let resumoFiltros = { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
+
+  function popularFiltrosResumo(){
+    const selCategoria = document.getElementById('filtro-categoria');
+    const selBanco = document.getElementById('filtro-banco');
+    const selForma = document.getElementById('filtro-forma-pagamento');
+    if(selCategoria){
+      selCategoria.innerHTML = '<option value="">Todas</option>' + categorias.map(c =>
+        `<option value="${escapeAttr(c.nome)}" ${c.nome === resumoFiltros.categoria ? 'selected' : ''}>${escapeAttr(c.nome)}</option>`).join('');
+    }
+    if(selBanco){
+      selBanco.innerHTML = '<option value="">Todos</option>' + bancos.map(b =>
+        `<option value="${escapeAttr(b.nome)}" ${b.nome === resumoFiltros.banco ? 'selected' : ''}>${escapeAttr(b.nome)}</option>`).join('');
+    }
+    if(selForma){
+      selForma.innerHTML = '<option value="">Todas</option>' + formasPagamento.map(f =>
+        `<option value="${escapeAttr(f.nome)}" ${f.nome === resumoFiltros.formaPagamento ? 'selected' : ''}>${escapeAttr(f.nome)}</option>`).join('');
+    }
+  }
+
+  function lancamentosFiltrados(){
+    const nomeBusca = resumoFiltros.nome.trim().toLowerCase();
+    return lancamentos.filter(item => {
+      if(nomeBusca && !String(item.nome || '').toLowerCase().includes(nomeBusca)) return false;
+      if(resumoFiltros.categoria && item.categoria !== resumoFiltros.categoria) return false;
+      if(resumoFiltros.banco && item.banco !== resumoFiltros.banco) return false;
+      if(resumoFiltros.formaPagamento && item.forma_pagamento !== resumoFiltros.formaPagamento) return false;
+      if(resumoFiltros.dataDe && (item.data || '') < resumoFiltros.dataDe) return false;
+      if(resumoFiltros.dataAte && (item.data || '') > resumoFiltros.dataAte) return false;
+      if(resumoFiltros.recorrente === 'sim' && !item.recorrente) return false;
+      if(resumoFiltros.recorrente === 'nao' && item.recorrente) return false;
+      return true;
+    });
+  }
+
+  window.limparFiltrosResumo = function(){
+    resumoFiltros = { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
+    const elNome = document.getElementById('filtro-nome');
+    const elDataDe = document.getElementById('filtro-data-de');
+    const elDataAte = document.getElementById('filtro-data-ate');
+    const elRecorrente = document.getElementById('filtro-recorrente');
+    if(elNome) elNome.value = '';
+    if(elDataDe) elDataDe.value = '';
+    if(elDataAte) elDataAte.value = '';
+    if(elRecorrente) elRecorrente.value = '';
+    renderResumo();
+  };
+
+  document.getElementById('filtro-nome').addEventListener('input', (e) => { resumoFiltros.nome = e.target.value; renderResumo(); });
+  document.getElementById('filtro-categoria').addEventListener('change', (e) => { resumoFiltros.categoria = e.target.value; renderResumo(); });
+  document.getElementById('filtro-banco').addEventListener('change', (e) => { resumoFiltros.banco = e.target.value; renderResumo(); });
+  document.getElementById('filtro-forma-pagamento').addEventListener('change', (e) => { resumoFiltros.formaPagamento = e.target.value; renderResumo(); });
+  document.getElementById('filtro-data-de').addEventListener('change', (e) => { resumoFiltros.dataDe = e.target.value; renderResumo(); });
+  document.getElementById('filtro-data-ate').addEventListener('change', (e) => { resumoFiltros.dataAte = e.target.value; renderResumo(); });
+  document.getElementById('filtro-recorrente').addEventListener('change', (e) => { resumoFiltros.recorrente = e.target.value; renderResumo(); });
+
   function renderResumo(){
+    popularFiltrosResumo();
     const tbody = document.getElementById('resumo-tbody');
     tbody.innerHTML = '';
-    document.getElementById('resumo-empty').style.display = lancamentos.length ? 'none' : 'block';
+    const itens = lancamentosFiltrados();
+    document.getElementById('resumo-empty').style.display = itens.length ? 'none' : 'block';
     let total = 0;
-    [...lancamentos].sort((a,b) => (a.data||'').localeCompare(b.data||'')).forEach(item => {
+    [...itens].sort((a,b) => (a.data||'').localeCompare(b.data||'')).forEach(item => {
       total += Number(item.valor) || 0;
       const tr = document.createElement('tr');
-      const sinalClasse = (Number(item.valor) || 0) < 0 ? 'valor-neg' : 'valor-pos';
+      const isDespesa = (Number(item.valor) || 0) < 0;
+      const sinalClasse = isDespesa ? 'valor-neg' : 'valor-pos';
       tr.innerHTML = `
         <td>${fmtDateBR(item.data)}</td>
         <td>${escapeAttr(item.nome)}</td>
         <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
         <td><select data-id="${item.id}" data-field="forma_pagamento">${formaPagamentoOptionsHtml(item.forma_pagamento)}</select></td>
+        <td><select data-id="${item.id}" data-field="tipo">
+          <option value="despesa" ${isDespesa ? 'selected' : ''}>Despesa</option>
+          <option value="receita" ${isDespesa ? '' : 'selected'}>Receita</option>
+        </select></td>
         <td class="num ${sinalClasse}">${money(item.valor)}</td>
         <td><select data-id="${item.id}" data-field="recorrente">
           <option value="nao" ${item.recorrente ? '' : 'selected'}>Não</option>
@@ -1746,6 +1888,22 @@
         const item = lancamentos.find(i => i.id === sel.dataset.id);
         if(!item) return;
         const field = sel.dataset.field;
+        if(field === 'tipo'){
+          const valorAnterior = item.valor;
+          const magnitude = Math.abs(Number(item.valor) || 0);
+          const novoValor = sel.value === 'receita' ? magnitude : -magnitude;
+          item.valor = novoValor;
+          const { error } = await db.from('lancamentos').update({valor: novoValor}).eq('id', item.id);
+          if(error){
+            item.valor = valorAnterior;
+            alertaErro('Não foi possível atualizar o lançamento. Tente novamente.');
+            renderResumo();
+            return;
+          }
+          renderResumo();
+          renderChartCategoria(); renderChartBanco();
+          return;
+        }
         const valorAnterior = item[field];
         const novoValor = field === 'recorrente' ? (sel.value === 'sim') : sel.value;
         item[field] = novoValor;
