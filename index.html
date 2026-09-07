@@ -174,7 +174,7 @@
 
   .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px;}
   table{width:100%; min-width:480px; border-collapse:collapse; margin-bottom:18px;}
-  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #resumo-tbody td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #resumo-tbody td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #resumo-tbody td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #resumo-tbody td:nth-child(6){min-width:130px;} #preview-tbody td:nth-child(7), #resumo-tbody td:nth-child(7){min-width:150px;} #preview-tbody td:nth-child(8), #resumo-tbody td:nth-child(8){min-width:120px;} #preview-tbody td:nth-child(9), #resumo-tbody td:nth-child(9){min-width:60px;}
+  .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #tbody-despesas td:nth-child(1), #tbody-receitas td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #tbody-despesas td:nth-child(2), #tbody-receitas td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #tbody-despesas td:nth-child(3), #tbody-receitas td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #tbody-despesas td:nth-child(4), #tbody-receitas td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #tbody-despesas td:nth-child(5), #tbody-receitas td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #tbody-despesas td:nth-child(6), #tbody-receitas td:nth-child(6){min-width:130px;} #preview-tbody td:nth-child(7), #tbody-despesas td:nth-child(7), #tbody-receitas td:nth-child(7){min-width:150px;} #preview-tbody td:nth-child(8), #tbody-despesas td:nth-child(8), #tbody-receitas td:nth-child(8){min-width:120px;} #preview-tbody td:nth-child(9), #tbody-despesas td:nth-child(9), #tbody-receitas td:nth-child(9){min-width:60px;}
   thead th{
     text-align:left; font-size:13px; text-transform:uppercase; letter-spacing:0.3px;
     color:var(--muted); font-weight:700; padding:8px; border-bottom:2px solid var(--black);
@@ -299,7 +299,7 @@
     .acc-total{font-size:14px;}
 
     table{min-width:420px;}
-    .acc-body table{min-width:320px;} #preview-tbody td:nth-child(1), #resumo-tbody td:nth-child(1){min-width:220px;} #preview-tbody td:nth-child(2), #resumo-tbody td:nth-child(2){min-width:150px;}
+    .acc-body table{min-width:320px;} #preview-tbody td:nth-child(1), #tbody-despesas td:nth-child(1), #tbody-receitas td:nth-child(1){min-width:220px;} #preview-tbody td:nth-child(2), #tbody-despesas td:nth-child(2), #tbody-receitas td:nth-child(2){min-width:150px;}
   }
 
   /* ---------- Sidebar (desktop) ---------- */
@@ -412,7 +412,8 @@
     <button data-tela="manual" onclick="goTo('manual')">Lançamento manual</button>
     <button data-tela="massa" onclick="goTo('massa')">Lançamento em massa</button>
     <button data-tela="cadastros" onclick="goTo('cadastros')">Cadastros</button>
-    <button data-tela="resumo" onclick="goTo('resumo')">Resumo</button>
+    <button data-tela="despesas" onclick="goTo('despesas')">Despesas</button>
+    <button data-tela="receitas" onclick="goTo('receitas')">Receitas</button>
     <button data-tela="patrimonio" onclick="goTo('patrimonio')">Patrimônio</button>
   </nav>
   <div id="sidebar-footer">
@@ -443,7 +444,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -522,7 +524,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -626,7 +629,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -678,7 +682,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -708,7 +713,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -741,7 +747,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -774,7 +781,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -795,19 +803,20 @@
 </div>
 
 <!-- ===================== RESUMO ===================== -->
-<div class="screen" id="screen-resumo">
+<div class="screen" id="screen-despesas">
   <div class="topbar">
     <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
     <div class="topbar-right">
       <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
       <div class="menu-wrap">
-      <button class="hamburger-btn" id="menu-toggle-resumo" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
-      <div class="menu-dropdown" id="menu-dropdown-resumo">
+      <button class="hamburger-btn" id="menu-toggle-despesas" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-despesas">
         <button onclick="goTo('home')">Início</button>
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -816,64 +825,38 @@
   </div>
   <div class="content">
     <div class="resumo-wrap">
-      <h1>Resumo dos lançamentos</h1>
+      <h1>Despesas</h1>
 
       <div class="card wide">
-        <div class="step-title" style="margin-bottom:14px;">Por categoria</div>
-        <div class="chart-card">
-          <div class="pie" id="pie-chart"></div>
-          <div class="legend" id="pie-legend"></div>
-        </div>
-        <p class="empty-msg" id="chart-empty" style="display:none;">Sem lançamentos para exibir no gráfico ainda.</p>
-      </div>
-
-      <div class="card wide">
-        <div class="step-title" style="margin-bottom:14px;">Por banco</div>
-        <div class="chart-card">
-          <div class="pie" id="pie-chart-banco"></div>
-          <div class="legend" id="pie-legend-banco"></div>
-        </div>
-        <p class="empty-msg" id="chart-banco-empty" style="display:none;">Sem lançamentos para exibir no gráfico ainda.</p>
-      </div>
-
-      <div class="card wide" id="resumo-filtros-card">
         <div class="step-title" style="margin-bottom:14px;">Filtros</div>
         <div class="filtros-grid">
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-nome">Nome</label>
-            <input type="text" id="filtro-nome" placeholder="Buscar por nome" autocomplete="off">
+            <label for="filtro-nome-despesas">Nome</label>
+            <input type="text" id="filtro-nome-despesas" placeholder="Buscar por nome" autocomplete="off">
           </div>
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-tipo">Tipo</label>
-            <select id="filtro-tipo">
-              <option value="">Todos</option>
-              <option value="despesa">Despesa</option>
-              <option value="receita">Receita</option>
-            </select>
+            <label for="filtro-categoria-despesas">Categoria</label>
+            <select id="filtro-categoria-despesas"><option value="">Todas</option></select>
           </div>
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-categoria">Categoria</label>
-            <select id="filtro-categoria"><option value="">Todas</option></select>
+            <label for="filtro-banco-despesas">Banco</label>
+            <select id="filtro-banco-despesas"><option value="">Todos</option></select>
           </div>
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-banco">Banco</label>
-            <select id="filtro-banco"><option value="">Todos</option></select>
+            <label for="filtro-forma-pagamento-despesas">Forma de Pagamento</label>
+            <select id="filtro-forma-pagamento-despesas"><option value="">Todas</option></select>
           </div>
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-forma-pagamento">Forma de Pagamento</label>
-            <select id="filtro-forma-pagamento"><option value="">Todas</option></select>
+            <label for="filtro-data-de-despesas">Data de</label>
+            <input type="date" id="filtro-data-de-despesas">
           </div>
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-data-de">Data de</label>
-            <input type="date" id="filtro-data-de">
+            <label for="filtro-data-ate-despesas">Data até</label>
+            <input type="date" id="filtro-data-ate-despesas">
           </div>
           <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-data-ate">Data até</label>
-            <input type="date" id="filtro-data-ate">
-          </div>
-          <div class="field-block" style="margin-bottom:0;">
-            <label for="filtro-recorrente">Despesa recorrente</label>
-            <select id="filtro-recorrente">
+            <label for="filtro-recorrente-despesas">Despesa recorrente</label>
+            <select id="filtro-recorrente-despesas">
               <option value="">Todos</option>
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
@@ -881,7 +864,7 @@
           </div>
         </div>
         <div class="actions-row" style="margin-top:16px;">
-          <button class="big-btn secondary" type="button" onclick="limparFiltrosResumo()">Limpar filtros</button>
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosLista('despesa')">Limpar filtros</button>
         </div>
       </div>
 
@@ -889,11 +872,95 @@
         <div class="table-scroll">
         <table>
           <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
-          <tbody id="resumo-tbody"></tbody>
-          <tfoot><tr><td colspan="6">Total</td><td class="num" id="resumo-total">R$ 0,00</td><td></td><td></td></tr></tfoot>
+          <tbody id="tbody-despesas"></tbody>
+          <tfoot><tr><td colspan="6">Total</td><td class="num" id="total-despesas">R$ 0,00</td><td></td><td></td></tr></tfoot>
         </table>
         </div>
-        <p class="empty-msg" id="resumo-empty" style="display:none;">Nenhum lançamento ainda.</p>
+        <p class="empty-msg" id="empty-despesas" style="display:none;">Nenhuma despesa ainda.</p>
+        <div class="actions-row">
+          <button class="big-btn" onclick="goTo('manual')">Novo lançamento manual</button>
+          <button class="big-btn secondary" onclick="goTo('massa')">Novo lançamento em massa</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== RECEITAS ===================== -->
+<div class="screen" id="screen-receitas">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-receitas" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-receitas">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('manual')">Lançamento manual</button>
+        <button onclick="goTo('massa')">Lançamento em massa</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="resumo-wrap">
+      <h1>Receitas</h1>
+
+      <div class="card wide">
+        <div class="step-title" style="margin-bottom:14px;">Filtros</div>
+        <div class="filtros-grid">
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-nome-receitas">Nome</label>
+            <input type="text" id="filtro-nome-receitas" placeholder="Buscar por nome" autocomplete="off">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-categoria-receitas">Categoria</label>
+            <select id="filtro-categoria-receitas"><option value="">Todas</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-banco-receitas">Banco</label>
+            <select id="filtro-banco-receitas"><option value="">Todos</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-forma-pagamento-receitas">Forma de Pagamento</label>
+            <select id="filtro-forma-pagamento-receitas"><option value="">Todas</option></select>
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-de-receitas">Data de</label>
+            <input type="date" id="filtro-data-de-receitas">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-data-ate-receitas">Data até</label>
+            <input type="date" id="filtro-data-ate-receitas">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="filtro-recorrente-receitas">Recorrente</label>
+            <select id="filtro-recorrente-receitas">
+              <option value="">Todos</option>
+              <option value="sim">Sim</option>
+              <option value="nao">Não</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px;">
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosLista('receita')">Limpar filtros</button>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <div class="table-scroll">
+        <table>
+          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <tbody id="tbody-receitas"></tbody>
+          <tfoot><tr><td colspan="6">Total</td><td class="num" id="total-receitas">R$ 0,00</td><td></td><td></td></tr></tfoot>
+        </table>
+        </div>
+        <p class="empty-msg" id="empty-receitas" style="display:none;">Nenhuma receita ainda.</p>
         <div class="actions-row">
           <button class="big-btn" onclick="goTo('manual')">Novo lançamento manual</button>
           <button class="big-btn secondary" onclick="goTo('massa')">Novo lançamento em massa</button>
@@ -916,7 +983,8 @@
         <button onclick="goTo('manual')">Lançamento manual</button>
         <button onclick="goTo('massa')">Lançamento em massa</button>
         <button onclick="goTo('cadastros')">Cadastros</button>
-        <button onclick="goTo('resumo')">Resumo</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1233,7 +1301,8 @@
     ['menu-toggle-categorias','menu-dropdown-categorias'],
     ['menu-toggle-cadBanco','menu-dropdown-cadBanco'],
     ['menu-toggle-cadFormaPagamento','menu-dropdown-cadFormaPagamento'],
-    ['menu-toggle-resumo','menu-dropdown-resumo'],
+    ['menu-toggle-despesas','menu-dropdown-despesas'],
+    ['menu-toggle-receitas','menu-dropdown-receitas'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio']
   ];
   menuPairs.forEach(([btnId, ddId]) => {
@@ -1269,7 +1338,8 @@
     document.querySelectorAll('.menu-dropdown').forEach(d => d.classList.remove('open'));
     if(name === 'manual') resetWizard();
     if(name === 'massa') resetUpload();
-    if(name === 'resumo') { renderResumo(); renderChartCategoria(); renderChartBanco(); }
+    if(name === 'despesas') renderLista('despesa');
+    if(name === 'receitas') renderLista('receita');
     if(name === 'categorias') renderCategorias();
     if(name === 'cadBanco') renderBancos();
     if(name === 'cadFormaPagamento') renderFormasPagamento();
@@ -1496,7 +1566,7 @@
       salvarLancamento().then(ok => {
         stepBtn.disabled = false;
         if(ok){
-          goTo('resumo');
+          goTo(manualTipoAtual === 'receita' ? 'receitas' : 'despesas');
         } else {
           block.classList.remove('done');
           input.disabled = false;
@@ -1691,8 +1761,10 @@
     const { data, error } = await db.from('lancamentos').insert(rows).select();
     if(error){ setStatus('Não foi possível enviar os lançamentos. Tente novamente.', true); return; }
     lancamentos.push(...data);
+    const temReceita = rows.some(r => (Number(r.valor) || 0) >= 0);
+    const temDespesa = rows.some(r => (Number(r.valor) || 0) < 0);
     pendingImport = [];
-    goTo('resumo');
+    goTo(temReceita && !temDespesa ? 'receitas' : 'despesas');
   };
   window.cancelarImportacao = function(){
     resetUpload();
@@ -1832,77 +1904,85 @@
     if(m) return `${m[3]}-${m[2]}-${m[1]}`;
     return '';
   }
-  // ---------- RESUMO ----------
-  let resumoFiltros = { nome:'', tipo:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
+  // ---------- DESPESAS / RECEITAS (listas separadas) ----------
+  let filtrosLista = {
+    despesa: { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' },
+    receita: { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' }
+  };
 
-  function popularFiltrosResumo(){
-    const selCategoria = document.getElementById('filtro-categoria');
-    const selBanco = document.getElementById('filtro-banco');
-    const selForma = document.getElementById('filtro-forma-pagamento');
+  function sufixoTipo(tipo){
+    return tipo === 'receita' ? 'receitas' : 'despesas';
+  }
+
+  function popularFiltrosLista(tipo){
+    const suf = sufixoTipo(tipo);
+    const f = filtrosLista[tipo];
+    const selCategoria = document.getElementById('filtro-categoria-' + suf);
+    const selBanco = document.getElementById('filtro-banco-' + suf);
+    const selForma = document.getElementById('filtro-forma-pagamento-' + suf);
     if(selCategoria){
       selCategoria.innerHTML = '<option value="">Todas</option>' + categorias.map(c =>
-        `<option value="${escapeAttr(c.nome)}" ${c.nome === resumoFiltros.categoria ? 'selected' : ''}>${escapeAttr(c.nome)}</option>`).join('');
+        `<option value="${escapeAttr(c.nome)}" ${c.nome === f.categoria ? 'selected' : ''}>${escapeAttr(c.nome)}</option>`).join('');
     }
     if(selBanco){
       selBanco.innerHTML = '<option value="">Todos</option>' + bancos.map(b =>
-        `<option value="${escapeAttr(b.nome)}" ${b.nome === resumoFiltros.banco ? 'selected' : ''}>${escapeAttr(b.nome)}</option>`).join('');
+        `<option value="${escapeAttr(b.nome)}" ${b.nome === f.banco ? 'selected' : ''}>${escapeAttr(b.nome)}</option>`).join('');
     }
     if(selForma){
-      selForma.innerHTML = '<option value="">Todas</option>' + formasPagamento.map(f =>
-        `<option value="${escapeAttr(f.nome)}" ${f.nome === resumoFiltros.formaPagamento ? 'selected' : ''}>${escapeAttr(f.nome)}</option>`).join('');
+      selForma.innerHTML = '<option value="">Todas</option>' + formasPagamento.map(fp =>
+        `<option value="${escapeAttr(fp.nome)}" ${fp.nome === f.formaPagamento ? 'selected' : ''}>${escapeAttr(fp.nome)}</option>`).join('');
     }
   }
 
-  function lancamentosFiltrados(){
-    const nomeBusca = resumoFiltros.nome.trim().toLowerCase();
+  function itensFiltrados(tipo){
+    const f = filtrosLista[tipo];
+    const nomeBusca = f.nome.trim().toLowerCase();
     return lancamentos.filter(item => {
+      const isDespesaItem = (Number(item.valor) || 0) < 0;
+      if(tipo === 'despesa' && !isDespesaItem) return false;
+      if(tipo === 'receita' && isDespesaItem) return false;
       if(nomeBusca && !String(item.nome || '').toLowerCase().includes(nomeBusca)) return false;
-      if(resumoFiltros.tipo){
-        const isDespesaItem = (Number(item.valor) || 0) < 0;
-        if(resumoFiltros.tipo === 'despesa' && !isDespesaItem) return false;
-        if(resumoFiltros.tipo === 'receita' && isDespesaItem) return false;
-      }
-      if(resumoFiltros.categoria && item.categoria !== resumoFiltros.categoria) return false;
-      if(resumoFiltros.banco && item.banco !== resumoFiltros.banco) return false;
-      if(resumoFiltros.formaPagamento && item.forma_pagamento !== resumoFiltros.formaPagamento) return false;
-      if(resumoFiltros.dataDe && (item.data || '') < resumoFiltros.dataDe) return false;
-      if(resumoFiltros.dataAte && (item.data || '') > resumoFiltros.dataAte) return false;
-      if(resumoFiltros.recorrente === 'sim' && !item.recorrente) return false;
-      if(resumoFiltros.recorrente === 'nao' && item.recorrente) return false;
+      if(f.categoria && item.categoria !== f.categoria) return false;
+      if(f.banco && item.banco !== f.banco) return false;
+      if(f.formaPagamento && item.forma_pagamento !== f.formaPagamento) return false;
+      if(f.dataDe && (item.data || '') < f.dataDe) return false;
+      if(f.dataAte && (item.data || '') > f.dataAte) return false;
+      if(f.recorrente === 'sim' && !item.recorrente) return false;
+      if(f.recorrente === 'nao' && item.recorrente) return false;
       return true;
     });
   }
 
-  window.limparFiltrosResumo = function(){
-    resumoFiltros = { nome:'', tipo:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
-    const elNome = document.getElementById('filtro-nome');
-    const elTipo = document.getElementById('filtro-tipo');
-    const elDataDe = document.getElementById('filtro-data-de');
-    const elDataAte = document.getElementById('filtro-data-ate');
-    const elRecorrente = document.getElementById('filtro-recorrente');
-    if(elNome) elNome.value = '';
-    if(elTipo) elTipo.value = '';
-    if(elDataDe) elDataDe.value = '';
-    if(elDataAte) elDataAte.value = '';
-    if(elRecorrente) elRecorrente.value = '';
-    renderResumo();
+  window.limparFiltrosLista = function(tipo){
+    filtrosLista[tipo] = { nome:'', categoria:'', banco:'', formaPagamento:'', dataDe:'', dataAte:'', recorrente:'' };
+    const suf = sufixoTipo(tipo);
+    ['nome','data-de','data-ate','recorrente'].forEach(campo => {
+      const el = document.getElementById('filtro-' + campo + '-' + suf);
+      if(el) el.value = '';
+    });
+    renderLista(tipo);
   };
 
-  document.getElementById('filtro-nome').addEventListener('input', (e) => { resumoFiltros.nome = e.target.value; renderResumo(); });
-  document.getElementById('filtro-tipo').addEventListener('change', (e) => { resumoFiltros.tipo = e.target.value; renderResumo(); });
-  document.getElementById('filtro-categoria').addEventListener('change', (e) => { resumoFiltros.categoria = e.target.value; renderResumo(); });
-  document.getElementById('filtro-banco').addEventListener('change', (e) => { resumoFiltros.banco = e.target.value; renderResumo(); });
-  document.getElementById('filtro-forma-pagamento').addEventListener('change', (e) => { resumoFiltros.formaPagamento = e.target.value; renderResumo(); });
-  document.getElementById('filtro-data-de').addEventListener('change', (e) => { resumoFiltros.dataDe = e.target.value; renderResumo(); });
-  document.getElementById('filtro-data-ate').addEventListener('change', (e) => { resumoFiltros.dataAte = e.target.value; renderResumo(); });
-  document.getElementById('filtro-recorrente').addEventListener('change', (e) => { resumoFiltros.recorrente = e.target.value; renderResumo(); });
+  function wireFiltrosLista(tipo){
+    const suf = sufixoTipo(tipo);
+    document.getElementById('filtro-nome-' + suf).addEventListener('input', (e) => { filtrosLista[tipo].nome = e.target.value; renderLista(tipo); });
+    document.getElementById('filtro-categoria-' + suf).addEventListener('change', (e) => { filtrosLista[tipo].categoria = e.target.value; renderLista(tipo); });
+    document.getElementById('filtro-banco-' + suf).addEventListener('change', (e) => { filtrosLista[tipo].banco = e.target.value; renderLista(tipo); });
+    document.getElementById('filtro-forma-pagamento-' + suf).addEventListener('change', (e) => { filtrosLista[tipo].formaPagamento = e.target.value; renderLista(tipo); });
+    document.getElementById('filtro-data-de-' + suf).addEventListener('change', (e) => { filtrosLista[tipo].dataDe = e.target.value; renderLista(tipo); });
+    document.getElementById('filtro-data-ate-' + suf).addEventListener('change', (e) => { filtrosLista[tipo].dataAte = e.target.value; renderLista(tipo); });
+    document.getElementById('filtro-recorrente-' + suf).addEventListener('change', (e) => { filtrosLista[tipo].recorrente = e.target.value; renderLista(tipo); });
+  }
+  wireFiltrosLista('despesa');
+  wireFiltrosLista('receita');
 
-  function renderResumo(){
-    popularFiltrosResumo();
-    const tbody = document.getElementById('resumo-tbody');
+  function renderLista(tipo){
+    popularFiltrosLista(tipo);
+    const suf = sufixoTipo(tipo);
+    const tbody = document.getElementById('tbody-' + suf);
     tbody.innerHTML = '';
-    const itens = lancamentosFiltrados();
-    document.getElementById('resumo-empty').style.display = itens.length ? 'none' : 'block';
+    const itens = itensFiltrados(tipo);
+    document.getElementById('empty-' + suf).style.display = itens.length ? 'none' : 'block';
     let total = 0;
     [...itens].sort((a,b) => (a.data||'').localeCompare(b.data||'')).forEach(item => {
       total += Number(item.valor) || 0;
@@ -1927,7 +2007,7 @@
         <td><button class="del-btn" data-id="${item.id}" aria-label="Excluir lançamento">✕</button></td>`;
       tbody.appendChild(tr);
     });
-    document.getElementById('resumo-total').textContent = money(total);
+    document.getElementById('total-' + suf).textContent = money(total);
     tbody.querySelectorAll('select').forEach(sel => {
       sel.addEventListener('change', async () => {
         const item = lancamentos.find(i => i.id === sel.dataset.id);
@@ -1942,11 +2022,9 @@
           if(error){
             item.valor = valorAnterior;
             alertaErro('Não foi possível atualizar o lançamento. Tente novamente.');
-            renderResumo();
-            return;
           }
-          renderResumo();
-          renderChartCategoria(); renderChartBanco();
+          renderLista('despesa');
+          renderLista('receita');
           return;
         }
         const valorAnterior = item[field];
@@ -1959,7 +2037,6 @@
           alertaErro('Não foi possível atualizar o lançamento. Tente novamente.');
           return;
         }
-        renderChartCategoria(); renderChartBanco();
       });
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
@@ -1968,8 +2045,7 @@
         const { error } = await db.from('lancamentos').delete().eq('id', btn.dataset.id);
         if(error){ alertaErro('Não foi possível excluir o lançamento. Tente novamente.'); btn.disabled = false; return; }
         lancamentos = lancamentos.filter(i => i.id !== btn.dataset.id);
-        renderResumo();
-        renderChartCategoria(); renderChartBanco();
+        renderLista(tipo);
       });
     });
   }
@@ -1979,74 +2055,6 @@
     const idx = categorias.findIndex(c => c.nome === nome);
     if(idx === -1) return COR_SEM_CATEGORIA;
     return CORES[idx % CORES.length];
-  }
-  function corParaBanco(nome){
-    if(!nome) return COR_SEM_CATEGORIA;
-    const idx = bancos.findIndex(b => b.nome === nome);
-    if(idx === -1) return COR_SEM_CATEGORIA;
-    return CORES[idx % CORES.length];
-  }
-
-  function renderPieGeneric(pieEl, legendEl, emptyEl, cardEl, grupos, totalGeral){
-    if(!totalGeral || totalGeral <= 0){
-      cardEl.style.display = 'none';
-      emptyEl.style.display = 'block';
-      return;
-    }
-    cardEl.style.display = 'flex';
-    emptyEl.style.display = 'none';
-    const entradas = Object.entries(grupos).sort((a,b) => b[1].valor - a[1].valor);
-    let acc = 0;
-    const stops = entradas.map(([, info]) => {
-      const pct = (info.valor / totalGeral) * 100;
-      const from = acc;
-      acc += pct;
-      return `${info.cor} ${from}% ${acc}%`;
-    });
-    pieEl.style.background = `conic-gradient(${stops.join(', ')})`;
-    legendEl.innerHTML = entradas.map(([nome, info]) => {
-      const pct = (info.valor / totalGeral) * 100;
-      return `<div class="legend-row">
-        <span class="legend-swatch" style="background:${info.cor}"></span>
-        <span class="legend-name">${escapeAttr(nome)}</span>
-        <span class="legend-value">${money(info.valor)}</span>
-        <span class="legend-pct">${pct.toFixed(1)}%</span>
-      </div>`;
-    }).join('');
-  }
-
-  function renderChartCategoria(){
-    const pieEl = document.getElementById('pie-chart');
-    const legendEl = document.getElementById('pie-legend');
-    const emptyEl = document.getElementById('chart-empty');
-    const cardEl = pieEl.closest('.chart-card');
-    const grupos = {};
-    let total = 0;
-    lancamentos.forEach(item => {
-      const chave = item.categoria || 'Sem categoria';
-      const valor = Math.abs(Number(item.valor) || 0);
-      total += valor;
-      if(!grupos[chave]) grupos[chave] = {valor:0, cor: corParaCategoria(item.categoria)};
-      grupos[chave].valor += valor;
-    });
-    renderPieGeneric(pieEl, legendEl, emptyEl, cardEl, grupos, total);
-  }
-
-  function renderChartBanco(){
-    const pieEl = document.getElementById('pie-chart-banco');
-    const legendEl = document.getElementById('pie-legend-banco');
-    const emptyEl = document.getElementById('chart-banco-empty');
-    const cardEl = pieEl.closest('.chart-card');
-    const grupos = {};
-    let total = 0;
-    lancamentos.forEach(item => {
-      const chave = item.banco || 'Sem banco';
-      const valor = Math.abs(Number(item.valor) || 0);
-      total += valor;
-      if(!grupos[chave]) grupos[chave] = {valor:0, cor: corParaBanco(item.banco)};
-      grupos[chave].valor += valor;
-    });
-    renderPieGeneric(pieEl, legendEl, emptyEl, cardEl, grupos, total);
   }
 
   // ---------- PATRIMÔNIO (painel) ----------
@@ -2139,7 +2147,8 @@
     populateCategoriaSelect();
     populateBancoDatalist();
     populateFormaPagamentoDatalist();
-    if(telaAtual === 'resumo'){ renderResumo(); renderChartCategoria(); renderChartBanco(); }
+    if(telaAtual === 'despesas') renderLista('despesa');
+    if(telaAtual === 'receitas') renderLista('receita');
     if(telaAtual === 'categorias') renderCategorias();
     if(telaAtual === 'cadBanco') renderBancos();
     if(telaAtual === 'cadFormaPagamento') renderFormasPagamento();
