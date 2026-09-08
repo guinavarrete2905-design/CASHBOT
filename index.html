@@ -83,6 +83,50 @@
   .menu-dropdown button:hover{background:var(--green-soft);}
   .menu-dropdown button + button{border-top:1px solid var(--border);}
 
+  /* botão de perfil (topbar) */
+  .profile-menu-wrap{position:relative;}
+  .profile-btn{
+    background:none; border:1px solid #2E5A45; border-radius:999px; cursor:pointer;
+    display:flex; align-items:center; gap:6px; padding:3px 10px 3px 3px; height:40px;
+  }
+  .profile-btn:hover{background:#1A4A34;}
+  .profile-btn-avatar{
+    width:32px; height:32px; border-radius:50%; overflow:hidden; flex-shrink:0;
+    background:var(--green-soft); display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:13px; color:var(--green-dark);
+  }
+  .profile-btn-avatar img{width:100%; height:100%; object-fit:cover; display:block;}
+  .profile-btn-chevron{color:#DDEDE3; font-size:11px; transition:transform .15s;}
+  .profile-menu-wrap.open .profile-btn-chevron{transform:rotate(180deg);}
+  .profile-dropdown{
+    display:none; position:absolute; right:0; top:calc(100% + 8px);
+    background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(18,60,41,0.18);
+    min-width:180px; overflow:hidden; flex-direction:column; z-index:25;
+  }
+  .profile-menu-wrap.open .profile-dropdown{display:flex;}
+  .profile-dropdown button{
+    background:none; border:none; text-align:left; padding:14px 18px; font-family:'Nunito',sans-serif;
+    font-weight:700; font-size:15px; color:var(--black); cursor:pointer;
+  }
+  .profile-dropdown button:hover{background:var(--green-soft);}
+
+  /* upload de foto na tela de editar perfil */
+  .avatar-upload-wrap{display:flex; flex-direction:column; align-items:center; gap:10px; margin-bottom:26px;}
+  .avatar-upload-circle{
+    position:relative; width:112px; height:112px; border-radius:50%;
+    background:var(--green-soft); border:2px dashed var(--border);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0;
+  }
+  .avatar-upload-circle img{width:100%; height:100%; object-fit:cover; display:block;}
+  .avatar-upload-fallback{font-size:34px; font-weight:800; color:var(--green-dark);}
+  .avatar-upload-badge{
+    position:absolute; bottom:2px; right:2px; width:30px; height:30px; border-radius:50%;
+    background:var(--green-dark); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:14px; border:3px solid #fff; pointer-events:none;
+  }
+  .avatar-upload-hint{font-size:13px; color:var(--muted); margin:0;}
+  .field-block.disabled input{background:#F2F5F3; color:var(--muted); cursor:not-allowed;}
+
   .content{
     flex:1; display:flex; flex-direction:column; align-items:center;
     padding:48px 20px 60px;
@@ -406,6 +450,8 @@
   .btn-solid-sm:hover{background:#256F46;}
   .user-chip{display:none; align-items:center; gap:8px; color:#fff; font-weight:700; font-size:15px;}
   body.logged-in .user-chip{display:flex;}
+  .profile-menu-wrap{display:none;}
+  body.logged-in .profile-menu-wrap{display:block;}
 
   /* ---------- dashboard em branco (por enquanto) ---------- */
   .dashboard-placeholder{max-width:1400px; width:100%; text-align:left; padding-top:0;}
@@ -490,6 +536,18 @@
         <button type="button" class="btn-solid-sm" onclick="goTo('signup')">Inscrever-se</button>
       </div>
       <div id="user-chip" class="user-chip"><span id="user-chip-nome"></span></div>
+      <div class="profile-menu-wrap" id="profile-menu-wrap-home">
+        <button type="button" class="profile-btn" id="profile-btn-home" aria-haspopup="true" aria-expanded="false" aria-label="Perfil">
+          <span class="profile-btn-avatar" id="profile-btn-avatar-home">
+            <img id="profile-btn-avatar-img-home" src="" alt="" style="display:none;">
+            <span id="profile-btn-avatar-fallback-home"></span>
+          </span>
+          <span class="profile-btn-chevron">▾</span>
+        </button>
+        <div class="profile-dropdown" id="profile-dropdown-home">
+          <button type="button" onclick="goTo('editarPerfil')">Editar Perfil</button>
+        </div>
+      </div>
       <div class="menu-wrap">
       <button class="hamburger-btn" id="menu-toggle-home" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-home">
@@ -1617,6 +1675,65 @@
     <h1 style="font-size:32px; font-weight:800; color:var(--muted); margin:0;">Em Breve</h1>
   </div>
 </div>
+<!-- ===================== EDITAR PERFIL ===================== -->
+<div class="screen" id="screen-editarPerfil">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-editarPerfil" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-editarPerfil">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card auth">
+      <div class="step-title">Editar perfil</div>
+      <div class="avatar-upload-wrap">
+        <label class="avatar-upload-circle" for="perfil-avatar-input" id="perfil-avatar-label">
+          <img id="perfil-avatar-preview" src="" alt="" style="display:none;">
+          <span class="avatar-upload-fallback" id="perfil-avatar-fallback"></span>
+          <span class="avatar-upload-badge">✎</span>
+        </label>
+        <input type="file" id="perfil-avatar-input" accept="image/*" style="display:none;">
+        <p class="avatar-upload-hint" id="perfil-avatar-status">Clique no círculo para adicionar uma foto</p>
+      </div>
+      <form id="form-editar-perfil">
+        <div class="field-block">
+          <label for="perfil-nome">Nome completo</label>
+          <input type="text" id="perfil-nome" autocomplete="name" required>
+        </div>
+        <div class="field-block">
+          <label for="perfil-cpf">CPF</label>
+          <input type="text" id="perfil-cpf" inputmode="numeric" placeholder="000.000.000-00" maxlength="14" required>
+        </div>
+        <div class="field-block disabled">
+          <label for="perfil-email">E-mail</label>
+          <input type="email" id="perfil-email" disabled>
+        </div>
+        <div class="field-block">
+          <label for="perfil-telefone">Telefone</label>
+          <input type="tel" id="perfil-telefone" placeholder="(00) 00000-0000" maxlength="15" required>
+        </div>
+        <div class="step-actions">
+          <button type="submit" class="btn-avancar" id="btn-salvar-perfil">Salvar alterações</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 <!-- ===================== LOGIN ===================== -->
 <div class="screen active" id="screen-login">
   <div class="topbar">
@@ -1718,6 +1835,32 @@
     document.getElementById('user-chip-nome').textContent = 'Olá, ' + (pessoa ? pessoa.nome.split(' ')[0] : '') + '!';
     document.getElementById('sidebar-user-nome').textContent = pessoa ? pessoa.nome : '';
     document.getElementById('home-saudacao').textContent = 'Olá' + (pessoa ? ', ' + pessoa.nome.split(' ')[0] : '') + '!';
+    atualizarAvatarTopbar();
+  }
+
+  function iniciaisNome(nome){
+    if(!nome) return '?';
+    const partes = nome.trim().split(/\s+/);
+    const primeira = partes[0] ? partes[0][0] : '';
+    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+    return (primeira + ultima).toUpperCase() || '?';
+  }
+
+  function atualizarAvatarTopbar(){
+    const img = document.getElementById('profile-btn-avatar-img-home');
+    const fallback = document.getElementById('profile-btn-avatar-fallback-home');
+    if(!img || !fallback) return;
+    const fotoUrl = currentPessoa ? currentPessoa.foto_url : null;
+    if(fotoUrl){
+      img.src = fotoUrl;
+      img.style.display = 'block';
+      fallback.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      img.src = '';
+      fallback.style.display = '';
+      fallback.textContent = iniciaisNome(currentPessoa ? currentPessoa.nome : '');
+    }
   }
 
   function setLoggedOut(){
@@ -1854,6 +1997,99 @@
   document.getElementById('signup-cpf').addEventListener('input', (e) => { e.target.value = formatarCPF(e.target.value); });
   document.getElementById('signup-telefone').addEventListener('input', (e) => { e.target.value = formatarTelefone(e.target.value); });
 
+  // ---------- EDITAR PERFIL ----------
+  function renderEditarPerfil(){
+    if(!currentPessoa) return;
+    document.getElementById('perfil-nome').value = currentPessoa.nome || '';
+    document.getElementById('perfil-cpf').value = formatarCPF(currentPessoa.cpf || '');
+    document.getElementById('perfil-email').value = currentPessoa.email || '';
+    document.getElementById('perfil-telefone').value = formatarTelefone(currentPessoa.telefone || '');
+    const preview = document.getElementById('perfil-avatar-preview');
+    const fallback = document.getElementById('perfil-avatar-fallback');
+    const status = document.getElementById('perfil-avatar-status');
+    if(currentPessoa.foto_url){
+      preview.src = currentPessoa.foto_url;
+      preview.style.display = 'block';
+      fallback.style.display = 'none';
+    } else {
+      preview.style.display = 'none';
+      preview.src = '';
+      fallback.style.display = '';
+      fallback.textContent = iniciaisNome(currentPessoa.nome);
+    }
+    status.textContent = 'Clique no círculo para adicionar uma foto';
+  }
+
+  document.getElementById('perfil-cpf').addEventListener('input', (e) => { e.target.value = formatarCPF(e.target.value); });
+  document.getElementById('perfil-telefone').addEventListener('input', (e) => { e.target.value = formatarTelefone(e.target.value); });
+
+  document.getElementById('perfil-avatar-input').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if(!file || !currentUser) return;
+    const status = document.getElementById('perfil-avatar-status');
+    const preview = document.getElementById('perfil-avatar-preview');
+    const fallback = document.getElementById('perfil-avatar-fallback');
+    if(!file.type.startsWith('image/')){
+      alertaErro('Selecione um arquivo de imagem.');
+      e.target.value = '';
+      return;
+    }
+    status.textContent = 'Enviando foto...';
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const caminho = `${currentUser.id}/avatar.${ext}`;
+    const { error: uploadError } = await db.storage.from('avatars').upload(caminho, file, { upsert: true, cacheControl: '3600' });
+    if(uploadError){
+      alertaErro('Não foi possível enviar a foto. Tente novamente.');
+      status.textContent = 'Clique no círculo para adicionar uma foto';
+      e.target.value = '';
+      return;
+    }
+    const { data: urlData } = db.storage.from('avatars').getPublicUrl(caminho);
+    const fotoUrl = urlData.publicUrl + '?t=' + Date.now();
+    const { error: updateError } = await db.from('pessoas').update({ foto_url: fotoUrl }).eq('id', currentUser.id);
+    if(updateError){
+      alertaErro('A foto foi enviada, mas não foi possível salvá-la no seu perfil. Tente novamente.');
+      status.textContent = 'Clique no círculo para adicionar uma foto';
+      e.target.value = '';
+      return;
+    }
+    currentPessoa = { ...currentPessoa, foto_url: fotoUrl };
+    preview.src = fotoUrl;
+    preview.style.display = 'block';
+    fallback.style.display = 'none';
+    status.textContent = 'Foto atualizada!';
+    atualizarAvatarTopbar();
+    e.target.value = '';
+  });
+
+  document.getElementById('form-editar-perfil').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if(!currentUser) return;
+    const btn = document.getElementById('btn-salvar-perfil');
+    const nome = document.getElementById('perfil-nome').value.trim();
+    const cpf = document.getElementById('perfil-cpf').value.trim();
+    const telefone = document.getElementById('perfil-telefone').value.trim();
+    if(!nome || !cpf || !telefone) return;
+    btn.disabled = true;
+    const { error } = await db.from('pessoas').update({ nome, cpf, telefone }).eq('id', currentUser.id);
+    btn.disabled = false;
+    if(error){
+      const msg = (error.message || '').toLowerCase();
+      if(msg.includes('duplicate') || msg.includes('unique')){
+        alertaErro('Esse CPF já está em uso em outra conta.');
+      } else {
+        alertaErro('Não foi possível salvar as alterações. Tente novamente.');
+      }
+      return;
+    }
+    currentPessoa = { ...currentPessoa, nome, cpf, telefone };
+    document.getElementById('user-chip-nome').textContent = 'Olá, ' + nome.split(' ')[0] + '!';
+    document.getElementById('sidebar-user-nome').textContent = nome;
+    document.getElementById('home-saudacao').textContent = 'Olá, ' + nome.split(' ')[0] + '!';
+    atualizarAvatarTopbar();
+    alertaErro('Perfil atualizado com sucesso!');
+  });
+
   let lancamentos = [];          // {id, nome, categoria, banco, valor, data, recorrente} — valor>0 = receita, valor<0 = despesa
   let pendingImport = [];
   let categorias = [];           // {id, nome}
@@ -1923,7 +2159,8 @@
     ['menu-toggle-bens','menu-dropdown-bens'],
     ['menu-toggle-saldos','menu-dropdown-saldos'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio'],
-    ['menu-toggle-metas','menu-dropdown-metas']
+    ['menu-toggle-metas','menu-dropdown-metas'],
+    ['menu-toggle-editarPerfil','menu-dropdown-editarPerfil']
   ];
   menuPairs.forEach(([btnId, ddId]) => {
     const btn = document.getElementById(btnId);
@@ -1943,6 +2180,27 @@
     if(dropdownAberto){
       voltarTela();
     }
+  });
+
+  // ---------- botão de perfil (avatar + dropdown "Editar Perfil") ----------
+  const profileMenuPairs = [
+    ['profile-btn-home','profile-menu-wrap-home']
+  ];
+  profileMenuPairs.forEach(([btnId, wrapId]) => {
+    const btn = document.getElementById(btnId);
+    const wrap = document.getElementById(wrapId);
+    if(!btn || !wrap) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = wrap.classList.contains('open');
+      document.querySelectorAll('.profile-menu-wrap').forEach(w => w.classList.remove('open'));
+      document.querySelectorAll('.profile-btn').forEach(b => b.setAttribute('aria-expanded','false'));
+      if(!isOpen){ wrap.classList.add('open'); btn.setAttribute('aria-expanded','true'); }
+    });
+  });
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.profile-menu-wrap').forEach(w => w.classList.remove('open'));
+    document.querySelectorAll('.profile-btn').forEach(b => b.setAttribute('aria-expanded','false'));
   });
 
   // ---------- navegação ----------
@@ -1970,6 +2228,7 @@
     if(name === 'cadBanco') renderBancos();
     if(name === 'cadFormaPagamento') renderFormasPagamento();
     if(name === 'patrimonio') renderPatrimonio();
+    if(name === 'editarPerfil') renderEditarPerfil();
     window.scrollTo(0,0);
   }
 
