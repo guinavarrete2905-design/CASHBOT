@@ -417,6 +417,10 @@
   .dash-card{background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px; display:flex; flex-direction:column;}
   .dash-card-title{font-weight:700; font-size:15px; color:var(--muted); margin-bottom:14px;}
   .dash-placeholder-value{font-size:30px; font-weight:800; color:#C9D3CD; margin-bottom:16px;}
+  .dash-placeholder-value.destaque{font-size:46px; font-weight:900; letter-spacing:-0.5px; line-height:1.1; margin-bottom:20px;}
+  @media (max-width:600px){
+    .dash-placeholder-value.destaque{font-size:34px;}
+  }
   .dash-chart-placeholder{flex:1; min-height:160px; border-radius:10px; background:repeating-linear-gradient(135deg, var(--green-soft), var(--green-soft) 10px, #FFFFFF 10px, #FFFFFF 20px); border:1px dashed var(--border);}
   .dash-chart-placeholder.small{min-height:110px;}
   .dash-donut-placeholder{width:130px; height:130px; border-radius:50%; margin:8px auto 0; background:conic-gradient(var(--border) 0 100%); position:relative;}
@@ -426,6 +430,13 @@
   .dash-stat-label{font-size:14px; color:var(--muted); font-weight:700;}
   .dash-stat-value{font-size:22px; font-weight:800; color:#C9D3CD;}
   .dash-empty{color:var(--muted); font-style:italic; margin:auto 0 0;}
+  .ult-trans-list{display:flex; flex-direction:column;}
+  .ult-trans-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid var(--border);}
+  .ult-trans-row:last-child{border-bottom:none;}
+  .ult-trans-info{display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .ult-trans-nome{font-weight:700; font-size:15px; color:var(--black); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .ult-trans-data{font-size:13px; color:var(--muted);}
+  .ult-trans-valor{font-weight:800; font-size:15px; white-space:nowrap; flex-shrink:0;}
   @media (max-width:900px){
     .dash-grid, .dash-grid-3{grid-template-columns:1fr;}
   }
@@ -505,8 +516,8 @@
 
       <div class="dash-grid">
         <div class="dash-card">
-          <div class="dash-card-title">Patrimônio total</div>
-          <div class="dash-placeholder-value" id="home-patrimonio-total" style="color:var(--green-dark);">R$ 0,00</div>
+          <div class="dash-card-title" style="font-size:16px; text-transform:uppercase; letter-spacing:0.4px;">Patrimônio total</div>
+          <div class="dash-placeholder-value destaque" id="home-patrimonio-total" style="color:var(--green-dark);">R$ 0,00</div>
           <div class="field-block" style="margin:2px 0 18px; max-width:220px;">
             <label for="home-patrimonio-mes" style="display:block; font-weight:700; font-size:13px; margin-bottom:6px; color:var(--muted); text-transform:uppercase; letter-spacing:0.3px;">Filtrar mês</label>
             <input type="month" id="home-patrimonio-mes">
@@ -631,7 +642,8 @@
       <div class="dash-grid dash-grid-3">
         <div class="dash-card" style="grid-column: span 2;">
           <div class="dash-card-title">Últimas transações</div>
-          <p class="dash-empty">Em breve.</p>
+          <div class="ult-trans-list" id="home-ultimas-transacoes"></div>
+          <p class="dash-empty" id="home-ultimas-transacoes-vazio" style="display:none;">Nenhum lançamento ainda.</p>
         </div>
         <div class="dash-card">
           <div class="dash-card-title">Minhas metas</div>
@@ -3033,18 +3045,23 @@
     });
   }
 
-  function corParaCategoria(nome){
-    if(!nome) return COR_SEM_CATEGORIA;
-    const idx = categorias.findIndex(c => c.nome === nome);
-    if(idx === -1) return COR_SEM_CATEGORIA;
-    return CORES[idx % CORES.length];
+  function corPorTexto(texto){
+    if(!texto) return COR_SEM_CATEGORIA;
+    let hash = 0;
+    for(let i = 0; i < texto.length; i++){
+      hash = (hash * 31 + texto.charCodeAt(i)) >>> 0;
+    }
+    return CORES[hash % CORES.length];
   }
 
-  function corGenerica(nome, lista){
+  function corParaCategoria(nome){
     if(!nome) return COR_SEM_CATEGORIA;
-    const idx = lista.findIndex(x => x.nome === nome);
-    if(idx === -1) return COR_SEM_CATEGORIA;
-    return CORES[idx % CORES.length];
+    return corPorTexto(nome);
+  }
+
+  function corGenerica(nome){
+    if(!nome) return COR_SEM_CATEGORIA;
+    return corPorTexto(nome);
   }
 
   // ---------- TELA DE INÍCIO: patrimônio + relatórios ----------
@@ -3053,6 +3070,34 @@
     renderComparativoPatrimonio();
     renderRelatorios();
     renderDespesaFixa();
+    renderUltimasTransacoes();
+  }
+
+  function renderUltimasTransacoes(){
+    const container = document.getElementById('home-ultimas-transacoes');
+    const vazioEl = document.getElementById('home-ultimas-transacoes-vazio');
+    if(!container) return;
+    const itens = [...lancamentos]
+      .sort((a,b) => (b.data||'').localeCompare(a.data||'') || String(b.id||'').localeCompare(String(a.id||'')))
+      .slice(0, 5);
+    if(!itens.length){
+      container.innerHTML = '';
+      if(vazioEl) vazioEl.style.display = '';
+      return;
+    }
+    if(vazioEl) vazioEl.style.display = 'none';
+    container.innerHTML = itens.map(item => {
+      const valorNum = Number(item.valor) || 0;
+      const isDespesa = valorNum < 0;
+      const detalhe = item.categoria ? escapeAttr(item.categoria) : (item.banco ? escapeAttr(item.banco) : '');
+      return `<div class="ult-trans-row">
+        <div class="ult-trans-info">
+          <span class="ult-trans-nome">${escapeAttr(item.nome || 'Sem nome')}</span>
+          <span class="ult-trans-data">${fmtDateBR(item.data)}${detalhe ? ' · ' + detalhe : ''}</span>
+        </div>
+        <div class="ult-trans-valor ${isDespesa ? 'valor-neg' : 'valor-pos'}">${isDespesa ? '-' : '+'} ${money(Math.abs(valorNum))}</div>
+      </div>`;
+    }).join('');
   }
 
   function renderDespesaFixa(){
@@ -3068,7 +3113,7 @@
     itens.forEach(item => {
       const chave = item.nome || 'Sem nome';
       const valor = Math.abs(Number(item.valor) || 0);
-      if(!grupos[chave]) grupos[chave] = { valor: 0, cor: CORES[Object.keys(grupos).length % CORES.length] };
+      if(!grupos[chave]) grupos[chave] = { valor: 0, cor: corPorTexto(chave) };
       grupos[chave].valor += valor;
       total += valor;
     });
