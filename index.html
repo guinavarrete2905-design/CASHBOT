@@ -99,10 +99,11 @@
   .profile-btn-chevron{color:#DDEDE3; font-size:11px; transition:transform .15s;}
   .profile-menu-wrap.open .profile-btn-chevron{transform:rotate(180deg);}
   .profile-dropdown{
-    display:none; position:absolute; right:0; top:calc(100% + 8px);
+    display:none; position:absolute; left:0; top:calc(100% + 8px);
     background:#fff; border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px rgba(18,60,41,0.18);
     min-width:180px; overflow:hidden; flex-direction:column; z-index:25;
   }
+  .topbar-left{display:flex; align-items:center; gap:14px;}
   .profile-menu-wrap.open .profile-dropdown{display:flex;}
   .profile-dropdown button{
     background:none; border:none; text-align:left; padding:14px 18px; font-family:'Nunito',sans-serif;
@@ -529,7 +530,21 @@
 <!-- ===================== HOME ===================== -->
 <div class="screen" id="screen-home">
   <div class="topbar">
-    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-left">
+      <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+      <div class="profile-menu-wrap" id="profile-menu-wrap-home">
+        <button type="button" class="profile-btn" id="profile-btn-home" aria-haspopup="true" aria-expanded="false" aria-label="Perfil">
+          <span class="profile-btn-avatar" id="profile-btn-avatar-home">
+            <img id="profile-btn-avatar-img-home" src="" alt="" style="display:none;">
+            <span id="profile-btn-avatar-fallback-home"></span>
+          </span>
+          <span class="profile-btn-chevron">▾</span>
+        </button>
+        <div class="profile-dropdown" id="profile-dropdown-home">
+          <button type="button" onclick="goTo('editarPerfil')">Editar Perfil</button>
+        </div>
+      </div>
+    </div>
     <div class="topbar-right">
       <div id="auth-buttons" class="auth-topbtns">
         <button type="button" class="btn-outline" onclick="goTo('login')">Entrar</button>
@@ -551,18 +566,6 @@
         <button onclick="handleLogout()">Sair</button>
       </div>
     </div>
-      <div class="profile-menu-wrap" id="profile-menu-wrap-home">
-        <button type="button" class="profile-btn" id="profile-btn-home" aria-haspopup="true" aria-expanded="false" aria-label="Perfil">
-          <span class="profile-btn-avatar" id="profile-btn-avatar-home">
-            <img id="profile-btn-avatar-img-home" src="" alt="" style="display:none;">
-            <span id="profile-btn-avatar-fallback-home"></span>
-          </span>
-          <span class="profile-btn-chevron">▾</span>
-        </button>
-        <div class="profile-dropdown" id="profile-dropdown-home">
-          <button type="button" onclick="goTo('editarPerfil')">Editar Perfil</button>
-        </div>
-      </div>
     </div>
   </div>
   <div class="content">
