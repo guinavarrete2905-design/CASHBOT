@@ -1900,6 +1900,9 @@
   function alertaErro(msg){
     alert(msg);
   }
+  function confirmarExclusao(msg){
+    return confirm(msg || 'Tem certeza que deseja excluir? Essa ação não pode ser desfeita.');
+  }
 
   // ---------- menu hamburguer (todas as telas) ----------
   const menuPairs = [
@@ -1997,6 +2000,7 @@
     ul.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
+        if(!confirmarExclusao('Excluir esta categoria? Essa ação não pode ser desfeita.')) return;
         btn.disabled = true;
         const { error } = await db.from('categorias').delete().eq('id', id);
         if(error){ alertaErro('Não foi possível remover a categoria. Tente novamente.'); btn.disabled = false; return; }
@@ -2040,6 +2044,7 @@
     ul.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
+        if(!confirmarExclusao('Excluir este banco? Essa ação não pode ser desfeita.')) return;
         btn.disabled = true;
         const { error } = await db.from('bancos').delete().eq('id', id);
         if(error){ alertaErro('Não foi possível remover o banco. Tente novamente.'); btn.disabled = false; return; }
@@ -2083,6 +2088,7 @@
     ul.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
+        if(!confirmarExclusao('Excluir esta forma de pagamento? Essa ação não pode ser desfeita.')) return;
         btn.disabled = true;
         const { error } = await db.from('formas_pagamento').delete().eq('id', id);
         if(error){ alertaErro('Não foi possível remover a forma de pagamento. Tente novamente.'); btn.disabled = false; return; }
@@ -2860,6 +2866,7 @@
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
+        if(!confirmarExclusao('Excluir este lançamento? Essa ação não pode ser desfeita.')) return;
         btn.disabled = true;
         const { error } = await db.from('lancamentos').delete().eq('id', btn.dataset.id);
         if(error){ alertaErro('Não foi possível excluir o lançamento. Tente novamente.'); btn.disabled = false; return; }
@@ -2953,6 +2960,7 @@
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
+        if(!confirmarExclusao('Excluir este bem? Essa ação não pode ser desfeita.')) return;
         btn.disabled = true;
         const { error } = await db.from('bens').delete().eq('id', btn.dataset.id);
         if(error){ alertaErro('Não foi possível excluir o bem. Tente novamente.'); btn.disabled = false; return; }
@@ -3036,6 +3044,7 @@
     });
     tbody.querySelectorAll('.del-btn').forEach(btn => {
       btn.addEventListener('click', async () => {
+        if(!confirmarExclusao('Excluir este saldo? Essa ação não pode ser desfeita.')) return;
         btn.disabled = true;
         const { error } = await db.from('saldos').delete().eq('id', btn.dataset.id);
         if(error){ alertaErro('Não foi possível excluir o saldo. Tente novamente.'); btn.disabled = false; return; }
