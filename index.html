@@ -536,18 +536,6 @@
         <button type="button" class="btn-solid-sm" onclick="goTo('signup')">Inscrever-se</button>
       </div>
       <div id="user-chip" class="user-chip"><span id="user-chip-nome"></span></div>
-      <div class="profile-menu-wrap" id="profile-menu-wrap-home">
-        <button type="button" class="profile-btn" id="profile-btn-home" aria-haspopup="true" aria-expanded="false" aria-label="Perfil">
-          <span class="profile-btn-avatar" id="profile-btn-avatar-home">
-            <img id="profile-btn-avatar-img-home" src="" alt="" style="display:none;">
-            <span id="profile-btn-avatar-fallback-home"></span>
-          </span>
-          <span class="profile-btn-chevron">▾</span>
-        </button>
-        <div class="profile-dropdown" id="profile-dropdown-home">
-          <button type="button" onclick="goTo('editarPerfil')">Editar Perfil</button>
-        </div>
-      </div>
       <div class="menu-wrap">
       <button class="hamburger-btn" id="menu-toggle-home" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
       <div class="menu-dropdown" id="menu-dropdown-home">
@@ -563,6 +551,18 @@
         <button onclick="handleLogout()">Sair</button>
       </div>
     </div>
+      <div class="profile-menu-wrap" id="profile-menu-wrap-home">
+        <button type="button" class="profile-btn" id="profile-btn-home" aria-haspopup="true" aria-expanded="false" aria-label="Perfil">
+          <span class="profile-btn-avatar" id="profile-btn-avatar-home">
+            <img id="profile-btn-avatar-img-home" src="" alt="" style="display:none;">
+            <span id="profile-btn-avatar-fallback-home"></span>
+          </span>
+          <span class="profile-btn-chevron">▾</span>
+        </button>
+        <div class="profile-dropdown" id="profile-dropdown-home">
+          <button type="button" onclick="goTo('editarPerfil')">Editar Perfil</button>
+        </div>
+      </div>
     </div>
   </div>
   <div class="content">
