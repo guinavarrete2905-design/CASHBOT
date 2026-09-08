@@ -128,6 +128,40 @@
   .avatar-upload-hint{font-size:13px; color:var(--muted); margin:0;}
   .field-block.disabled input{background:#F2F5F3; color:var(--muted); cursor:not-allowed;}
 
+  /* Gastos por Dia — calendário */
+  .calendario-mes{margin-bottom:28px;}
+  .calendario-mes:last-child{margin-bottom:0;}
+  .calendario-mes-titulo{font-weight:800; font-size:18px; margin-bottom:12px; color:var(--black);}
+  .calendario-grid{display:grid; grid-template-columns:repeat(7,1fr); gap:6px;}
+  .calendario-dow{text-align:center; font-weight:700; font-size:12px; color:var(--muted); text-transform:uppercase; padding-bottom:4px;}
+  .calendario-dia{background:var(--card); border:1px solid var(--border); border-radius:10px; min-height:88px; padding:8px; display:flex; flex-direction:column; gap:3px; overflow:hidden;}
+  .calendario-dia.vazio{background:transparent; border-color:transparent;}
+  .calendario-dia.hoje{border-color:var(--green); box-shadow:inset 0 0 0 1px var(--green);}
+  .calendario-dia-num{font-weight:800; font-size:13px; color:var(--black);}
+  .calendario-valor{font-size:11px; font-weight:700; line-height:1.3; word-break:break-word;}
+  .calendario-mes-card{min-height:96px; justify-content:center; gap:6px;}
+  .calendario-grid-ano{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:14px;}
+
+  .gpd-dia-lista{display:flex; flex-direction:column;}
+  .gpd-dia-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); flex-wrap:wrap;}
+  .gpd-dia-row:last-child{border-bottom:none;}
+  .gpd-dia-data{font-weight:700; font-size:14px; color:var(--black);}
+  .gpd-dia-dow{font-weight:600; color:var(--muted); font-size:12px;}
+  .gpd-dia-valores{display:flex; gap:14px; font-size:13px; font-weight:700;}
+  .gpd-dia-vazio{color:var(--muted); font-weight:600; font-size:13px;}
+
+  .dow-bars{display:flex; flex-direction:column; gap:10px;}
+  .dow-bar-row{display:grid; grid-template-columns:100px 1fr 100px; align-items:center; gap:10px;}
+  .dow-bar-label{font-weight:700; font-size:13px; color:var(--muted);}
+  .dow-bar-track{background:var(--green-soft); border-radius:6px; height:14px; overflow:hidden;}
+  .dow-bar-fill{background:var(--danger); height:100%; border-radius:6px; transition:width .2s;}
+  .dow-bar-value{font-weight:800; font-size:13px; text-align:right; color:var(--danger);}
+  @media (max-width:600px){
+    .calendario-dia{min-height:64px; padding:5px;}
+    .calendario-valor{font-size:10px;}
+    .dow-bar-row{grid-template-columns:80px 1fr 70px; gap:6px;}
+  }
+
   .content{
     flex:1; display:flex; flex-direction:column; align-items:center;
     padding:48px 20px 60px;
@@ -562,6 +596,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -732,6 +767,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -766,6 +802,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -798,6 +835,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -830,6 +868,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -937,6 +976,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -993,6 +1033,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1070,6 +1111,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1126,6 +1168,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1159,6 +1202,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1195,6 +1239,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1231,6 +1276,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1267,6 +1313,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1353,6 +1400,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1439,6 +1487,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1516,6 +1565,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1581,6 +1631,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1651,6 +1702,73 @@
   </div>
 </div>
 
+<!-- ===================== GASTOS POR DIA ===================== -->
+<div class="screen" id="screen-gastosPorDia">
+  <div class="topbar">
+    <button class="logo" onclick="goTo('home')"><span class="dot"></span>CashBot</button>
+    <div class="topbar-right">
+      <button class="voltar-btn" type="button" onclick="voltarTela()" aria-label="Voltar">‹ Voltar</button>
+      <div class="menu-wrap">
+      <button class="hamburger-btn" id="menu-toggle-gastosPorDia" aria-haspopup="true" aria-expanded="false" aria-label="Abrir menu"><span></span></button>
+      <div class="menu-dropdown" id="menu-dropdown-gastosPorDia">
+        <button onclick="goTo('home')">Início</button>
+        <button onclick="goTo('lancamentos')">Lançamentos</button>
+        <button onclick="goTo('cadastros')">Cadastros</button>
+        <button onclick="goTo('despesas')">Despesas</button>
+        <button onclick="goTo('receitas')">Receitas</button>
+        <button onclick="goTo('bens')">Bens</button>
+        <button onclick="goTo('saldos')">Saldos</button>
+        <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
+        <button onclick="goTo('metas')">Metas</button>
+        <button onclick="handleLogout()">Sair</button>
+      </div>
+    </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="resumo-wrap">
+      <h1>Gastos por Dia</h1>
+
+      <div class="card wide">
+        <div class="step-title" style="margin-bottom:14px;">Filtros</div>
+        <div class="filtros-grid">
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="gpd-data-inicio">Data início</label>
+            <input type="date" id="gpd-data-inicio">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="gpd-data-fim">Data fim</label>
+            <input type="date" id="gpd-data-fim">
+          </div>
+          <div class="field-block" style="margin-bottom:0;">
+            <label for="gpd-visualizacao">Visualização</label>
+            <select id="gpd-visualizacao">
+              <option value="dia">Dia</option>
+              <option value="semana">Semana</option>
+              <option value="mes" selected>Mês</option>
+              <option value="ano">Ano</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px;">
+          <button class="big-btn secondary" type="button" onclick="limparFiltrosGastosPorDia()">Limpar filtros</button>
+        </div>
+      </div>
+
+      <div class="card wide">
+        <div id="gpd-calendario"></div>
+      </div>
+
+      <div class="card wide">
+        <div class="step-title" style="margin-bottom:4px;">Gastos por dia da semana</div>
+        <p class="sub" style="margin:0 0 16px; font-size:13px; color:var(--muted);">Média de despesas por dia da semana no período filtrado</p>
+        <div class="dow-bars" id="gpd-dow-bars"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===================== METAS ===================== -->
 <div class="screen" id="screen-metas">
   <div class="topbar">
@@ -1668,6 +1786,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -1695,6 +1814,7 @@
         <button onclick="goTo('bens')">Bens</button>
         <button onclick="goTo('saldos')">Saldos</button>
         <button onclick="goTo('patrimonio')">Patrimônio</button>
+        <button onclick="goTo('gastosPorDia')">Gastos por Dia</button>
         <button onclick="goTo('metas')">Metas</button>
         <button onclick="handleLogout()">Sair</button>
       </div>
@@ -2093,6 +2213,237 @@
     alertaErro('Perfil atualizado com sucesso!');
   });
 
+  // ---------- GASTOS POR DIA ----------
+  const DOW_NOMES = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+  const DOW_ABREV = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const MES_NOMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  function parseDataLocal(str){
+    if(!str) return null;
+    const [y,m,d] = str.split('-').map(Number);
+    return new Date(y, m-1, d);
+  }
+  function formatarDataISO(date){
+    const y = date.getFullYear();
+    const m = String(date.getMonth()+1).padStart(2,'0');
+    const d = String(date.getDate()).padStart(2,'0');
+    return `${y}-${m}-${d}`;
+  }
+  function diasEntre(inicioStr, fimStr){
+    const ms = parseDataLocal(fimStr) - parseDataLocal(inicioStr);
+    return Math.round(ms / 86400000) + 1;
+  }
+  function totaisDoDia(dataStr){
+    let receita = 0, despesa = 0;
+    lancamentos.forEach(item => {
+      if(item.data !== dataStr) return;
+      const v = Number(item.valor) || 0;
+      if(v >= 0) receita += v; else despesa += Math.abs(v);
+    });
+    return { receita, despesa };
+  }
+  function celulaDiaHtml(dataStr, numeroExibido){
+    const { receita, despesa } = totaisDoDia(dataStr);
+    const hojeStr = formatarDataISO(new Date());
+    const classes = ['calendario-dia'];
+    if(dataStr === hojeStr) classes.push('hoje');
+    return `<div class="${classes.join(' ')}">
+      <span class="calendario-dia-num">${numeroExibido}</span>
+      ${receita > 0 ? `<span class="valor-pos calendario-valor">+ ${money(receita)}</span>` : ''}
+      ${despesa > 0 ? `<span class="valor-neg calendario-valor">- ${money(despesa)}</span>` : ''}
+    </div>`;
+  }
+
+  function renderMesGrid(ano, mes){
+    const primeiroDia = new Date(ano, mes, 1);
+    const ultimoDia = new Date(ano, mes+1, 0);
+    const diasNoMes = ultimoDia.getDate();
+    const offsetInicio = primeiroDia.getDay();
+    let celulas = '';
+    for(let i=0;i<offsetInicio;i++) celulas += '<div class="calendario-dia vazio"></div>';
+    for(let d=1; d<=diasNoMes; d++){
+      celulas += celulaDiaHtml(formatarDataISO(new Date(ano, mes, d)), d);
+    }
+    const resto = (7 - ((offsetInicio + diasNoMes) % 7)) % 7;
+    for(let i=0;i<resto;i++) celulas += '<div class="calendario-dia vazio"></div>';
+    return `<div class="calendario-mes">
+      <div class="calendario-mes-titulo">${MES_NOMES[mes]} de ${ano}</div>
+      <div class="calendario-grid">
+        ${DOW_ABREV.map(d => `<div class="calendario-dow">${d}</div>`).join('')}
+        ${celulas}
+      </div>
+    </div>`;
+  }
+
+  function renderCalendarioMeses(container, inicioStr, fimStr){
+    const inicio = parseDataLocal(inicioStr);
+    const fim = parseDataLocal(fimStr);
+    let cursor = new Date(inicio.getFullYear(), inicio.getMonth(), 1);
+    const fimMes = new Date(fim.getFullYear(), fim.getMonth(), 1);
+    let html = '';
+    let guarda = 0;
+    while(cursor <= fimMes && guarda < 60){
+      html += renderMesGrid(cursor.getFullYear(), cursor.getMonth());
+      cursor = new Date(cursor.getFullYear(), cursor.getMonth()+1, 1);
+      guarda++;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderCalendarioSemanas(container, inicioStr, fimStr){
+    const fim = parseDataLocal(fimStr);
+    let cursorSemana = parseDataLocal(inicioStr);
+    cursorSemana.setDate(cursorSemana.getDate() - cursorSemana.getDay());
+    let html = '';
+    let guarda = 0;
+    while(cursorSemana <= fim && guarda < 60){
+      const diasSemana = [];
+      for(let i=0;i<7;i++){
+        const d = new Date(cursorSemana);
+        d.setDate(d.getDate()+i);
+        diasSemana.push(d);
+      }
+      html += `<div class="calendario-mes">
+        <div class="calendario-mes-titulo">Semana de ${fmtDateBR(formatarDataISO(diasSemana[0]))} a ${fmtDateBR(formatarDataISO(diasSemana[6]))}</div>
+        <div class="calendario-grid">
+          ${DOW_ABREV.map(d => `<div class="calendario-dow">${d}</div>`).join('')}
+          ${diasSemana.map(d => {
+            const dataStr = formatarDataISO(d);
+            return (dataStr < inicioStr || dataStr > fimStr) ? '<div class="calendario-dia vazio"></div>' : celulaDiaHtml(dataStr, d.getDate());
+          }).join('')}
+        </div>
+      </div>`;
+      cursorSemana.setDate(cursorSemana.getDate()+7);
+      guarda++;
+    }
+    container.innerHTML = html;
+  }
+
+  function renderCalendarioListaDias(container, inicioStr, fimStr){
+    let cursor = parseDataLocal(inicioStr);
+    const fim = parseDataLocal(fimStr);
+    let linhas = '';
+    while(cursor <= fim){
+      const dataStr = formatarDataISO(cursor);
+      const { receita, despesa } = totaisDoDia(dataStr);
+      linhas += `<div class="gpd-dia-row">
+        <span class="gpd-dia-data">${fmtDateBR(dataStr)} <span class="gpd-dia-dow">(${DOW_ABREV[cursor.getDay()]})</span></span>
+        <span class="gpd-dia-valores">
+          ${receita > 0 ? `<span class="valor-pos">+ ${money(receita)}</span>` : ''}
+          ${despesa > 0 ? `<span class="valor-neg">- ${money(despesa)}</span>` : ''}
+          ${(receita === 0 && despesa === 0) ? '<span class="gpd-dia-vazio">—</span>' : ''}
+        </span>
+      </div>`;
+      cursor.setDate(cursor.getDate()+1);
+    }
+    container.innerHTML = `<div class="gpd-dia-lista">${linhas}</div>`;
+  }
+
+  function renderCalendarioAno(container, inicioStr, fimStr){
+    const inicio = parseDataLocal(inicioStr);
+    const fim = parseDataLocal(fimStr);
+    let cursor = new Date(inicio.getFullYear(), inicio.getMonth(), 1);
+    const fimMes = new Date(fim.getFullYear(), fim.getMonth(), 1);
+    let cards = '';
+    let guarda = 0;
+    while(cursor <= fimMes && guarda < 60){
+      const ano = cursor.getFullYear(), mes = cursor.getMonth();
+      const primeiroDiaStr = formatarDataISO(new Date(ano, mes, 1));
+      const ultimoDiaStr = formatarDataISO(new Date(ano, mes+1, 0));
+      let receitaMes = 0, despesaMes = 0;
+      lancamentos.forEach(item => {
+        if(!item.data) return;
+        if(item.data < primeiroDiaStr || item.data > ultimoDiaStr) return;
+        if(item.data < inicioStr || item.data > fimStr) return;
+        const v = Number(item.valor) || 0;
+        if(v >= 0) receitaMes += v; else despesaMes += Math.abs(v);
+      });
+      cards += `<div class="calendario-dia calendario-mes-card">
+        <span class="calendario-dia-num">${MES_NOMES[mes]} ${ano}</span>
+        ${receitaMes > 0 ? `<span class="valor-pos calendario-valor">+ ${money(receitaMes)}</span>` : ''}
+        ${despesaMes > 0 ? `<span class="valor-neg calendario-valor">- ${money(despesaMes)}</span>` : ''}
+        ${(receitaMes === 0 && despesaMes === 0) ? '<span class="gpd-dia-vazio">Sem lançamentos</span>' : ''}
+      </div>`;
+      cursor = new Date(ano, mes+1, 1);
+      guarda++;
+    }
+    container.innerHTML = `<div class="calendario-grid-ano">${cards}</div>`;
+  }
+
+  function renderMediaDiaSemana(inicioStr, fimStr){
+    const container = document.getElementById('gpd-dow-bars');
+    if(!container) return;
+    const somaPorDow = [0,0,0,0,0,0,0];
+    const contagemPorDow = [0,0,0,0,0,0,0];
+    let cursor = parseDataLocal(inicioStr);
+    const fim = parseDataLocal(fimStr);
+    while(cursor <= fim){
+      const dow = cursor.getDay();
+      const { despesa } = totaisDoDia(formatarDataISO(cursor));
+      somaPorDow[dow] += despesa;
+      contagemPorDow[dow] += 1;
+      cursor.setDate(cursor.getDate()+1);
+    }
+    const medias = somaPorDow.map((soma, i) => contagemPorDow[i] ? soma / contagemPorDow[i] : 0);
+    const maiorMedia = Math.max(...medias, 0.01);
+    container.innerHTML = medias.map((media, i) => `
+      <div class="dow-bar-row">
+        <span class="dow-bar-label">${DOW_NOMES[i]}</span>
+        <div class="dow-bar-track"><div class="dow-bar-fill" style="width:${Math.min(100, (media / maiorMedia) * 100)}%"></div></div>
+        <span class="dow-bar-value">${money(media)}</span>
+      </div>
+    `).join('');
+  }
+
+  function atualizarCalendarioGastos(){
+    const inicioStr = document.getElementById('gpd-data-inicio').value;
+    const fimStr = document.getElementById('gpd-data-fim').value;
+    const visualizacao = document.getElementById('gpd-visualizacao').value;
+    const container = document.getElementById('gpd-calendario');
+    const painelDow = document.getElementById('gpd-dow-bars');
+    if(!inicioStr || !fimStr || inicioStr > fimStr){
+      container.innerHTML = '<p class="empty-msg">Selecione um período válido (data início antes da data fim).</p>';
+      if(painelDow) painelDow.innerHTML = '';
+      return;
+    }
+    const totalDias = diasEntre(inicioStr, fimStr);
+    if((visualizacao === 'dia' || visualizacao === 'semana') && totalDias > 366){
+      container.innerHTML = '<p class="empty-msg">Período muito longo para essa visualização. Escolha um intervalo de até 1 ano, ou mude para Mês/Ano.</p>';
+      renderMediaDiaSemana(inicioStr, fimStr);
+      return;
+    }
+    if(visualizacao === 'dia') renderCalendarioListaDias(container, inicioStr, fimStr);
+    else if(visualizacao === 'semana') renderCalendarioSemanas(container, inicioStr, fimStr);
+    else if(visualizacao === 'ano') renderCalendarioAno(container, inicioStr, fimStr);
+    else renderCalendarioMeses(container, inicioStr, fimStr);
+    renderMediaDiaSemana(inicioStr, fimStr);
+  }
+
+  function renderGastosPorDia(){
+    const inicioInput = document.getElementById('gpd-data-inicio');
+    const fimInput = document.getElementById('gpd-data-fim');
+    if(inicioInput && !inicioInput.value){
+      const hoje = new Date();
+      inicioInput.value = formatarDataISO(new Date(hoje.getFullYear(), hoje.getMonth(), 1));
+    }
+    if(fimInput && !fimInput.value){
+      const hoje = new Date();
+      fimInput.value = formatarDataISO(new Date(hoje.getFullYear(), hoje.getMonth()+1, 0));
+    }
+    atualizarCalendarioGastos();
+  }
+
+  window.limparFiltrosGastosPorDia = function(){
+    document.getElementById('gpd-data-inicio').value = '';
+    document.getElementById('gpd-data-fim').value = '';
+    document.getElementById('gpd-visualizacao').value = 'mes';
+    renderGastosPorDia();
+  };
+
+  document.getElementById('gpd-data-inicio').addEventListener('change', atualizarCalendarioGastos);
+  document.getElementById('gpd-data-fim').addEventListener('change', atualizarCalendarioGastos);
+  document.getElementById('gpd-visualizacao').addEventListener('change', atualizarCalendarioGastos);
+
   let lancamentos = [];          // {id, nome, categoria, banco, valor, data, recorrente} — valor>0 = receita, valor<0 = despesa
   let pendingImport = [];
   let categorias = [];           // {id, nome}
@@ -2162,6 +2513,7 @@
     ['menu-toggle-bens','menu-dropdown-bens'],
     ['menu-toggle-saldos','menu-dropdown-saldos'],
     ['menu-toggle-patrimonio','menu-dropdown-patrimonio'],
+    ['menu-toggle-gastosPorDia','menu-dropdown-gastosPorDia'],
     ['menu-toggle-metas','menu-dropdown-metas'],
     ['menu-toggle-editarPerfil','menu-dropdown-editarPerfil']
   ];
@@ -2232,6 +2584,7 @@
     if(name === 'cadFormaPagamento') renderFormasPagamento();
     if(name === 'patrimonio') renderPatrimonio();
     if(name === 'editarPerfil') renderEditarPerfil();
+    if(name === 'gastosPorDia') renderGastosPorDia();
     window.scrollTo(0,0);
   }
 
