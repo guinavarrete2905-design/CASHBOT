@@ -132,6 +132,17 @@
   .avatar-upload-hint{font-size:13px; color:var(--muted); margin:0;}
   .field-block.disabled input{background:#F2F5F3; color:var(--muted); cursor:not-allowed;}
 
+  /* Instalar app (Baixar CashBot) */
+  .install-overlay{display:none; position:fixed; inset:0; background:rgba(18,32,27,0.55); z-index:100; align-items:center; justify-content:center; padding:20px;}
+  .install-overlay.open{display:flex;}
+  .install-modal{background:var(--card); border-radius:var(--radius); padding:28px; max-width:420px; width:100%; box-shadow:0 20px 50px rgba(0,0,0,0.25);}
+  .install-modal-title{font-weight:800; font-size:20px; margin-bottom:6px; color:var(--black);}
+  .install-modal-sub{color:var(--muted); font-size:14px; margin:0 0 18px;}
+  .install-steps{display:flex; flex-direction:column; gap:12px; margin-bottom:22px;}
+  .install-step{display:flex; gap:12px; align-items:flex-start;}
+  .install-step-num{flex-shrink:0; width:26px; height:26px; border-radius:50%; background:var(--green-soft); color:var(--green-dark); font-weight:800; font-size:13px; display:flex; align-items:center; justify-content:center;}
+  .install-step-text{font-size:14px; color:var(--black); line-height:1.45;}
+
   /* Gastos por Dia — calendário */
   .calendario-mes{margin-bottom:28px;}
   .calendario-mes:last-child{margin-bottom:0;}
@@ -580,6 +591,7 @@
         </button>
         <div class="profile-dropdown" id="profile-dropdown-home">
           <button type="button" onclick="goTo('editarPerfil')">Editar Perfil</button>
+          <button type="button" onclick="instalarApp()">Baixar CashBot</button>
         </div>
       </div>
     </div>
@@ -4248,7 +4260,107 @@
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     });
   }
+
+  // ---------- Instalar app (Baixar CashBot) ----------
+  let deferredInstallPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+  });
+
+  function detectarPlataformaInstalacao(){
+    const ua = navigator.userAgent || '';
+    const touchMac = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+    const isIOS = /iPhone|iPad|iPod/.test(ua) || touchMac;
+    const isMac = /Macintosh/.test(ua) && !isIOS;
+    const isSafari = /^((?!chrome|android|crios|fxios).)*safari/i.test(ua);
+    return { isMac, isIOS, isSafari };
+  }
+
+  function passosInstalacao(){
+    const { isMac, isIOS, isSafari } = detectarPlataformaInstalacao();
+    if(isIOS){
+      return {
+        sub: 'No iPhone/iPad, use o Safari para instalar o CashBot na tela de início.',
+        passos: [
+          'Toque no ícone de compartilhar (o quadrado com uma seta para cima) na barra do Safari.',
+          'Role para baixo e toque em "Adicionar à Tela de Início".',
+          'Toque em "Adicionar" no canto superior direito.'
+        ]
+      };
+    }
+    if(isMac && isSafari){
+      return {
+        sub: 'No Safari (macOS Sonoma ou mais recente), instalar o CashBot é rápido:',
+        passos: [
+          'Clique no menu "Arquivo" na barra superior do Safari.',
+          'Escolha "Adicionar ao Dock…" (ou clique no ícone de compartilhar na barra de endereço e escolha a mesma opção).',
+          'Confirme em "Adicionar". O CashBot aparece como um app no seu Dock.'
+        ]
+      };
+    }
+    if(isMac){
+      return {
+        sub: 'Instale o CashBot como app no seu Mac:',
+        passos: [
+          'Clique no ícone de instalar (⊕ ou uma tela com seta) do lado direito da barra de endereço.',
+          'Se não aparecer, abra o menu ⋮ (três pontinhos) e escolha "Instalar CashBot…".',
+          'Confirme em "Instalar".'
+        ]
+      };
+    }
+    return {
+      sub: 'Instale o CashBot como app no seu computador:',
+      passos: [
+        'Clique no ícone de instalar (⊕ ou uma tela com seta) do lado direito da barra de endereço.',
+        'Se não aparecer, abra o menu ⋮ (três pontinhos) e escolha "Instalar CashBot…".',
+        'Confirme em "Instalar".'
+      ]
+    };
+  }
+
+  function mostrarInstrucoesInstalacao(){
+    const { sub, passos } = passosInstalacao();
+    document.getElementById('install-modal-sub').textContent = sub;
+    document.getElementById('install-steps').innerHTML = passos.map((texto, i) => `
+      <div class="install-step">
+        <span class="install-step-num">${i + 1}</span>
+        <span class="install-step-text">${texto}</span>
+      </div>
+    `).join('');
+    document.getElementById('install-overlay').classList.add('open');
+  }
+
+  window.fecharInstrucoesInstalacao = function(){
+    document.getElementById('install-overlay').classList.remove('open');
+  };
+
+  window.instalarApp = async function(){
+    document.querySelectorAll('.profile-menu-wrap').forEach(w => w.classList.remove('open'));
+    if(deferredInstallPrompt){
+      deferredInstallPrompt.prompt();
+      try { await deferredInstallPrompt.userChoice; } catch(e) {}
+      deferredInstallPrompt = null;
+      return;
+    }
+    mostrarInstrucoesInstalacao();
+  };
+
+  document.getElementById('install-overlay').addEventListener('click', (e) => {
+    if(e.target.id === 'install-overlay') fecharInstrucoesInstalacao();
+  });
 })();
 </script>
+<div class="install-overlay" id="install-overlay">
+  <div class="install-modal">
+    <div class="install-modal-title">Instalar o CashBot</div>
+    <p class="install-modal-sub" id="install-modal-sub">Siga o passo a passo abaixo.</p>
+    <div class="install-steps" id="install-steps"></div>
+    <button type="button" class="big-btn" style="width:100%;" onclick="fecharInstrucoesInstalacao()">Entendi</button>
+  </div>
+</div>
 </body>
 </html>
