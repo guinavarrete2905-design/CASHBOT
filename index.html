@@ -136,8 +136,12 @@
   .install-banner{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; background:var(--green-soft); border-color:var(--green); margin-bottom:20px;}
   .install-banner-title{font-weight:800; font-size:16px; color:var(--green-dark); margin-bottom:4px;}
   .install-banner-sub{font-size:13px; color:var(--muted);}
+  .install-banner-note{font-size:12.5px; color:var(--muted); margin:-8px 0 20px; text-align:left;}
+  .install-banner-note a{color:var(--green-dark); font-weight:600;}
+  .link-btn{background:none; border:none; padding:0; margin:0; color:var(--green-dark); font-weight:700; font-size:12.5px; cursor:pointer; text-decoration:underline;}
   @media (max-width:600px){
     .install-banner{flex-direction:column; align-items:stretch; text-align:center;}
+    .install-banner-note{text-align:center;}
   }
   .install-overlay{display:none; position:fixed; inset:0; background:rgba(18,32,27,0.55); z-index:100; align-items:center; justify-content:center; padding:20px;}
   .install-overlay.open{display:flex;}
@@ -635,10 +639,14 @@
       <div class="card wide install-banner">
         <div>
           <div class="install-banner-title">Baixe o CashBot no seu computador</div>
-          <div class="install-banner-sub">Instale como um app, com ícone próprio, sem precisar abrir o navegador toda vez.</div>
+          <div class="install-banner-sub">Instale como um programa de verdade, com ícone próprio e atalho no menu iniciar/dock.</div>
         </div>
-        <button type="button" class="big-btn" style="width:auto; flex-shrink:0; margin-bottom:0;" onclick="instalarApp()">Baixar CashBot</button>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <a class="big-btn" style="width:auto; flex-shrink:0; margin-bottom:0; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://github.com/guinavarrete2905-design/CASHBOT/releases/download/v1.0.0/CashBot-Setup-1.0.0.exe" download>Baixar para Windows</a>
+          <a class="big-btn secondary" style="width:auto; flex-shrink:0; margin-bottom:0; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://github.com/guinavarrete2905-design/CASHBOT/releases/download/v1.0.0/CashBot-1.0.0-arm64.dmg" download>Baixar para Mac</a>
+        </div>
       </div>
+      <p class="install-banner-note">Mac com chip Intel (modelos até 2020)? <a href="https://github.com/guinavarrete2905-design/CASHBOT/releases/download/v1.0.0/CashBot-1.0.0-x64.dmg" download>baixe esta versão</a> em vez da de cima. Prefere instalar direto do navegador, sem baixar arquivo nenhum? <button type="button" class="link-btn" onclick="instalarApp()">clique aqui</button>.</p>
 
       <div class="dash-grid">
         <div class="dash-card">
