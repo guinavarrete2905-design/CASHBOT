@@ -136,12 +136,8 @@
   .install-banner{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; background:var(--green-soft); border-color:var(--green); margin-bottom:20px;}
   .install-banner-title{font-weight:800; font-size:16px; color:var(--green-dark); margin-bottom:4px;}
   .install-banner-sub{font-size:13px; color:var(--muted);}
-  .install-banner-note{font-size:12.5px; color:var(--muted); margin:-8px 0 20px; text-align:left;}
-  .install-banner-note a{color:var(--green-dark); font-weight:600;}
-  .link-btn{background:none; border:none; padding:0; margin:0; color:var(--green-dark); font-weight:700; font-size:12.5px; cursor:pointer; text-decoration:underline;}
   @media (max-width:600px){
     .install-banner{flex-direction:column; align-items:stretch; text-align:center;}
-    .install-banner-note{text-align:center;}
   }
   .install-overlay{display:none; position:fixed; inset:0; background:rgba(18,32,27,0.55); z-index:100; align-items:center; justify-content:center; padding:20px;}
   .install-overlay.open{display:flex;}
@@ -288,7 +284,17 @@
   .status-msg{font-size:15px; color:var(--muted); margin-bottom:10px; min-height:20px;}
   .status-msg.erro{color:var(--danger);}
 
-  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px;}
+  .campo-ajuda{font-size:12.5px; color:var(--muted); margin:-6px 0 14px;}
+  .massa-fill-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:var(--green-soft); border:1px solid var(--green); border-radius:10px; padding:12px 14px; margin-bottom:14px;}
+  .massa-fill-label{font-weight:700; font-size:13.5px; color:var(--green-dark); white-space:nowrap;}
+  .massa-fill-bar select, .massa-fill-bar input{padding:9px 10px; border-radius:8px; border:1px solid var(--border); font-size:14px; min-width:140px;}
+  @media (max-width:600px){
+    .massa-fill-bar{flex-direction:column; align-items:stretch;}
+    .massa-fill-bar select, .massa-fill-bar input{min-width:0; width:100%;}
+  }
+  .table-scroll{overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:2px; cursor:grab;}
+  .table-scroll.dragging{cursor:grabbing; user-select:none;}
+  .table-scroll.dragging *{user-select:none;}
   table{width:100%; min-width:480px; border-collapse:collapse; margin-bottom:18px;}
   .acc-body table{min-width:360px;} #preview-tbody td:nth-child(1), #tbody-despesas td:nth-child(1), #tbody-receitas td:nth-child(1){min-width:150px;} #preview-tbody td:nth-child(2), #tbody-despesas td:nth-child(2), #tbody-receitas td:nth-child(2){min-width:280px;} #preview-tbody td:nth-child(3), #tbody-despesas td:nth-child(3), #tbody-receitas td:nth-child(3){min-width:190px;} #preview-tbody td:nth-child(4), #tbody-despesas td:nth-child(4), #tbody-receitas td:nth-child(4){min-width:130px;} #preview-tbody td:nth-child(5), #tbody-despesas td:nth-child(5), #tbody-receitas td:nth-child(5){min-width:190px;} #preview-tbody td:nth-child(6), #tbody-despesas td:nth-child(6), #tbody-receitas td:nth-child(6){min-width:130px;} #preview-tbody td:nth-child(7), #tbody-despesas td:nth-child(7), #tbody-receitas td:nth-child(7){min-width:150px;} #preview-tbody td:nth-child(8), #tbody-despesas td:nth-child(8), #tbody-receitas td:nth-child(8){min-width:120px;} #preview-tbody td:nth-child(9), #tbody-despesas td:nth-child(9), #tbody-receitas td:nth-child(9){min-width:60px;}
   thead th{
@@ -639,14 +645,10 @@
       <div class="card wide install-banner">
         <div>
           <div class="install-banner-title">Baixe o CashBot no seu computador</div>
-          <div class="install-banner-sub">Instale como um programa de verdade, com ícone próprio e atalho no menu iniciar/dock.</div>
+          <div class="install-banner-sub">Instale como um app, com ícone próprio, sem precisar abrir o navegador toda vez.</div>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="big-btn" style="width:auto; flex-shrink:0; margin-bottom:0; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://github.com/guinavarrete2905-design/CASHBOT/releases/download/v1.0.0/CashBot-Setup-1.0.0.exe" download>Baixar para Windows</a>
-          <a class="big-btn secondary" style="width:auto; flex-shrink:0; margin-bottom:0; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;" href="https://github.com/guinavarrete2905-design/CASHBOT/releases/download/v1.0.0/CashBot-1.0.0-arm64.dmg" download>Baixar para Mac</a>
-        </div>
+        <button type="button" class="big-btn" style="width:auto; flex-shrink:0; margin-bottom:0;" onclick="instalarApp()">Baixar CashBot</button>
       </div>
-      <p class="install-banner-note">Mac com chip Intel (modelos até 2020)? <a href="https://github.com/guinavarrete2905-design/CASHBOT/releases/download/v1.0.0/CashBot-1.0.0-x64.dmg" download>baixe esta versão</a> em vez da de cima. Prefere instalar direto do navegador, sem baixar arquivo nenhum? <button type="button" class="link-btn" onclick="instalarApp()">clique aqui</button>.</p>
 
       <div class="dash-grid">
         <div class="dash-card">
@@ -981,6 +983,16 @@
           </div>
         </div>
 
+        <div class="field-block" id="fb-competencia" style="display:none;">
+          <label for="in-competencia">Competência (mês em que esse lançamento deve contar)</label>
+          <input type="month" id="in-competencia">
+          <p class="campo-ajuda">Por padrão é o mês da data acima. Mude aqui se, por exemplo, uma compra de cartão feita em setembro só deve contar em outubro.</p>
+          <div class="step-actions">
+            <button type="button" class="btn-avancar" id="btn-competencia">AVANÇAR</button>
+            <button type="button" class="btn-voltar-step" onclick="voltarStepManual('competencia')">‹ Voltar</button>
+          </div>
+        </div>
+
         <div class="field-block" id="fb-recorrente" style="display:none;">
           <label for="in-recorrente">Recorrente?</label>
           <select id="in-recorrente">
@@ -1039,9 +1051,25 @@
       <p class="status-msg" id="upload-status"></p>
 
       <div id="preview-wrap" style="display:none;">
+        <div class="massa-fill-bar">
+          <span class="massa-fill-label">Preencher em massa:</span>
+          <select id="massa-fill-campo" onchange="atualizarCampoPreenchimentoEmMassa()">
+            <option value="data">Data</option>
+            <option value="nome">Nome</option>
+            <option value="categoria">Categoria</option>
+            <option value="banco" selected>Banco</option>
+            <option value="forma_pagamento">Forma de Pagamento</option>
+            <option value="tipo">Tipo</option>
+            <option value="valor">Valor</option>
+            <option value="competencia">Competência</option>
+            <option value="recorrente">Recorrente</option>
+          </select>
+          <span id="massa-fill-valor-wrap"></span>
+          <button type="button" class="big-btn secondary" style="width:auto; flex-shrink:0; margin-bottom:0; padding:10px 18px; font-size:14px;" onclick="aplicarPreenchimentoEmMassa()">Aplicar a todos</button>
+        </div>
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Competência</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="preview-tbody"></tbody>
         </table>
         </div>
@@ -1406,9 +1434,9 @@
       <div class="card wide">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Competência</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="tbody-despesas"></tbody>
-          <tfoot><tr><td colspan="6">Total</td><td class="num" id="total-despesas">R$ 0,00</td><td></td><td></td></tr></tfoot>
+          <tfoot><tr><td colspan="7">Total</td><td class="num" id="total-despesas">R$ 0,00</td><td></td><td></td></tr></tfoot>
         </table>
         </div>
         <p class="empty-msg" id="empty-despesas" style="display:none;">Nenhuma despesa ainda.</p>
@@ -1493,9 +1521,9 @@
       <div class="card wide">
         <div class="table-scroll">
         <table>
-          <thead><tr><th>Data</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
+          <thead><tr><th>Data</th><th>Competência</th><th>Nome</th><th>Categoria</th><th>Banco</th><th>Forma de Pagamento</th><th>Tipo</th><th class="num">Valor</th><th>Recorrente</th><th></th></tr></thead>
           <tbody id="tbody-receitas"></tbody>
-          <tfoot><tr><td colspan="6">Total</td><td class="num" id="total-receitas">R$ 0,00</td><td></td><td></td></tr></tfoot>
+          <tfoot><tr><td colspan="7">Total</td><td class="num" id="total-receitas">R$ 0,00</td><td></td><td></td></tr></tfoot>
         </table>
         </div>
         <p class="empty-msg" id="empty-receitas" style="display:none;">Nenhuma receita ainda.</p>
@@ -2778,9 +2806,9 @@
   }
 
   // ---------- LANÇAMENTO MANUAL (wizard progressivo) ----------
-  const TODOS_CAMPOS_MANUAL = ['tipo','nome','categoria','banco','formaPagamento','valor','data','recorrente'];
-  const PASSOS_DESPESA = ['tipo','nome','categoria','banco','formaPagamento','valor','data','recorrente'];
-  const PASSOS_RECEITA = ['tipo','nome','banco','categoria','valor','data','recorrente'];
+  const TODOS_CAMPOS_MANUAL = ['tipo','nome','categoria','banco','formaPagamento','valor','data','competencia','recorrente'];
+  const PASSOS_DESPESA = ['tipo','nome','categoria','banco','formaPagamento','valor','data','competencia','recorrente'];
+  const PASSOS_RECEITA = ['tipo','nome','banco','categoria','valor','data','competencia','recorrente'];
   let manualTipoAtual = 'despesa';
 
   function passosAtuais(){
@@ -2840,7 +2868,7 @@
 
   function advanceStep(currentField, isLast){
     const input = document.getElementById('in-' + currentField);
-    const isOpcional = (currentField === 'categoria' || currentField === 'banco' || currentField === 'formaPagamento' || currentField === 'recorrente');
+    const isOpcional = (currentField === 'categoria' || currentField === 'banco' || currentField === 'formaPagamento' || currentField === 'recorrente' || currentField === 'competencia');
     if(!isOpcional && (!input.value || (currentField === 'valor' && parseFloat(input.value) <= 0))){
       input.focus();
       return;
@@ -2867,6 +2895,13 @@
     } else {
       const passos = passosAtuais();
       const nextField = passos[passos.indexOf(currentField) + 1];
+      if(nextField === 'competencia'){
+        const inComp = document.getElementById('in-competencia');
+        if(!inComp.value){
+          const dataVal = document.getElementById('in-data').value;
+          if(dataVal) inComp.value = dataVal.slice(0,7);
+        }
+      }
       document.getElementById('fb-' + nextField).style.display = 'block';
       setTimeout(() => document.getElementById('in-' + nextField).focus(), 50);
     }
@@ -2879,10 +2914,11 @@
   document.getElementById('btn-formaPagamento').addEventListener('click', () => advanceStep('formaPagamento', false));
   document.getElementById('btn-valor').addEventListener('click', () => advanceStep('valor', false));
   document.getElementById('btn-data').addEventListener('click', () => advanceStep('data', false));
+  document.getElementById('btn-competencia').addEventListener('click', () => advanceStep('competencia', false));
   document.getElementById('btn-recorrente').addEventListener('click', () => advanceStep('recorrente', true));
 
   document.getElementById('form-manual').addEventListener('submit', (e) => e.preventDefault());
-  ['in-nome','in-categoria','in-banco','in-formaPagamento','in-valor','in-data'].forEach(id => {
+  ['in-nome','in-categoria','in-banco','in-formaPagamento','in-valor','in-data','in-competencia'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', (e) => {
       if(e.key === 'Enter'){
         e.preventDefault();
@@ -2895,13 +2931,16 @@
   async function salvarLancamento(){
     const tipoManual = document.getElementById('in-tipo').value;
     const magnitude = Math.abs(parseFloat(document.getElementById('in-valor').value) || 0);
+    const dataManual = document.getElementById('in-data').value || null;
+    const competenciaManual = document.getElementById('in-competencia').value || (dataManual ? dataManual.slice(0,7) : '');
     const payload = {
       nome: document.getElementById('in-nome').value.trim(),
       categoria: document.getElementById('in-categoria').value.trim() || null,
       banco: document.getElementById('in-banco').value.trim() || null,
       forma_pagamento: tipoManual === 'receita' ? null : (document.getElementById('in-formaPagamento').value.trim() || null),
       valor: tipoManual === 'receita' ? magnitude : -magnitude,
-      data: document.getElementById('in-data').value || null,
+      data: dataManual,
+      competencia: competenciaManual ? competenciaManual + '-01' : null,
       recorrente: document.getElementById('in-recorrente').value === 'sim',
       user_id: currentUser.id
     };
@@ -3124,6 +3163,7 @@
       }
       pendingImport = rows;
       renderPreview();
+      atualizarCampoPreenchimentoEmMassa();
     }catch(err){
       console.error(err);
       setStatus('Não foi possível ler esse arquivo. Tente novamente ou escolha outro.', true);
@@ -3162,6 +3202,7 @@
       const sinalClasse = (Number(item.valor) || 0) < 0 ? 'valor-neg' : 'valor-pos';
       tr.innerHTML = `
         <td><input type="date" value="${escapeAttr(item.data)}" data-idx="${idx}" data-field="data"></td>
+        <td><input type="month" value="${escapeAttr(item.competencia || item.data.slice(0,7))}" data-idx="${idx}" data-field="competencia" title="Mês em que o lançamento deve contar (ex.: compra de setembro paga em outubro)"></td>
         <td><input type="text" value="${escapeAttr(item.nome)}" data-idx="${idx}" data-field="nome"></td>
         <td><input type="text" list="datalist-categorias" placeholder="(vazio)" value="${escapeAttr(item.categoria)}" data-idx="${idx}" data-field="categoria" autocomplete="off"></td>
         <td><input type="text" list="datalist-bancos" placeholder="(vazio)" value="${escapeAttr(item.banco)}" data-idx="${idx}" data-field="banco" autocomplete="off"></td>
@@ -3199,6 +3240,15 @@
           }
         } else if(field === 'recorrente'){
           pendingImport[idx][field] = inp.value === 'sim';
+        } else if(field === 'data'){
+          const mesAntigo = (pendingImport[idx].data || '').slice(0,7);
+          const competenciaSeguiaData = (pendingImport[idx].competencia || '') === mesAntigo;
+          pendingImport[idx].data = inp.value;
+          if(competenciaSeguiaData){
+            pendingImport[idx].competencia = inp.value.slice(0,7);
+            const compInput = tbody.querySelector('input[data-idx="' + idx + '"][data-field="competencia"]');
+            if(compInput) compInput.value = pendingImport[idx].competencia;
+          }
         } else {
           pendingImport[idx][field] = inp.value;
         }
@@ -3212,6 +3262,59 @@
     });
   }
 
+  // ---------- Preenchimento em massa (ex.: colocar "Banco XP" em todos os lançamentos importados) ----------
+  window.atualizarCampoPreenchimentoEmMassa = function(){
+    const campo = document.getElementById('massa-fill-campo').value;
+    const wrap = document.getElementById('massa-fill-valor-wrap');
+    if(!wrap) return;
+    let html = '';
+    if(campo === 'tipo'){
+      html = `<select id="massa-fill-valor"><option value="despesa">Despesa</option><option value="receita">Receita</option></select>`;
+    } else if(campo === 'recorrente'){
+      html = `<select id="massa-fill-valor"><option value="nao">Não</option><option value="sim">Sim</option></select>`;
+    } else if(campo === 'data'){
+      html = `<input type="date" id="massa-fill-valor">`;
+    } else if(campo === 'competencia'){
+      html = `<input type="month" id="massa-fill-valor">`;
+    } else if(campo === 'valor'){
+      html = `<input type="number" step="0.01" id="massa-fill-valor" placeholder="Ex.: 150,00">`;
+    } else if(campo === 'categoria'){
+      html = `<input type="text" id="massa-fill-valor" list="datalist-categorias" placeholder="Ex.: Alimentação" autocomplete="off">`;
+    } else if(campo === 'banco'){
+      html = `<input type="text" id="massa-fill-valor" list="datalist-bancos" placeholder="Ex.: XP" autocomplete="off">`;
+    } else if(campo === 'forma_pagamento'){
+      html = `<input type="text" id="massa-fill-valor" list="datalist-formas-pagamento" placeholder="Ex.: Cartão de crédito" autocomplete="off">`;
+    } else {
+      html = `<input type="text" id="massa-fill-valor" placeholder="Valor para todos os lançamentos">`;
+    }
+    wrap.innerHTML = html;
+  };
+
+  window.aplicarPreenchimentoEmMassa = function(){
+    if(!pendingImport.length) return;
+    const campo = document.getElementById('massa-fill-campo').value;
+    const valorEl = document.getElementById('massa-fill-valor');
+    if(!valorEl) return;
+    let valor = valorEl.value;
+    if(campo === 'recorrente'){
+      valor = valor === 'sim';
+    } else if(campo === 'valor'){
+      valor = parseFloat(valor) || 0;
+    } else if(campo !== 'tipo' && !valor){
+      alertaErro('Preencha o valor que você quer aplicar a todos os lançamentos.');
+      return;
+    }
+    pendingImport.forEach(item => {
+      if(campo === 'tipo'){
+        const magnitude = Math.abs(Number(item.valor) || 0);
+        item.valor = valor === 'receita' ? magnitude : -magnitude;
+      } else {
+        item[campo] = valor;
+      }
+    });
+    renderPreview();
+  };
+
   window.confirmarImportacao = async function(){
     if(!pendingImport.length) return;
     const rows = pendingImport.map(item => ({
@@ -3221,6 +3324,7 @@
       forma_pagamento: item.forma_pagamento || null,
       valor: item.valor || 0,
       data: item.data || null,
+      competencia: item.competencia ? (item.competencia.length === 7 ? item.competencia + '-01' : item.competencia) : null,
       recorrente: !!item.recorrente,
       user_id: currentUser.id
     }));
@@ -3287,22 +3391,27 @@
     const kCategoria = findKey(['categoria','category']);
     const kFormaPagamento = findKey(['forma de pagamento','forma_pagamento','pagamento','payment']);
     const kRecorrente = findKey(['recorrente','recurring']);
+    const kCompetencia = findKey(['compet']);
     // nome/descrição do lançamento: aceita várias grafias comuns de planilhas e extratos bancários
     let kNome = findKey(['nome','descri','desc','hist','lançamento','lancamento','título','titulo','estabelecimento','transa','memo','item']);
     // se nenhuma coluna de nome foi reconhecida, usa como último recurso a primeira coluna de texto
     // que ainda não foi usada por outro campo (data/valor/categoria/banco/forma/recorrente) — assim o
     // nome sempre vem preenchido a partir da planilha, mas continua 100% editável na pré-visualização.
     if(!kNome){
-      const usados = [kValor, kData, kBanco, kCategoria, kFormaPagamento, kRecorrente].filter(Boolean);
+      const usados = [kValor, kData, kBanco, kCategoria, kFormaPagamento, kRecorrente, kCompetencia].filter(Boolean);
       kNome = keys.find(k => !usados.includes(k) && String(row[k]).trim() && isNaN(Number(String(row[k]).replace(',','.'))));
     }
+    const dataNormalizada = normalizeDate(kData ? row[kData] : '');
     return {
       nome: kNome ? String(row[kNome]).trim() : '',
       categoria: normalizeContraLista(kCategoria ? String(row[kCategoria]).trim() : '', categorias),
       banco: normalizeContraLista(kBanco ? String(row[kBanco]).trim() : '', bancos),
       forma_pagamento: normalizeContraLista(kFormaPagamento ? String(row[kFormaPagamento]).trim() : '', formasPagamento),
       valorRaw: kValor ? row[kValor] : 0,
-      data: normalizeDate(kData ? row[kData] : ''),
+      data: dataNormalizada,
+      // competência: mês em que o lançamento deve "contar" (ex.: compra de cartão em setembro,
+      // paga/competência em outubro). Se a planilha não trouxer essa coluna, assume o mês da própria data.
+      competencia: normalizeCompetencia(kCompetencia ? row[kCompetencia] : '', dataNormalizada),
       recorrente: kRecorrente ? parseRecorrenteTexto(row[kRecorrente]) : false
     };
   }
@@ -3323,6 +3432,7 @@
         forma_pagamento: campos.forma_pagamento,
         valor: valorNum,
         data: campos.data,
+        competencia: campos.competencia,
         recorrente: campos.recorrente
       };
     }).filter(r => r.nome || r.valor);
@@ -3340,7 +3450,7 @@
       const data = dtRaw.length >= 8 ? `${dtRaw.slice(0,4)}-${dtRaw.slice(4,6)}-${dtRaw.slice(6,8)}` : '';
       const nome = get('NAME') || get('MEMO');
       const valor = parseFloat(get('TRNAMT')) || 0;
-      return {nome, categoria:'', banco:'', forma_pagamento:'', valor, data, recorrente:false};
+      return {nome, categoria:'', banco:'', forma_pagamento:'', valor, data, competencia: data.slice(0,7), recorrente:false};
     }).filter(r => r.nome || r.valor);
   }
 
@@ -3363,6 +3473,7 @@
         forma_pagamento: campos.forma_pagamento,
         valor: valorNum,
         data: campos.data,
+        competencia: campos.competencia,
         recorrente: campos.recorrente
       };
     }).filter(r => r.nome || r.valor);
@@ -3377,6 +3488,21 @@
     m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
     if(m) return `${m[3]}-${m[2]}-${m[1]}`;
     return '';
+  }
+  // competência: mês de referência do lançamento (formato "AAAA-MM", igual ao <input type="month">).
+  // Aceita datas completas, "MM/AAAA" ou "AAAA-MM"; se não der pra reconhecer, usa o mês da data informada.
+  function normalizeCompetencia(v, dataISO){
+    const fallback = dataISO ? dataISO.slice(0,7) : '';
+    if(!v) return fallback;
+    if(v instanceof Date) return v.toISOString().slice(0,7);
+    const s = String(v).trim();
+    let m = s.match(/^(\d{4})-(\d{2})/);
+    if(m) return `${m[1]}-${m[2]}`;
+    m = s.match(/^(\d{2})\/(\d{4})$/);
+    if(m) return `${m[2]}-${m[1]}`;
+    m = s.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+    if(m) return `${m[3]}-${m[2]}`;
+    return fallback;
   }
   // ---------- DESPESAS / RECEITAS (listas separadas) ----------
   let filtrosLista = {
@@ -3465,6 +3591,7 @@
       const sinalClasse = isDespesa ? 'valor-neg' : 'valor-pos';
       tr.innerHTML = `
         <td><input type="date" data-id="${item.id}" data-field="data" value="${item.data || ''}"></td>
+        <td><input type="month" data-id="${item.id}" data-field="competencia" value="${(item.competencia || '').slice(0,7)}" title="Mês em que esse lançamento deve contar"></td>
         <td>${escapeAttr(item.nome)}</td>
         <td><select data-id="${item.id}" data-field="categoria">${categoriaOptionsHtml(item.categoria)}</select></td>
         <td><select data-id="${item.id}" data-field="banco">${bancoOptionsHtml(item.banco)}</select></td>
@@ -3482,7 +3609,7 @@
       tbody.appendChild(tr);
     });
     document.getElementById('total-' + suf).textContent = money(total);
-    tbody.querySelectorAll('select, input[type=date]').forEach(sel => {
+    tbody.querySelectorAll('select, input[type=date], input[type=month]').forEach(sel => {
       sel.addEventListener('change', async () => {
         const item = lancamentos.find(i => i.id === sel.dataset.id);
         if(!item) return;
@@ -3511,6 +3638,18 @@
             alertaErro('Não foi possível atualizar a data. Tente novamente.');
           }
           renderLista(tipo);
+          return;
+        }
+        if(field === 'competencia'){
+          const valorAnterior = item.competencia;
+          const novoValor = sel.value ? sel.value + '-01' : null;
+          item.competencia = novoValor;
+          const { error } = await db.from('lancamentos').update({competencia: novoValor}).eq('id', item.id);
+          if(error){
+            item.competencia = valorAnterior;
+            sel.value = (valorAnterior || '').slice(0,7);
+            alertaErro('Não foi possível atualizar a competência. Tente novamente.');
+          }
           return;
         }
         const valorAnterior = item[field];
@@ -4290,6 +4429,37 @@
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     });
   }
+
+  // ---------- Arrastar com o mouse para rolar tabelas (lançamentos, preview da importação, etc.) ----------
+  function ativarArrastarParaRolar(el){
+    if(!el || el.dataset.dragScrollReady) return;
+    el.dataset.dragScrollReady = '1';
+    let isDown = false, startX = 0, startScroll = 0, moveu = false;
+    const INTERATIVOS = 'input, select, textarea, button, a, label';
+    el.addEventListener('mousedown', (e) => {
+      if(e.target.closest(INTERATIVOS)) return;
+      isDown = true; moveu = false;
+      startX = e.pageX;
+      startScroll = el.scrollLeft;
+      el.classList.add('dragging');
+    });
+    window.addEventListener('mousemove', (e) => {
+      if(!isDown) return;
+      const walk = e.pageX - startX;
+      if(Math.abs(walk) > 3) moveu = true;
+      if(moveu) e.preventDefault();
+      el.scrollLeft = startScroll - walk;
+    });
+    window.addEventListener('mouseup', () => {
+      if(!isDown) return;
+      isDown = false;
+      el.classList.remove('dragging');
+    });
+    el.addEventListener('mouseleave', () => {
+      if(isDown){ isDown = false; el.classList.remove('dragging'); }
+    });
+  }
+  document.querySelectorAll('.table-scroll').forEach(ativarArrastarParaRolar);
 
   // ---------- Instalar app (Baixar CashBot) ----------
   let deferredInstallPrompt = null;
