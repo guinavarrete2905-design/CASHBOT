@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Identidade: neutros levemente frios, um único acento azul-tinta e cores semânticas
+  (positivo / negativo / atenção) reservadas para significado financeiro.
+*/
+@layer base {
+  :root {
+    --background: 220 20% 97%;
+    --surface: 0 0% 100%;
+    --foreground: 222 24% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 24% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 24% 12%;
+    --primary: 221 55% 29%;
+    --primary-foreground: 40 33% 97%;
+    --secondary: 220 16% 93%;
+    --secondary-foreground: 222 24% 16%;
+    --muted: 220 16% 94%;
+    --muted-foreground: 220 9% 42%;
+    --accent: 220 22% 92%;
+    --accent-foreground: 222 24% 14%;
+    --destructive: 0 66% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --positive: 152 52% 32%;
+    --negative: 0 66% 46%;
+    --warning: 36 86% 42%;
+    --border: 220 14% 88%;
+    --input: 220 14% 84%;
+    --ring: 221 55% 40%;
+    --radius: 0.625rem;
+    color-scheme: light;
+  }
+
+  .dark {
+    --background: 222 14% 8%;
+    --surface: 222 13% 11%;
+    --foreground: 220 15% 92%;
+    --card: 222 13% 11%;
+    --card-foreground: 220 15% 92%;
+    --popover: 222 13% 12%;
+    --popover-foreground: 220 15% 92%;
+    --primary: 218 72% 72%;
+    --primary-foreground: 222 30% 10%;
+    --secondary: 222 11% 17%;
+    --secondary-foreground: 220 15% 92%;
+    --muted: 222 11% 15%;
+    --muted-foreground: 220 9% 62%;
+    --accent: 222 11% 18%;
+    --accent-foreground: 220 15% 94%;
+    --destructive: 0 62% 58%;
+    --destructive-foreground: 0 0% 100%;
+    --positive: 150 45% 55%;
+    --negative: 0 70% 66%;
+    --warning: 38 80% 60%;
+    --border: 222 10% 20%;
+    --input: 222 10% 25%;
+    --ring: 218 72% 65%;
+    color-scheme: dark;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+    font-feature-settings: 'ss01';
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
+    text-wrap: balance;
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
