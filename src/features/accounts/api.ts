@@ -38,32 +38,47 @@ export function isCard(account: Pick<Account, 'type'>) {
   return account.type === 'credit_card'
 }
 
+export async function fetchAccounts(spaceId: string): Promise<Account[]> {
+  const [accountsRes, balancesRes] = await Promise.all([
+    supabase.from('accounts').select('*').eq('space_id', spaceId),
+    supabase.from('account_balances').select('account_id, balance').eq('space_id', spaceId),
+  ])
+  if (accountsRes.error) throw accountsRes.error
+  if (balancesRes.error) throw balancesRes.error
+
+  const balances = new Map((balancesRes.data ?? []).map((b) => [b.account_id, Number(b.balance ?? 0)]))
+  return (accountsRes.data ?? [])
+    .filter((a) => isAccountType(a.type))
+    .map((a) => ({
+      ...a,
+      type: a.type as AccountType,
+      initialBalance: Number(a.initial_balance),
+      creditLimit: a.credit_limit === null ? null : Number(a.credit_limit),
+      balance: balances.get(a.id) ?? Number(a.initial_balance),
+    }))
+    .sort((a, b) => Number(isCard(a)) - Number(isCard(b)) || a.name.localeCompare(b.name, 'pt-BR'))
+}
+
 /** Contas e cartões do espaço com o saldo de cada um. */
 export function useAccounts(spaceId: string | undefined) {
   return useQuery({
     queryKey: [...accountsKey(spaceId ?? 'none'), 'list'],
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Account[]> => {
-      const [accountsRes, balancesRes] = await Promise.all([
-        supabase.from('accounts').select('*').eq('space_id', spaceId!),
-        supabase.from('account_balances').select('account_id, balance').eq('space_id', spaceId!),
-      ])
-      if (accountsRes.error) throw accountsRes.error
-      if (balancesRes.error) throw balancesRes.error
-
-      const balances = new Map((balancesRes.data ?? []).map((b) => [b.account_id, Number(b.balance ?? 0)]))
-      return (accountsRes.data ?? [])
-        .filter((a) => isAccountType(a.type))
-        .map((a) => ({
-          ...a,
-          type: a.type as AccountType,
-          initialBalance: Number(a.initial_balance),
-          creditLimit: a.credit_limit === null ? null : Number(a.credit_limit),
-          balance: balances.get(a.id) ?? Number(a.initial_balance),
-        }))
-        .sort((a, b) => Number(isCard(a)) - Number(isCard(b)) || a.name.localeCompare(b.name, 'pt-BR'))
-    },
+    queryFn: () => fetchAccounts(spaceId!),
   })
+}
+
+export async function fetchCardMovements(spaceId: string, cardIds: string[], fromISO: string): Promise<CardMovement[]> {
+  if (cardIds.length === 0) return []
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('kind, amount, occurred_on, account_id')
+    .eq('space_id', spaceId)
+    .in('account_id', cardIds)
+    .gte('occurred_on', fromISO)
+    .limit(5000)
+  if (error) throw error
+  return (data ?? []).map((m) => ({ ...m, kind: toKindSafe(m.kind), amount: Number(m.amount) }))
 }
 
 /** Movimentações lançadas nos cartões a partir de uma data (para calcular faturas). */
@@ -71,17 +86,7 @@ export function useCardMovements(spaceId: string | undefined, cardIds: string[],
   return useQuery({
     queryKey: [...accountsKey(spaceId ?? 'none'), 'card-movements', cardIds.join(','), fromISO],
     enabled: Boolean(spaceId) && cardIds.length > 0,
-    queryFn: async (): Promise<CardMovement[]> => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('kind, amount, occurred_on, account_id')
-        .eq('space_id', spaceId!)
-        .in('account_id', cardIds)
-        .gte('occurred_on', fromISO)
-        .limit(5000)
-      if (error) throw error
-      return (data ?? []).map((m) => ({ ...m, kind: toKindSafe(m.kind), amount: Number(m.amount) }))
-    },
+    queryFn: () => fetchCardMovements(spaceId!, cardIds, fromISO),
   })
 }
 

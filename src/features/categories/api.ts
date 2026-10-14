@@ -12,21 +12,23 @@ export const KIND_LABEL: Record<CategoryKind, string> = {
   income: 'Receitas',
 }
 
+export async function fetchCategories(spaceId: string): Promise<Category[]> {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .eq('space_id', spaceId)
+    .order('name')
+  if (error) throw error
+  return (data ?? [])
+    .filter((c): c is Tables<'categories'> & { kind: CategoryKind } => c.kind === 'expense' || c.kind === 'income')
+    .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
+}
+
 export function useCategories(spaceId: string | undefined) {
   return useQuery({
     queryKey: categoriesKey(spaceId ?? 'none'),
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Category[]> => {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('space_id', spaceId!)
-        .order('name')
-      if (error) throw error
-      return (data ?? [])
-        .filter((c): c is Tables<'categories'> & { kind: CategoryKind } => c.kind === 'expense' || c.kind === 'income')
-        .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'))
-    },
+    queryFn: () => fetchCategories(spaceId!),
   })
 }
 

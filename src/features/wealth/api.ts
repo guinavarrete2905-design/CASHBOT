@@ -44,73 +44,79 @@ export type Snapshot = { month: string; accounts: number; assets: number; liabil
 
 const wealthKey = (spaceId: string) => ['wealth', spaceId] as const
 
+export async function fetchAssets(spaceId: string): Promise<Asset[]> {
+  const { data, error } = await supabase.from('assets').select('*').eq('space_id', spaceId).order('value', { ascending: false })
+  if (error) throw error
+  return (data ?? []).map((a) => ({
+    id: a.id,
+    name: a.name,
+    type: (a.type in ASSET_TYPE_LABEL ? a.type : 'other') as AssetType,
+    value: Number(a.value),
+    notes: a.notes,
+    archived: a.archived,
+    createdBy: a.created_by,
+    updatedAt: a.updated_at,
+  }))
+}
+
 export function useAssets(spaceId: string | undefined) {
   return useQuery({
     queryKey: [...wealthKey(spaceId ?? 'none'), 'assets'],
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Asset[]> => {
-      const { data, error } = await supabase.from('assets').select('*').eq('space_id', spaceId!).order('value', { ascending: false })
-      if (error) throw error
-      return (data ?? []).map((a) => ({
-        id: a.id,
-        name: a.name,
-        type: (a.type in ASSET_TYPE_LABEL ? a.type : 'other') as AssetType,
-        value: Number(a.value),
-        notes: a.notes,
-        archived: a.archived,
-        createdBy: a.created_by,
-        updatedAt: a.updated_at,
-      }))
-    },
+    queryFn: () => fetchAssets(spaceId!),
   })
+}
+
+export async function fetchLiabilities(spaceId: string): Promise<Liability[]> {
+  const { data, error } = await supabase
+    .from('liabilities')
+    .select('*')
+    .eq('space_id', spaceId)
+    .order('balance', { ascending: false })
+  if (error) throw error
+  return (data ?? []).map((l) => ({
+    id: l.id,
+    name: l.name,
+    type: (l.type in LIABILITY_TYPE_LABEL ? l.type : 'other') as LiabilityType,
+    balance: Number(l.balance),
+    monthlyPayment: l.monthly_payment === null ? null : Number(l.monthly_payment),
+    notes: l.notes,
+    archived: l.archived,
+    createdBy: l.created_by,
+    updatedAt: l.updated_at,
+  }))
 }
 
 export function useLiabilities(spaceId: string | undefined) {
   return useQuery({
     queryKey: [...wealthKey(spaceId ?? 'none'), 'liabilities'],
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Liability[]> => {
-      const { data, error } = await supabase
-        .from('liabilities')
-        .select('*')
-        .eq('space_id', spaceId!)
-        .order('balance', { ascending: false })
-      if (error) throw error
-      return (data ?? []).map((l) => ({
-        id: l.id,
-        name: l.name,
-        type: (l.type in LIABILITY_TYPE_LABEL ? l.type : 'other') as LiabilityType,
-        balance: Number(l.balance),
-        monthlyPayment: l.monthly_payment === null ? null : Number(l.monthly_payment),
-        notes: l.notes,
-        archived: l.archived,
-        createdBy: l.created_by,
-        updatedAt: l.updated_at,
-      }))
-    },
+    queryFn: () => fetchLiabilities(spaceId!),
   })
+}
+
+export async function fetchSnapshots(spaceId: string): Promise<Snapshot[]> {
+  const { data, error } = await supabase
+    .from('net_worth_snapshots')
+    .select('*')
+    .eq('space_id', spaceId)
+    .order('month', { ascending: true })
+    .limit(120)
+  if (error) throw error
+  return (data ?? []).map((s) => ({
+    month: s.month.slice(0, 7),
+    accounts: Number(s.accounts),
+    assets: Number(s.assets),
+    liabilities: Number(s.liabilities),
+    netWorth: Number(s.net_worth),
+  }))
 }
 
 export function useSnapshots(spaceId: string | undefined) {
   return useQuery({
     queryKey: [...wealthKey(spaceId ?? 'none'), 'snapshots'],
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Snapshot[]> => {
-      const { data, error } = await supabase
-        .from('net_worth_snapshots')
-        .select('*')
-        .eq('space_id', spaceId!)
-        .order('month', { ascending: true })
-        .limit(120)
-      if (error) throw error
-      return (data ?? []).map((s) => ({
-        month: s.month.slice(0, 7),
-        accounts: Number(s.accounts),
-        assets: Number(s.assets),
-        liabilities: Number(s.liabilities),
-        netWorth: Number(s.net_worth),
-      }))
-    },
+    queryFn: () => fetchSnapshots(spaceId!),
   })
 }
 

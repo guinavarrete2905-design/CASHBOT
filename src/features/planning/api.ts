@@ -15,39 +15,43 @@ export type Goal = {
 
 const planningKey = (spaceId: string) => ['planning', spaceId] as const
 
+export async function fetchBudgets(spaceId: string): Promise<Budget[]> {
+  const { data, error } = await supabase.from('budgets').select('id, category_id, amount').eq('space_id', spaceId)
+  if (error) throw error
+  return (data ?? []).map((b) => ({ id: b.id, categoryId: b.category_id, amount: Number(b.amount) }))
+}
+
 export function useBudgets(spaceId: string | undefined) {
   return useQuery({
     queryKey: [...planningKey(spaceId ?? 'none'), 'budgets'],
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Budget[]> => {
-      const { data, error } = await supabase.from('budgets').select('id, category_id, amount').eq('space_id', spaceId!)
-      if (error) throw error
-      return (data ?? []).map((b) => ({ id: b.id, categoryId: b.category_id, amount: Number(b.amount) }))
-    },
+    queryFn: () => fetchBudgets(spaceId!),
   })
+}
+
+export async function fetchGoals(spaceId: string): Promise<Goal[]> {
+  const { data, error } = await supabase
+    .from('goals')
+    .select('*')
+    .eq('space_id', spaceId)
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return (data ?? []).map((g) => ({
+    id: g.id,
+    name: g.name,
+    target: Number(g.target_amount),
+    saved: Number(g.saved_amount),
+    targetDate: g.target_date,
+    archived: g.archived,
+    createdBy: g.created_by,
+  }))
 }
 
 export function useGoals(spaceId: string | undefined) {
   return useQuery({
     queryKey: [...planningKey(spaceId ?? 'none'), 'goals'],
     enabled: Boolean(spaceId),
-    queryFn: async (): Promise<Goal[]> => {
-      const { data, error } = await supabase
-        .from('goals')
-        .select('*')
-        .eq('space_id', spaceId!)
-        .order('created_at', { ascending: true })
-      if (error) throw error
-      return (data ?? []).map((g) => ({
-        id: g.id,
-        name: g.name,
-        target: Number(g.target_amount),
-        saved: Number(g.saved_amount),
-        targetDate: g.target_date,
-        archived: g.archived,
-        createdBy: g.created_by,
-      }))
-    },
+    queryFn: () => fetchGoals(spaceId!),
   })
 }
 

@@ -24,6 +24,7 @@ import {
   type TransactionStatus,
 } from './api'
 import { buildSeries, SCOPE_LABEL, type SeriesKind, type SeriesScope } from './series'
+import { effectiveStatus, seriesFuturePending, validateTransaction } from './validate'
 
 export type TransactionPrefill = Partial<{
   kind: TransactionKind
@@ -32,6 +33,9 @@ export type TransactionPrefill = Partial<{
   accountId: string | null
   transferAccountId: string | null
   occurredOn: string
+  categoryId: string | null
+  status: TransactionStatus
+  repeat: { kind: SeriesKind; count: number }
 }>
 
 type Props = {
@@ -105,7 +109,7 @@ export function TransactionDialog({
   const [occurredOn, setOccurredOn] = useState(
     transaction?.occurred_on ?? prefill?.occurredOn ?? defaultDate ?? todayISO(),
   )
-  const [categoryId, setCategoryId] = useState<string>(transaction?.category_id ?? '')
+  const [categoryId, setCategoryId] = useState<string>(transaction?.category_id ?? prefill?.categoryId ?? '')
   // undefined = ainda não escolhido (usa a primeira conta quando as contas carregarem).
   const [accountChoice, setAccountChoice] = useState<string | undefined>(
     transaction ? (transaction.account_id ?? '') : prefill?.accountId ?? undefined,
@@ -113,10 +117,10 @@ export function TransactionDialog({
   const [transferTo, setTransferTo] = useState<string>(
     transaction?.transfer_account_id ?? prefill?.transferAccountId ?? '',
   )
-  const [status, setStatus] = useState<TransactionStatus>(transaction?.status ?? 'paid')
+  const [status, setStatus] = useState<TransactionStatus>(transaction?.status ?? prefill?.status ?? 'paid')
   const [notes, setNotes] = useState(transaction?.notes ?? '')
-  const [repeat, setRepeat] = useState<'none' | SeriesKind>('none')
-  const [repeatCount, setRepeatCount] = useState('2')
+  const [repeat, setRepeat] = useState<'none' | SeriesKind>(prefill?.repeat?.kind ?? 'none')
+  const [repeatCount, setRepeatCount] = useState(String(prefill?.repeat?.count ?? 2))
   const [scope, setScope] = useState<SeriesScope>('this')
   const [deleteScope, setDeleteScope] = useState<SeriesScope>('this')
   const [error, setError] = useState<string | null>(null)
@@ -168,27 +172,17 @@ export function TransactionDialog({
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
-    if (amount === null || amount <= 0) {
-      setError('Informe um valor maior que zero. Ex.: 1.250,90')
+    const invalid = validateTransaction({
+      kind,
+      amount,
+      description,
+      occurredOn,
+      accountId: accountId || null,
+      transferAccountId: kind === 'transfer' ? transferTo || null : null,
+    })
+    if (invalid || amount === null) {
+      setError(invalid ?? 'Informe um valor maior que zero. Ex.: 1.250,90')
       return
-    }
-    if (!description.trim()) {
-      setError('Informe uma descrição.')
-      return
-    }
-    if (!occurredOn) {
-      setError('Informe a data.')
-      return
-    }
-    if (kind === 'transfer') {
-      if (!accountId || !transferTo) {
-        setError('Escolha a conta de origem e a de destino.')
-        return
-      }
-      if (accountId === transferTo) {
-        setError('A conta de origem e a de destino precisam ser diferentes.')
-        return
-      }
     }
 
     const input = {
@@ -200,11 +194,11 @@ export function TransactionDialog({
       accountId: accountId || null,
       transferAccountId: kind === 'transfer' ? transferTo : null,
       // Compras no cartão entram na fatura; a situação de pagamento é a da fatura.
-      status: kind !== 'transfer' && onCard ? ('paid' as const) : status,
+      status: effectiveStatus(kind, onCard, status),
       notes,
       series:
         !transaction && repeat !== 'none'
-          ? { kind: repeat, count, futurePending: !(kind !== 'transfer' && onCard) }
+          ? { kind: repeat, count, futurePending: seriesFuturePending(kind, onCard) }
           : undefined,
     }
     const onError = (err: unknown) => setError(toUserMessage(err, 'Não foi possível salvar a movimentação.'))

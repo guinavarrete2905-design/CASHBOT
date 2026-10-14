@@ -28,6 +28,11 @@ export type TransactionInput = {
   notes: string
   /** Somente ao criar: gera parcelas ou ocorrências mensais. */
   series?: { kind: SeriesKind; count: number; futurePending: boolean }
+  /**
+   * Somente ao criar: código único do lançamento (proteção contra duplicidade).
+   * Em séries, cada item recebe o sufixo `:<n>`.
+   */
+  externalRef?: string
 }
 
 const transactionsRoot = (spaceId: string) => ['transactions', spaceId] as const
@@ -109,23 +114,26 @@ export function usePendingTransactions(spaceId: string | undefined, limit = 6) {
   })
 }
 
+/** Pendências até uma data (inclusive), incluindo as atrasadas, da mais antiga para a mais nova. */
+export async function fetchPendingUntil(spaceId: string, untilISO: string, limit = 200): Promise<Transaction[]> {
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('space_id', spaceId)
+    .eq('status', 'pending')
+    .lte('occurred_on', untilISO)
+    .order('occurred_on', { ascending: true })
+    .limit(limit)
+  if (error) throw error
+  return (data ?? []).map(normalize)
+}
+
 /** Pendências até `days` dias à frente, incluindo as atrasadas (para o calendário de vencimentos). */
 export function useUpcomingTransactions(spaceId: string | undefined, days = 60) {
   return useQuery({
     queryKey: [...transactionsRoot(spaceId ?? 'none'), 'upcoming', days],
     enabled: Boolean(spaceId),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('space_id', spaceId!)
-        .eq('status', 'pending')
-        .lte('occurred_on', todayISO(new Date(Date.now() + days * 24 * 60 * 60 * 1000)))
-        .order('occurred_on', { ascending: true })
-        .limit(200)
-      if (error) throw error
-      return (data ?? []).map(normalize)
-    },
+    queryFn: () => fetchPendingUntil(spaceId!, todayISO(new Date(Date.now() + days * 24 * 60 * 60 * 1000))),
   })
 }
 
@@ -212,8 +220,9 @@ export function useCreateTransaction(spaceId: string) {
   return useMutation({
     mutationFn: async (input: TransactionInput) => {
       const base = { space_id: spaceId, ...toRow(input) }
+      const ref = input.externalRef?.slice(0, 180)
       if (!input.series) {
-        const { error } = await supabase.from('transactions').insert(base)
+        const { error } = await supabase.from('transactions').insert({ ...base, external_ref: ref ?? null })
         if (error) throw error
         return 1
       }
@@ -236,6 +245,7 @@ export function useCreateTransaction(spaceId: string) {
         series_kind: input.series!.kind,
         series_index: item.index,
         series_total: input.series!.count,
+        external_ref: ref ? `${ref}:${item.index}` : null,
       }))
       const { error } = await supabase.from('transactions').insert(rows)
       if (error) throw error

@@ -60,6 +60,33 @@ export type Database = {
           },
         ]
       }
+      assistant_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          space_id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          space_id: string
+          user_id?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          space_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       assets: {
         Row: {
           archived: boolean
@@ -506,6 +533,30 @@ export type Database = {
       add_space_member: {
         Args: { p_email: string; p_role?: string; p_space_id: string }
         Returns: undefined
+      }
+      assistant_expenses_by_category: {
+        Args: { p_from: string; p_space_id: string; p_to: string }
+        Returns: { category_id: string | null; category_name: string | null; total: number; tx_count: number }[]
+      }
+      assistant_monthly_totals: {
+        Args: { p_from: string; p_space_id: string; p_to: string }
+        Returns: { expense: number; income: number; month: string }[]
+      }
+      assistant_period_summary: {
+        Args: { p_account_id?: string; p_category_id?: string; p_from: string; p_space_id: string; p_to: string }
+        Returns: { expense: number; income: number; pending_expense: number; pending_income: number; tx_count: number }[]
+      }
+      assistant_top_expenses: {
+        Args: { p_category_id?: string; p_from: string; p_limit?: number; p_space_id: string; p_to: string }
+        Returns: {
+          account_name: string | null
+          amount: number
+          category_name: string | null
+          description: string
+          id: string
+          occurred_on: string
+          status: string
+        }[]
       }
       create_space: {
         Args: { p_name: string; p_type: string }
