@@ -43,3 +43,11 @@ export function effectiveStatus(kind: TransactionKind, onCard: boolean, status: 
 export function seriesFuturePending(kind: TransactionKind, onCard: boolean): boolean {
   return !(kind !== 'transfer' && onCard)
 }
+
+/** Limites de repetição oferecidos no formulário (parcelado: 2 a 48; todo mês: 2 a 60). */
+export const SERIES_LIMITS = { installment: { min: 2, max: 48 }, recurring: { min: 2, max: 60 } } as const
+
+/** Parcelado não vale para transferência (mesma regra do formulário e do banco). */
+export function seriesAllowed(kind: TransactionKind, series: 'installment' | 'recurring'): boolean {
+  return !(kind === 'transfer' && series === 'installment')
+}

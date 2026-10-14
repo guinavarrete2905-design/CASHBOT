@@ -558,6 +558,10 @@ export type Database = {
           status: string
         }[]
       }
+      create_transactions_batch: {
+        Args: { p_batch_id: string; p_rows: Json; p_space_id: string }
+        Returns: { already_saved: boolean; inserted: number }[]
+      }
       create_space: {
         Args: { p_name: string; p_type: string }
         Returns: string

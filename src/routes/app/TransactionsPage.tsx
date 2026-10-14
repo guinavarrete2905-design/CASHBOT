@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, ListOrdered, Plus, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileSpreadsheet, ListOrdered, Plus, Search } from 'lucide-react'
 import { EmptyState, ErrorState } from '@/components/feedback'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,9 @@ import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { useUser } from '@/providers/AuthProvider'
 import { useCurrentSpace } from '@/providers/SpaceProvider'
+
+// A planilha só é baixada quando aberta.
+const BulkEntryDialog = lazy(() => import('@/features/transactions/bulk/BulkEntryDialog').then((m) => ({ default: m.BulkEntryDialog })))
 
 type KindFilter = 'all' | 'income' | 'expense' | 'transfer'
 
@@ -64,6 +67,7 @@ export function TransactionsPage() {
   const [categoryFilter, setCategoryFilter] = useState('')
   const [accountFilter, setAccountFilter] = useState('')
   const [search, setSearch] = useState('')
+  const [bulkOpen, setBulkOpen] = useState(false)
   const [dialog, setDialog] = useState<{ mode: 'create' } | { mode: 'edit'; transaction: Transaction } | null>(null)
 
   const all = useMemo(() => transactions.data ?? [], [transactions.data])
@@ -107,10 +111,16 @@ export function TransactionsPage() {
         title="Movimentações"
         description={current ? `Receitas e despesas de ${current.name}.` : undefined}
         actions={
-          <Button onClick={() => setDialog({ mode: 'create' })} disabled={!spaceId} className="hidden sm:inline-flex">
-            <Plus aria-hidden="true" />
-            Nova movimentação
-          </Button>
+          <>
+            <Button variant="outline" onClick={() => setBulkOpen(true)} disabled={!spaceId} className="text-muted-foreground hover:text-foreground">
+              <FileSpreadsheet aria-hidden="true" />
+              Lançamento em massa
+            </Button>
+            <Button onClick={() => setDialog({ mode: 'create' })} disabled={!spaceId} className="hidden sm:inline-flex">
+              <Plus aria-hidden="true" />
+              Nova movimentação
+            </Button>
+          </>
         }
       />
 
@@ -293,6 +303,12 @@ export function TransactionsPage() {
         >
           <Plus aria-hidden="true" />
         </Button>
+      )}
+
+      {bulkOpen && spaceId && current && (
+        <Suspense fallback={null}>
+          <BulkEntryDialog spaceId={spaceId} spaceName={current.name} onClose={() => setBulkOpen(false)} />
+        </Suspense>
       )}
 
       {dialog && spaceId && (

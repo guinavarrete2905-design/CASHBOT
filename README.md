@@ -22,9 +22,10 @@ Implementado:
 - **Transferências** entre contas (não contam como receita nem despesa), lançamentos ligados a uma conta ou cartão e filtro por conta na lista de movimentações.
 - **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
 - **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. Todas as áreas do menu estão implementadas.
+- **Lançamento em massa:** em Movimentações, botão "Lançamento em massa" abre uma planilha editável (Data, Tipo, Descrição, Valor, Conta, Categoria/destino, Situação, Repetição, Observações). Adicionar 1 ou 10 linhas, duplicar, excluir, repetir data/conta/categoria/situação para baixo, navegação por teclado e colagem direto do Excel/Google Planilhas. Valida cada célula com as mesmas regras do formulário, mostra resumo ao vivo, revisão com alerta de possíveis duplicados e grava tudo de uma vez (tudo ou nada). No celular, cada linha vira um cartão.
 - **Assistente Financeiro (sem IA generativa):** chat que consulta os dados reais do espaço atual, registra movimentações com prévia e confirmação e explica conceitos financeiros. Detalhes em [Assistente Financeiro](#assistente-financeiro).
 
-Ainda **não** implementado (próximas etapas): central de lançamentos em massa, importação de extratos, Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
+Ainda **não** implementado (próximas etapas): importação de arquivos de extrato (OFX/CSV), Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
 
 ## Tecnologias
 
@@ -98,6 +99,7 @@ Migrações, em ordem:
 5. [`20261014210000_planning.sql`](supabase/migrations/20261014210000_planning.sql) — orçamentos e metas.
 6. [`20261014230000_wealth.sql`](supabase/migrations/20261014230000_wealth.sql) — bens, dívidas e histórico do patrimônio.
 7. [`20261015010000_assistant.sql`](supabase/migrations/20261015010000_assistant.sql) — histórico do Assistente Financeiro e funções de consulta agregada.
+8. [`20261015030000_transactions_batch.sql`](supabase/migrations/20261015030000_transactions_batch.sql) — função `create_transactions_batch` do lançamento em massa.
 
 A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
 
@@ -118,7 +120,7 @@ A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos
 | `assistant_messages` | histórico do Assistente Financeiro, por usuário e espaço (só o próprio usuário lê e apaga) |
 | `account_balances` (visão) | saldo de cada conta, só com o que já foi pago/recebido; respeita o RLS de quem consulta |
 
-Funções: `create_space`, `add_space_member`, `update_space_member_role` (validam o papel de quem chama) e `is_space_member`, `space_role`, `shares_space_with` (usadas pelas políticas, `SECURITY DEFINER` para evitar recursão). Para o assistente: `assistant_period_summary`, `assistant_expenses_by_category`, `assistant_top_expenses` e `assistant_monthly_totals` — consultas agregadas `SECURITY INVOKER` (rodam com as permissões de quem chama, então o RLS vale), só para usuários autenticados.
+Funções: `create_space`, `add_space_member`, `update_space_member_role` (validam o papel de quem chama) e `is_space_member`, `space_role`, `shares_space_with` (usadas pelas políticas, `SECURITY DEFINER` para evitar recursão). Lançamento em massa: `create_transactions_batch(espaço, lote, linhas)` grava o lote inteiro numa única transação (qualquer erro desfaz tudo), roda com as permissões de quem chama (RLS e o gatilho `transactions_guard` valem) e marca cada linha com `external_ref = lote:<id>:<posição>`, então reenviar o mesmo lote não duplica. Para o assistente: `assistant_period_summary`, `assistant_expenses_by_category`, `assistant_top_expenses` e `assistant_monthly_totals` — consultas agregadas `SECURITY INVOKER` (rodam com as permissões de quem chama, então o RLS vale), só para usuários autenticados.
 
 ### Regras de acesso (RLS)
 
@@ -150,7 +152,7 @@ npm test            # Vitest: permissões, erros, rotas, valores em reais, datas
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql) e [`supabase/tests/rls_assistant.sql`](supabase/tests/rls_assistant.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql) e [`supabase/tests/rls_assistant.sql`](supabase/tests/rls_assistant.sql) e [`supabase/tests/rls_batch.sql`](supabase/tests/rls_batch.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
 
 Sem acesso ao registro do npm, os testes puros (sem React) também rodam direto no Node:
 
@@ -158,6 +160,19 @@ Sem acesso ao registro do npm, os testes puros (sem React) também rodam direto 
 scripts/node-test/t.sh src/features/assistant/*.test.ts      # ou qualquer arquivo *.test.ts sem React
 node --experimental-strip-types --no-warnings --import ./scripts/node-test/register.mjs scripts/assistant/coverage.ts --write
 ```
+
+## Lançamento em massa
+
+Fica em `src/features/transactions/bulk/`: `model.ts` (interpretação, validação, colagem, duplicados, resumo e geração do lote — sem React, testado em `model.test.ts`), `api.ts` (gravação e consulta de duplicados) e `BulkEntryDialog.tsx` (interface, carregada sob demanda).
+
+Decisões:
+
+- **Mesmas regras do formulário:** `validateTransaction`, situação no cartão (`effectiveStatus`), parcelas e recorrências por `buildSeries` (centavos distribuídos sem perda, futuras pendentes, no cartão todas na fatura), limites de 2–48 parcelas e 2–60 meses, transferência não pode ser parcelada. Contas e categorias arquivadas não são aceitas.
+- **Sem adivinhação:** data só DD/MM/AAAA (ou AAAA-MM-DD), nunca troca dia e mês; valor com um separador e três dígitos ("1.234", "1,234") é ambíguo e vira erro; tipo, conta, categoria, situação ou repetição colados sem correspondência ficam marcados na célula.
+- **Estados das linhas:** em branco (ignorada), incompleta, com erro, válida. Só dá para revisar com todas as linhas preenchidas válidas.
+- **Valores no resumo:** como informados na linha (parcelado = total da compra; todo mês = valor de um mês). Na revisão, os totais somam todas as movimentações que serão criadas, com as parcelas e meses futuros contados à parte.
+- **Duplicados:** mesma data + valor + descrição + conta, na planilha ou já gravado. É só um alerta: dá para remover a linha ou salvar assim mesmo.
+- **Gravação:** uma chamada a `create_transactions_batch`. Tudo ou nada; o id do lote é mantido enquanto o conteúdo não muda, então tentar de novo depois de uma falha nunca duplica.
 
 ## Assistente Financeiro
 
@@ -175,7 +190,7 @@ Arquitetura (`src/features/assistant/`):
 | F. Gerenciador de conversas | `types.ts` (`ConversationContext`) | último período, filtros e resultados ("E em outubro?", "Qual a diferença?"), perguntas em aberto e rascunhos pendentes |
 | G. Interface | `AssistantLauncher.tsx`, `AssistantPanel.tsx` | botão discreto, histórico, sugestões, cartões de confirmação, links para as telas |
 
-Lançamentos: o assistente prepara um rascunho (descrição, valor, data, categoria, conta/cartão, espaço, parcelamento) e mostra **CONFIRMAR / EDITAR / CANCELAR**. Nada é salvo sem confirmação. A gravação usa o mesmo serviço e as mesmas validações do formulário (`validateTransaction`), e cada rascunho tem um código único gravado em `external_ref` (`assistente:<id>`): confirmar duas vezes não duplica. EDITAR abre o formulário normal já preenchido. Até 5 itens por mensagem; para mais, o assistente indica Movimentações (a central de lançamentos em massa é uma etapa futura).
+Lançamentos: o assistente prepara um rascunho (descrição, valor, data, categoria, conta/cartão, espaço, parcelamento) e mostra **CONFIRMAR / EDITAR / CANCELAR**. Nada é salvo sem confirmação. A gravação usa o mesmo serviço e as mesmas validações do formulário (`validateTransaction`), e cada rascunho tem um código único gravado em `external_ref` (`assistente:<id>`): confirmar duas vezes não duplica. EDITAR abre o formulário normal já preenchido. Até 5 itens por mensagem; para mais, o assistente indica o Lançamento em massa em Movimentações.
 
 Cobertura: [`docs/assistente-cobertura.md`](docs/assistente-cobertura.md) (conjunto de 210 perguntas de referência, gerado por `scripts/assistant/coverage.ts`).
 
@@ -183,6 +198,6 @@ Limitações: não acessa taxas e cotações atuais; não dá orientação tribu
 
 ## Próximas etapas
 
-1. Central de lançamentos em massa (tabela editável e importação de OFX/CSV), integrada ao assistente.
+1. Importação de arquivos (OFX/CSV) usando a mesma planilha de lançamento em massa.
 2. Histórico de faturas e marcação de fatura paga.
 3. Remover as tabelas do CashBot antigo, quando você decidir.

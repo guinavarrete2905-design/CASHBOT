@@ -24,7 +24,7 @@ import {
   type TransactionStatus,
 } from './api'
 import { buildSeries, SCOPE_LABEL, type SeriesKind, type SeriesScope } from './series'
-import { effectiveStatus, seriesFuturePending, validateTransaction } from './validate'
+import { effectiveStatus, SERIES_LIMITS, seriesFuturePending, validateTransaction } from './validate'
 
 export type TransactionPrefill = Partial<{
   kind: TransactionKind
@@ -409,7 +409,7 @@ export function TransactionDialog({
                       {repeat === 'installment' ? 'Número de parcelas' : 'Por quantos meses'}
                     </label>
                     <NativeSelect id="tx-repeat-count" value={repeatCount} onChange={(e) => setRepeatCount(e.target.value)}>
-                      {Array.from({ length: repeat === 'installment' ? 47 : 59 }, (_, i) => i + 2).map((n) => (
+                      {Array.from({ length: SERIES_LIMITS[repeat].max - 1 }, (_, i) => i + SERIES_LIMITS[repeat].min).map((n) => (
                         <option key={n} value={n}>
                           {repeat === 'installment' ? `${n}x` : `${n} meses`}
                         </option>
