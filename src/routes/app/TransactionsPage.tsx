@@ -12,14 +12,15 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useCategories } from '@/features/categories/api'
 import { summarize, useMonthTransactions, type Transaction } from '@/features/transactions/api'
 import { TransactionDialog } from '@/features/transactions/TransactionDialog'
-import { TransactionList } from '@/features/transactions/TransactionList'
+import { buildLookup, TransactionList } from '@/features/transactions/TransactionList'
+import { useAccounts } from '@/features/accounts/api'
 import { currentYearMonth, formatMonth, isYearMonth, shiftMonth, todayISO } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { useUser } from '@/providers/AuthProvider'
 import { useCurrentSpace } from '@/providers/SpaceProvider'
 
-type KindFilter = 'all' | 'income' | 'expense'
+type KindFilter = 'all' | 'income' | 'expense' | 'transfer'
 
 function normalizeText(s: string) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
@@ -55,9 +56,13 @@ export function TransactionsPage() {
   const transactions = useMonthTransactions(spaceId, month)
   const categoriesQuery = useCategories(spaceId)
   const categories = useMemo(() => categoriesQuery.data ?? [], [categoriesQuery.data])
+  const accountsQuery = useAccounts(spaceId)
+  const accounts = useMemo(() => accountsQuery.data ?? [], [accountsQuery.data])
+  const names = useMemo(() => buildLookup(categories, accounts), [categories, accounts])
 
   const [kindFilter, setKindFilter] = useState<KindFilter>('all')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [accountFilter, setAccountFilter] = useState('')
   const [search, setSearch] = useState('')
   const [dialog, setDialog] = useState<{ mode: 'create' } | { mode: 'edit'; transaction: Transaction } | null>(null)
 
@@ -70,12 +75,13 @@ export function TransactionsPage() {
       if (kindFilter !== 'all' && t.kind !== kindFilter) return false
       if (categoryFilter === 'none' && t.category_id) return false
       if (categoryFilter && categoryFilter !== 'none' && t.category_id !== categoryFilter) return false
+      if (accountFilter && t.account_id !== accountFilter && t.transfer_account_id !== accountFilter) return false
       if (q && !normalizeText(`${t.description} ${t.notes ?? ''}`).includes(q)) return false
       return true
     })
-  }, [all, kindFilter, categoryFilter, search])
+  }, [all, kindFilter, categoryFilter, accountFilter, search])
 
-  const filtering = kindFilter !== 'all' || categoryFilter !== '' || search.trim() !== ''
+  const filtering = kindFilter !== 'all' || categoryFilter !== '' || accountFilter !== '' || search.trim() !== ''
 
   function goToMonth(next: string) {
     setParams(next === currentYearMonth() ? {} : { mes: next }, { replace: true })
@@ -84,6 +90,7 @@ export function TransactionsPage() {
   function clearFilters() {
     setKindFilter('all')
     setCategoryFilter('')
+    setAccountFilter('')
     setSearch('')
   }
 
@@ -92,6 +99,7 @@ export function TransactionsPage() {
   const canDeleteAny = current?.role === 'owner' || current?.role === 'admin'
 
   const categoryOptions = categories.filter((c) => kindFilter === 'all' || c.kind === kindFilter)
+  const accountOptions = accounts.filter((a) => !a.archived || all.some((t) => t.account_id === a.id))
 
   return (
     <>
@@ -159,6 +167,7 @@ export function TransactionsPage() {
           <Segmented
             label="Tipo"
             size="sm"
+            className="max-w-full overflow-x-auto"
             value={kindFilter}
             onChange={(v) => {
               setKindFilter(v)
@@ -168,8 +177,10 @@ export function TransactionsPage() {
               { value: 'all', label: 'Todas' },
               { value: 'expense', label: 'Despesas' },
               { value: 'income', label: 'Receitas' },
+              { value: 'transfer', label: 'Transferências' },
             ]}
           />
+          {kindFilter !== 'transfer' && (
           <div className="w-44">
             <label htmlFor="filter-category" className="sr-only">
               Filtrar por categoria
@@ -189,6 +200,27 @@ export function TransactionsPage() {
               ))}
             </NativeSelect>
           </div>
+          )}
+          {accountOptions.length > 0 && (
+            <div className="w-40">
+              <label htmlFor="filter-account" className="sr-only">
+                Filtrar por conta
+              </label>
+              <NativeSelect
+                id="filter-account"
+                className="h-9"
+                value={accountFilter}
+                onChange={(e) => setAccountFilter(e.target.value)}
+              >
+                <option value="">Todas as contas</option>
+                {accountOptions.map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.name}
+                  </option>
+                ))}
+              </NativeSelect>
+            </div>
+          )}
           <div className="relative min-w-[10rem] flex-1">
             <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
@@ -245,7 +277,7 @@ export function TransactionsPage() {
           )}
           <TransactionList
             items={filtered}
-            categories={categories}
+            names={names}
             onSelect={(t) => setDialog({ mode: 'edit', transaction: t })}
           />
         </>

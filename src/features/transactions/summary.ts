@@ -1,8 +1,9 @@
-export type TransactionKind = 'income' | 'expense'
+export type TransactionKind = 'income' | 'expense' | 'transfer'
 export type TransactionStatus = 'paid' | 'pending'
 
 /** Rótulo do status conforme o tipo: receita "Recebida"/"A receber", despesa "Paga"/"A pagar". */
 export function statusLabel(kind: TransactionKind, status: TransactionStatus): string {
+  if (kind === 'transfer') return status === 'pending' ? 'Agendada' : 'Feita'
   if (status === 'pending') return kind === 'income' ? 'A receber' : 'A pagar'
   return kind === 'income' ? 'Recebida' : 'Paga'
 }
@@ -13,13 +14,17 @@ function toCents(n: number) {
   return Math.round(n * 100)
 }
 
-/** Totais por tipo, em centavos internamente para não acumular erro de ponto flutuante. */
+/**
+ * Totais de receitas e despesas, em centavos internamente para não acumular erro de ponto flutuante.
+ * Transferências entre contas não são receita nem despesa e ficam de fora.
+ */
 export function summarize(transactions: Summable[]) {
   let income = 0
   let expense = 0
   let pendingIncome = 0
   let pendingExpense = 0
   for (const t of transactions) {
+    if (t.kind === 'transfer') continue
     const cents = toCents(t.amount)
     if (t.kind === 'income') {
       income += cents

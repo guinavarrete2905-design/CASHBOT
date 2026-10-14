@@ -2,35 +2,40 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/lib/database.types'
 import { monthRange, shiftMonth, todayISO, type YearMonth } from '@/lib/dates'
-import type { CategoryKind } from '@/features/categories/api'
+import type { TransactionKind, TransactionStatus } from './summary'
 
-import type { TransactionStatus } from './summary'
-
-export type { TransactionStatus } from './summary'
+export type { TransactionKind, TransactionStatus } from './summary'
 export { statusLabel, summarize } from './summary'
 
 export type Transaction = Omit<Tables<'transactions'>, 'kind' | 'status' | 'amount'> & {
-  kind: CategoryKind
+  kind: TransactionKind
   status: TransactionStatus
   amount: number
 }
 
 export type TransactionInput = {
-  kind: CategoryKind
+  kind: TransactionKind
   description: string
   amount: number
   occurredOn: string
   categoryId: string | null
+  accountId: string | null
+  /** Conta de destino (somente transferências). */
+  transferAccountId: string | null
   status: TransactionStatus
   notes: string
 }
 
 const transactionsRoot = (spaceId: string) => ['transactions', spaceId] as const
 
+function toKind(kind: string): TransactionKind {
+  return kind === 'income' || kind === 'transfer' ? kind : 'expense'
+}
+
 function normalize(row: Tables<'transactions'>): Transaction {
   return {
     ...row,
-    kind: row.kind === 'income' ? 'income' : 'expense',
+    kind: toKind(row.kind),
     status: row.status === 'pending' ? 'pending' : 'paid',
     amount: Number(row.amount),
   }
@@ -124,7 +129,7 @@ export function useMonthlyTotals(spaceId: string | undefined, months = 6, until:
         const bucket = buckets.get(row.occurred_on.slice(0, 7))
         if (!bucket) continue
         if (row.kind === 'income') bucket.income += Number(row.amount)
-        else bucket.expense += Number(row.amount)
+        else if (row.kind === 'expense') bucket.expense += Number(row.amount)
       }
       return [...buckets.values()]
     },
@@ -137,7 +142,9 @@ function toRow(input: TransactionInput) {
     description: input.description.trim(),
     amount: input.amount,
     occurred_on: input.occurredOn,
-    category_id: input.categoryId,
+    category_id: input.kind === 'transfer' ? null : input.categoryId,
+    account_id: input.accountId,
+    transfer_account_id: input.kind === 'transfer' ? input.transferAccountId : null,
     status: input.status,
     notes: input.notes.trim() || null,
   }
@@ -145,7 +152,12 @@ function toRow(input: TransactionInput) {
 
 function useInvalidate(spaceId: string) {
   const queryClient = useQueryClient()
-  return () => queryClient.invalidateQueries({ queryKey: transactionsRoot(spaceId) })
+  // Saldos de contas e faturas dependem das movimentações.
+  return () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: transactionsRoot(spaceId) }),
+      queryClient.invalidateQueries({ queryKey: ['accounts', spaceId] }),
+    ])
 }
 
 export function useCreateTransaction(spaceId: string) {

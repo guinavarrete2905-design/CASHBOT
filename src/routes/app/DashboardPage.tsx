@@ -18,7 +18,8 @@ import {
 } from '@/features/transactions/api'
 import { MonthlyChart } from '@/features/transactions/MonthlyChart'
 import { TransactionDialog } from '@/features/transactions/TransactionDialog'
-import { TransactionRow } from '@/features/transactions/TransactionList'
+import { buildLookup, TransactionRow } from '@/features/transactions/TransactionList'
+import { isCard, useAccounts } from '@/features/accounts/api'
 import { currentYearMonth, formatMonth, todayISO } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
@@ -138,7 +139,13 @@ export function DashboardPage() {
   const totals = useMonthlyTotals(spaceId, 6, month)
   const categoriesQuery = useCategories(spaceId)
   const categories = useMemo(() => categoriesQuery.data ?? [], [categoriesQuery.data])
-  const names = useMemo(() => new Map(categories.map((c) => [c.id, c.name])), [categories])
+  const accountsQuery = useAccounts(spaceId)
+  const accounts = useMemo(() => accountsQuery.data ?? [], [accountsQuery.data])
+  const names = useMemo(() => buildLookup(categories, accounts), [categories, accounts])
+  const activeAccounts = accounts.filter((a) => !a.archived && !isCard(a))
+  const accountsTotal = activeAccounts.reduce((sum, a) => sum + Math.round(a.balance * 100), 0) / 100
+  const cardsDebt =
+    accounts.filter((a) => !a.archived && isCard(a)).reduce((sum, a) => sum + Math.round(Math.max(0, -a.balance) * 100), 0) / 100
 
   const [dialog, setDialog] = useState<{ transaction?: Transaction } | null>(null)
 
@@ -222,7 +229,22 @@ export function DashboardPage() {
               loading={monthLoading}
               hint="Receitas menos despesas, com pendentes"
             />
-            <Indicator label="Saldo em contas" value={null} hint="Aparece quando as contas forem cadastradas" />
+            {activeAccounts.length > 0 ? (
+              <Indicator
+                label="Saldo em contas"
+                value={accountsTotal}
+                tone={accountsTotal < 0 ? 'negative' : undefined}
+                loading={accountsQuery.isPending}
+                hint={cardsDebt > 0 ? `${formatMoney(cardsDebt)} em aberto nos cartões` : `${activeAccounts.length} ${activeAccounts.length === 1 ? 'conta' : 'contas'}`}
+              />
+            ) : (
+              <Indicator
+                label="Saldo em contas"
+                value={null}
+                loading={!spaceId || accountsQuery.isPending}
+                hint="Cadastre suas contas para ver o saldo"
+              />
+            )}
           </Card>
         )}
       </section>
@@ -254,7 +276,7 @@ export function DashboardPage() {
                     <TransactionRow
                       t={t}
                       showDate
-                      categoryName={t.category_id ? names.get(t.category_id) : undefined}
+                      names={names}
                       onSelect={(tx) => setDialog({ transaction: tx })}
                     />
                   </li>
@@ -301,7 +323,7 @@ export function DashboardPage() {
                       <TransactionRow
                         t={t}
                         showDate
-                        categoryName={t.category_id ? names.get(t.category_id) : undefined}
+                        names={names}
                         onSelect={(tx) => setDialog({ transaction: tx })}
                       />
                     </li>
@@ -315,6 +337,15 @@ export function DashboardPage() {
             <ol className="grid gap-4">
               <Step done title="Criar sua conta">
                 Seu espaço pessoal já está pronto.
+              </Step>
+              <Step done={accounts.length > 0} title="Cadastrar suas contas e cartões">
+                {accounts.length > 0 ? (
+                  'Pronto. Os saldos são atualizados a cada lançamento pago.'
+                ) : (
+                  <Link to="/contas" className={linkClass}>
+                    Cadastrar contas <ArrowRight className="size-3.5" aria-hidden="true" />
+                  </Link>
+                )}
               </Step>
               <Step done={hasAnyTransaction} title="Lançar a primeira movimentação">
                 {hasAnyTransaction ? (

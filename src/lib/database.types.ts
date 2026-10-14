@@ -10,6 +10,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      accounts: {
+        Row: {
+          archived: boolean
+          closing_day: number | null
+          created_at: string
+          credit_limit: number | null
+          due_day: number | null
+          id: string
+          initial_balance: number
+          name: string
+          space_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean
+          closing_day?: number | null
+          created_at?: string
+          credit_limit?: number | null
+          due_day?: number | null
+          id?: string
+          initial_balance?: number
+          name: string
+          space_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean
+          closing_day?: number | null
+          created_at?: string
+          credit_limit?: number | null
+          due_day?: number | null
+          id?: string
+          initial_balance?: number
+          name?: string
+          space_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'accounts_space_id_fkey'
+            columns: ['space_id']
+            isOneToOne: false
+            referencedRelation: 'spaces'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       categories: {
         Row: {
           archived: boolean
@@ -136,6 +186,7 @@ export type Database = {
       }
       transactions: {
         Row: {
+          account_id: string | null
           amount: number
           category_id: string | null
           created_at: string
@@ -148,9 +199,11 @@ export type Database = {
           occurred_on: string
           space_id: string
           status: string
+          transfer_account_id: string | null
           updated_at: string
         }
         Insert: {
+          account_id?: string | null
           amount: number
           category_id?: string | null
           created_at?: string
@@ -163,9 +216,11 @@ export type Database = {
           occurred_on: string
           space_id: string
           status?: string
+          transfer_account_id?: string | null
           updated_at?: string
         }
         Update: {
+          account_id?: string | null
           amount?: number
           category_id?: string | null
           created_at?: string
@@ -178,9 +233,24 @@ export type Database = {
           occurred_on?: string
           space_id?: string
           status?: string
+          transfer_account_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: 'transactions_account_id_fkey'
+            columns: ['account_id']
+            isOneToOne: false
+            referencedRelation: 'accounts'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'transactions_transfer_account_id_fkey'
+            columns: ['transfer_account_id']
+            isOneToOne: false
+            referencedRelation: 'accounts'
+            referencedColumns: ['id']
+          },
           {
             foreignKeyName: 'transactions_category_id_fkey'
             columns: ['category_id']
@@ -234,7 +304,14 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      account_balances: {
+        Row: {
+          account_id: string | null
+          balance: number | null
+          space_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_space_member: {

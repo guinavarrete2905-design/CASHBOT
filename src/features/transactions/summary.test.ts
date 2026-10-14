@@ -19,6 +19,15 @@ describe('summarize', () => {
     })
   })
 
+  it('ignora transferências entre contas', () => {
+    expect(
+      summarize([
+        { kind: 'transfer', status: 'paid', amount: 1000 },
+        { kind: 'expense', status: 'paid', amount: 10 },
+      ]),
+    ).toEqual({ income: 0, expense: 10, balance: -10, pendingIncome: 0, pendingExpense: 0 })
+  })
+
   it('zera quando não há movimentações', () => {
     expect(summarize([])).toEqual({ income: 0, expense: 0, balance: 0, pendingIncome: 0, pendingExpense: 0 })
   })
@@ -30,6 +39,7 @@ describe('statusLabel', () => {
     expect(statusLabel('income', 'pending')).toBe('A receber')
     expect(statusLabel('expense', 'paid')).toBe('Paga')
     expect(statusLabel('expense', 'pending')).toBe('A pagar')
+    expect(statusLabel('transfer', 'pending')).toBe('Agendada')
   })
 })
 

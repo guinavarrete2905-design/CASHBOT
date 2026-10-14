@@ -4,6 +4,7 @@ import { ForgotPasswordPage } from './auth/ForgotPasswordPage'
 import { LoginPage } from './auth/LoginPage'
 import { ResetPasswordPage } from './auth/ResetPasswordPage'
 import { SignupPage } from './auth/SignupPage'
+import { AccountsPage } from './app/AccountsPage'
 import { ComingSoonPage } from './app/ComingSoonPage'
 import { DashboardPage } from './app/DashboardPage'
 import { NotFoundPage } from './app/NotFoundPage'
@@ -25,7 +26,7 @@ export function AppRoutes() {
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
           <Route path="movimentacoes" element={<TransactionsPage />} />
-          <Route path="contas" element={<ComingSoonPage area="accounts" />} />
+          <Route path="contas" element={<AccountsPage />} />
           <Route path="planejamento" element={<ComingSoonPage area="planning" />} />
           <Route path="patrimonio" element={<ComingSoonPage area="wealth" />} />
           <Route path="relatorios" element={<ComingSoonPage area="reports" />} />

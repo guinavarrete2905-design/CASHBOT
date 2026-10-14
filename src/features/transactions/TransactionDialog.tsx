@@ -10,7 +10,8 @@ import { Label } from '@/components/ui/label'
 import { NativeSelect } from '@/components/ui/native-select'
 import { Segmented } from '@/components/ui/segmented'
 import { Textarea } from '@/components/ui/textarea'
-import type { Category, CategoryKind } from '@/features/categories/api'
+import { isCard, useAccounts, type Account } from '@/features/accounts/api'
+import type { Category } from '@/features/categories/api'
 import { toUserMessage } from '@/lib/errors'
 import { formatMoney, formatMoneyInput, parseMoneyInput } from '@/lib/money'
 import { todayISO } from '@/lib/dates'
@@ -19,30 +20,98 @@ import {
   useDeleteTransaction,
   useUpdateTransaction,
   type Transaction,
+  type TransactionKind,
   type TransactionStatus,
 } from './api'
+
+export type TransactionPrefill = Partial<{
+  kind: TransactionKind
+  amount: number
+  description: string
+  accountId: string | null
+  transferAccountId: string | null
+  occurredOn: string
+}>
 
 type Props = {
   spaceId: string
   categories: Category[]
   /** Movimentação a editar; ausente para criar uma nova. */
   transaction?: Transaction
+  /** Valores iniciais de uma nova movimentação (ex.: pagamento de fatura). */
+  prefill?: TransactionPrefill
   defaultDate?: string
   canDelete?: boolean
   onClose: () => void
 }
 
-export function TransactionDialog({ spaceId, categories, transaction, defaultDate, canDelete = false, onClose }: Props) {
+const KIND_NOUN: Record<TransactionKind, string> = {
+  expense: 'Despesa',
+  income: 'Receita',
+  transfer: 'Transferência',
+}
+
+function AccountOptions({ accounts, keepId }: { accounts: Account[]; keepId?: string | null }) {
+  const visible = accounts.filter((a) => !a.archived || a.id === keepId)
+  const regular = visible.filter((a) => !isCard(a))
+  const cards = visible.filter(isCard)
+  return (
+    <>
+      {regular.length > 0 && (
+        <optgroup label="Contas">
+          {regular.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+              {a.archived ? ' (arquivada)' : ''}
+            </option>
+          ))}
+        </optgroup>
+      )}
+      {cards.length > 0 && (
+        <optgroup label="Cartões">
+          {cards.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.name}
+              {a.archived ? ' (arquivado)' : ''}
+            </option>
+          ))}
+        </optgroup>
+      )}
+    </>
+  )
+}
+
+export function TransactionDialog({
+  spaceId,
+  categories,
+  transaction,
+  prefill,
+  defaultDate,
+  canDelete = false,
+  onClose,
+}: Props) {
   const editing = Boolean(transaction)
   const create = useCreateTransaction(spaceId)
   const update = useUpdateTransaction(spaceId)
   const remove = useDeleteTransaction(spaceId)
+  const accountsQuery = useAccounts(spaceId)
+  const accounts = useMemo(() => accountsQuery.data ?? [], [accountsQuery.data])
 
-  const [kind, setKind] = useState<CategoryKind>(transaction?.kind ?? 'expense')
-  const [amountText, setAmountText] = useState(transaction ? formatMoneyInput(transaction.amount) : '')
-  const [description, setDescription] = useState(transaction?.description ?? '')
-  const [occurredOn, setOccurredOn] = useState(transaction?.occurred_on ?? defaultDate ?? todayISO())
+  const [kind, setKind] = useState<TransactionKind>(transaction?.kind ?? prefill?.kind ?? 'expense')
+  const initialAmount = transaction?.amount ?? prefill?.amount
+  const [amountText, setAmountText] = useState(initialAmount ? formatMoneyInput(initialAmount) : '')
+  const [description, setDescription] = useState(transaction?.description ?? prefill?.description ?? '')
+  const [occurredOn, setOccurredOn] = useState(
+    transaction?.occurred_on ?? prefill?.occurredOn ?? defaultDate ?? todayISO(),
+  )
   const [categoryId, setCategoryId] = useState<string>(transaction?.category_id ?? '')
+  // undefined = ainda não escolhido (usa a primeira conta quando as contas carregarem).
+  const [accountChoice, setAccountChoice] = useState<string | undefined>(
+    transaction ? (transaction.account_id ?? '') : prefill?.accountId ?? undefined,
+  )
+  const [transferTo, setTransferTo] = useState<string>(
+    transaction?.transfer_account_id ?? prefill?.transferAccountId ?? '',
+  )
   const [status, setStatus] = useState<TransactionStatus>(transaction?.status ?? 'paid')
   const [notes, setNotes] = useState(transaction?.notes ?? '')
   const [error, setError] = useState<string | null>(null)
@@ -51,7 +120,12 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
   const amountRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
-  const options = useMemo(
+  const firstRegular = accounts.find((a) => !a.archived && !isCard(a))
+  const accountId = accountChoice ?? firstRegular?.id ?? ''
+  const selectedAccount = accounts.find((a) => a.id === accountId)
+  const onCard = Boolean(selectedAccount && isCard(selectedAccount))
+
+  const categoryOptions = useMemo(
     () => categories.filter((c) => c.kind === kind && (!c.archived || c.id === transaction?.category_id)),
     [categories, kind, transaction?.category_id],
   )
@@ -59,7 +133,7 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
   const amount = parseMoneyInput(amountText)
   const saving = create.isPending || update.isPending
 
-  function changeKind(next: CategoryKind) {
+  function changeKind(next: TransactionKind) {
     setKind(next)
     // A categoria precisa ser do mesmo tipo.
     if (categoryId && !categories.some((c) => c.id === categoryId && c.kind === next)) setCategoryId('')
@@ -88,6 +162,16 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
       setError('Informe a data.')
       return
     }
+    if (kind === 'transfer') {
+      if (!accountId || !transferTo) {
+        setError('Escolha a conta de origem e a de destino.')
+        return
+      }
+      if (accountId === transferTo) {
+        setError('A conta de origem e a de destino precisam ser diferentes.')
+        return
+      }
+    }
 
     const input = {
       kind,
@@ -95,7 +179,10 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
       amount,
       occurredOn,
       categoryId: categoryId || null,
-      status,
+      accountId: accountId || null,
+      transferAccountId: kind === 'transfer' ? transferTo : null,
+      // Compras no cartão entram na fatura; a situação de pagamento é a da fatura.
+      status: kind !== 'transfer' && onCard ? ('paid' as const) : status,
       notes,
     }
     const onError = (err: unknown) => setError(toUserMessage(err, 'Não foi possível salvar a movimentação.'))
@@ -115,7 +202,7 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
       const keepOpen = keepOpenRef.current
       create.mutate(input, {
         onSuccess: () => {
-          toast.success(`${kind === 'income' ? 'Receita' : 'Despesa'} de ${formatMoney(amount)} lançada.`)
+          toast.success(`${KIND_NOUN[kind]} de ${formatMoney(amount)} lançada.`)
           if (keepOpen) resetForNext()
           else onClose()
         },
@@ -124,6 +211,9 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
     }
   }
 
+  const placeholder =
+    kind === 'income' ? 'Ex.: Salário de outubro' : kind === 'transfer' ? 'Ex.: Pagamento da fatura' : 'Ex.: Mercado do mês'
+
   return (
     <>
       <Dialog open onOpenChange={(open) => !open && !saving && onClose()}>
@@ -131,7 +221,7 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
           <DialogHeader>
             <DialogTitle>{editing ? 'Editar movimentação' : 'Nova movimentação'}</DialogTitle>
             <DialogDescription className="sr-only">
-              Preencha tipo, valor, descrição, data e categoria.
+              Preencha tipo, valor, descrição, data, conta e categoria.
             </DialogDescription>
           </DialogHeader>
 
@@ -146,6 +236,7 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
               options={[
                 { value: 'expense', label: 'Despesa', className: 'text-negative' },
                 { value: 'income', label: 'Receita', className: 'text-positive' },
+                { value: 'transfer', label: 'Transferência' },
               ]}
             />
 
@@ -175,46 +266,91 @@ export function TransactionDialog({ spaceId, categories, transaction, defaultDat
               <Input
                 id="tx-description"
                 maxLength={140}
-                placeholder={kind === 'income' ? 'Ex.: Salário de outubro' : 'Ex.: Mercado do mês'}
+                placeholder={placeholder}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-2">
-                <Label htmlFor="tx-date">Data</Label>
-                <Input id="tx-date" type="date" value={occurredOn} onChange={(e) => setOccurredOn(e.target.value)} />
+            {kind === 'transfer' ? (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-2">
+                  <Label htmlFor="tx-from">De</Label>
+                  <NativeSelect id="tx-from" value={accountId} onChange={(e) => setAccountChoice(e.target.value)}>
+                    <option value="">Escolha</option>
+                    <AccountOptions accounts={accounts} keepId={transaction?.account_id} />
+                  </NativeSelect>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="tx-to">Para</Label>
+                  <NativeSelect id="tx-to" value={transferTo} onChange={(e) => setTransferTo(e.target.value)}>
+                    <option value="">Escolha</option>
+                    <AccountOptions accounts={accounts} keepId={transaction?.transfer_account_id} />
+                  </NativeSelect>
+                </div>
+                {accounts.length < 2 && (
+                  <p className="col-span-2 text-xs text-muted-foreground">
+                    Para transferir, cadastre pelo menos duas contas em Contas e cartões.
+                  </p>
+                )}
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="tx-category">Categoria</Label>
-                <NativeSelect id="tx-category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
-                  <option value="">Sem categoria</option>
-                  {options.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                      {c.archived ? ' (arquivada)' : ''}
-                    </option>
-                  ))}
-                </NativeSelect>
+            ) : (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="grid gap-2">
+                  <Label htmlFor="tx-account">{kind === 'income' ? 'Recebida em' : 'Paga com'}</Label>
+                  <NativeSelect id="tx-account" value={accountId} onChange={(e) => setAccountChoice(e.target.value)}>
+                    <option value="">Sem conta</option>
+                    <AccountOptions accounts={accounts} keepId={transaction?.account_id} />
+                  </NativeSelect>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="tx-category">Categoria</Label>
+                  <NativeSelect id="tx-category" value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+                    <option value="">Sem categoria</option>
+                    {categoryOptions.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                        {c.archived ? ' (arquivada)' : ''}
+                      </option>
+                    ))}
+                  </NativeSelect>
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="grid gap-2">
-              <span className="text-sm font-medium" aria-hidden="true">
-                Situação
-              </span>
-              <Segmented
-                label="Situação"
-                value={status}
-                onChange={setStatus}
-                className="w-full"
-                options={[
-                  { value: 'paid', label: kind === 'income' ? 'Recebida' : 'Paga' },
-                  { value: 'pending', label: kind === 'income' ? 'A receber' : 'A pagar' },
-                ]}
-              />
+              <Label htmlFor="tx-date">{kind !== 'transfer' && onCard ? 'Data da compra' : 'Data'}</Label>
+              <Input id="tx-date" type="date" value={occurredOn} onChange={(e) => setOccurredOn(e.target.value)} />
             </div>
+
+            {kind !== 'transfer' && onCard ? (
+              <p className="rounded-md bg-secondary px-3 py-2 text-xs text-muted-foreground">
+                Compras no cartão entram na fatura conforme a data e o dia de fechamento do cartão.
+              </p>
+            ) : (
+              <div className="grid gap-2">
+                <span className="text-sm font-medium" aria-hidden="true">
+                  Situação
+                </span>
+                <Segmented
+                  label="Situação"
+                  value={status}
+                  onChange={setStatus}
+                  className="w-full"
+                  options={
+                    kind === 'transfer'
+                      ? [
+                          { value: 'paid', label: 'Feita' },
+                          { value: 'pending', label: 'Agendada' },
+                        ]
+                      : [
+                          { value: 'paid', label: kind === 'income' ? 'Recebida' : 'Paga' },
+                          { value: 'pending', label: kind === 'income' ? 'A receber' : 'A pagar' },
+                        ]
+                  }
+                />
+              </div>
+            )}
 
             <div className="grid gap-2">
               <Label htmlFor="tx-notes">
