@@ -129,6 +129,27 @@ export function useUpcomingTransactions(spaceId: string | undefined, days = 60) 
   })
 }
 
+/** Todas as movimentações entre dois meses (inclusive), para relatórios. */
+export function useRangeTransactions(spaceId: string | undefined, from: YearMonth, to: YearMonth) {
+  return useQuery({
+    queryKey: [...transactionsRoot(spaceId ?? 'none'), 'range', from, to],
+    enabled: Boolean(spaceId),
+    placeholderData: keepPreviousData,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('space_id', spaceId!)
+        .gte('occurred_on', monthRange(from).start)
+        .lt('occurred_on', monthRange(to).endExclusive)
+        .order('occurred_on', { ascending: true })
+        .limit(10000)
+      if (error) throw error
+      return (data ?? []).map(normalize)
+    },
+  })
+}
+
 export type MonthTotals = { month: YearMonth; income: number; expense: number }
 
 /** Totais de receitas e despesas dos últimos `months` meses (inclui o mês atual). */

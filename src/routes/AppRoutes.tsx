@@ -9,6 +9,7 @@ import { ComingSoonPage } from './app/ComingSoonPage'
 import { DashboardPage } from './app/DashboardPage'
 import { NotFoundPage } from './app/NotFoundPage'
 import { PlanningPage } from './app/PlanningPage'
+import { ReportsPage } from './app/ReportsPage'
 import { SettingsPage } from './app/settings/SettingsPage'
 import { TransactionsPage } from './app/TransactionsPage'
 import { ProtectedRoute, PublicOnlyRoute } from './guards'
@@ -30,7 +31,7 @@ export function AppRoutes() {
           <Route path="contas" element={<AccountsPage />} />
           <Route path="planejamento" element={<PlanningPage />} />
           <Route path="patrimonio" element={<ComingSoonPage area="wealth" />} />
-          <Route path="relatorios" element={<ComingSoonPage area="reports" />} />
+          <Route path="relatorios" element={<ReportsPage />} />
           <Route path="configuracoes" element={<Navigate to="/configuracoes/perfil" replace />} />
           <Route path="configuracoes/:section" element={<SettingsPage />} />
           <Route path="*" element={<NotFoundPage />} />

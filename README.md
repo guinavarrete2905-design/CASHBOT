@@ -4,7 +4,7 @@ Plataforma web de gestão financeira pessoal e familiar. Começa como ferramenta
 
 Esta é a **v2**, refeita do zero na branch `v2`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) e continua publicada a partir do `main` até a troca ser aprovada.
 
-## Estado atual (etapa 5 — planejamento)
+## Estado atual (etapa 6 — relatórios)
 
 Implementado:
 
@@ -17,6 +17,7 @@ Implementado:
 - **Contas e cartões:** conta corrente, poupança, dinheiro, investimento e cartão de crédito. Cada conta tem saldo inicial e saldo atualizado a cada lançamento pago. Cartões têm limite, dia de fechamento e de vencimento, valor em aberto, fatura atual e última fatura fechada, e botão "Pagar fatura" (gera uma transferência da conta para o cartão). Contas podem ser arquivadas; só podem ser excluídas se não tiverem movimentações.
 - **Parcelas e recorrências:** ao lançar, escolha "Parcelado" (informa o total e o número de parcelas; os centavos são distribuídos sem perda) ou "Todo mês" (repete o mesmo valor por N meses). As ocorrências futuras ficam pendentes; no cartão, cada parcela entra na fatura do seu mês. Na edição e na exclusão, escolha "Só esta", "Esta e as próximas" ou "Todas". As listas mostram a posição (ex.: 3/10).
 - **Planejamento:** orçamento mensal por categoria de despesa (limite que vale todos os meses), com barra de uso, aviso a partir de 80% e quando passa do limite, e lista de gastos em categorias sem limite. Metas com valor, quanto já foi guardado, prazo opcional e quanto guardar por mês. Próximos vencimentos (atrasados e próximos 60 dias). O Início mostra o resumo do orçamento.
+- **Relatórios:** período de 3, 6 ou 12 meses ou o ano atual, considerando tudo ou só o que já foi pago/recebido. Totais (receitas, despesas, resultado e quanto sobrou da renda), gastos por categoria com participação, receitas x despesas por mês e comparativo de despesas por categoria com o mês anterior. Exportação em CSV no padrão do Excel em português (";" e vírgula decimal).
 - **Transferências** entre contas (não contam como receita nem despesa), lançamentos ligados a uma conta ou cartão e filtro por conta na lista de movimentações.
 - **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
 - **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. As áreas Contas e cartões, Planejamento, Patrimônio e Relatórios mostram o que está por vir, sem botões que não funcionam.
@@ -135,7 +136,7 @@ No SQL Editor do Supabase, cole e execute cada arquivo de migração, na ordem. 
 ```bash
 npm run typecheck   # verificação de tipos
 npm run lint        # ESLint
-npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento e metas
+npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas e relatórios
 npm run build       # build de produção
 ```
 
@@ -143,7 +144,7 @@ Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spa
 
 ## Próximas etapas
 
-1. Relatórios: gastos por categoria, receitas x despesas e comparativo entre meses.
+1. Patrimônio: investimentos, bens, dívidas e evolução do patrimônio líquido.
 2. Histórico de faturas e marcação de fatura paga.
 3. Orçamentos, metas e calendário de vencimentos.
 4. Importação de extratos (OFX/CSV), usando `transactions.external_ref` para não duplicar.

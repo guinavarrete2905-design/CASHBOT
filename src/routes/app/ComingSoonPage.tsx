@@ -1,9 +1,9 @@
-import { ChartPie, PiggyBank, type LucideIcon } from 'lucide-react'
+import { PiggyBank, type LucideIcon } from 'lucide-react'
 import { EmptyState } from '@/components/feedback'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { useCurrentSpace } from '@/providers/SpaceProvider'
 
-type Area = 'wealth' | 'reports'
+type Area = 'wealth'
 
 const CONTENT: Record<Area, { title: string; description: string; icon: LucideIcon; upcoming: string[] }> = {
   wealth: {
@@ -11,12 +11,6 @@ const CONTENT: Record<Area, { title: string; description: string; icon: LucideIc
     description: 'Investimentos, bens, dívidas e financiamentos.',
     icon: PiggyBank,
     upcoming: ['Investimentos', 'Bens', 'Dívidas e financiamentos', 'Evolução do patrimônio líquido'],
-  },
-  reports: {
-    title: 'Relatórios',
-    description: 'Análises do seu dinheiro ao longo do tempo.',
-    icon: ChartPie,
-    upcoming: ['Gastos por categoria', 'Receitas x despesas por mês', 'Comparativo entre períodos'],
   },
 }
 
