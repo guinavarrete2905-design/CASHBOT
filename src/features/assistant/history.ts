@@ -26,7 +26,7 @@ export function useAssistantHistory(spaceId: string | undefined) {
       if (error) throw error
       return (data ?? [])
         .reverse()
-        .map((m) => ({ id: m.id, role: m.role === 'user' ? 'user' : 'assistant', content: m.content, createdAt: m.created_at }))
+        .map((m): StoredMessage => ({ id: m.id, role: m.role === 'user' ? 'user' : 'assistant', content: m.content, createdAt: m.created_at }))
     },
   })
 }

@@ -10,6 +10,7 @@ import {
   parseInstallments,
   parsePeriods,
   splitByAmounts,
+  type Span,
 } from './parse'
 
 const TODAY = '2026-10-14' // quarta-feira
@@ -170,7 +171,7 @@ describe('contas', () => {
 describe('descrição', () => {
   function describeOf(s: string) {
     const n = normalize(s)
-    const consumed = [
+    const consumed: Span[] = [
       ...parseAmounts(n.text, true),
       ...(parseInstallments(n.text) ? [parseInstallments(n.text)!] : []),
     ]
