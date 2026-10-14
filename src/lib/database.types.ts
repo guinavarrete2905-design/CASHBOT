@@ -544,7 +544,7 @@ export type Database = {
       }
       assistant_period_summary: {
         Args: { p_account_id?: string; p_category_id?: string; p_from: string; p_space_id: string; p_to: string }
-        Returns: { expense: number; income: number; pending_expense: number; pending_income: number; tx_count: number }[]
+        Returns: { expense: number; expense_count: number; income: number; income_count: number; pending_expense: number; pending_income: number }[]
       }
       assistant_top_expenses: {
         Args: { p_category_id?: string; p_from: string; p_limit?: number; p_space_id: string; p_to: string }

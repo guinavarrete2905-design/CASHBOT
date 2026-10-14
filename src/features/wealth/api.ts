@@ -42,7 +42,7 @@ export type Liability = {
 
 export type Snapshot = { month: string; accounts: number; assets: number; liabilities: number; netWorth: number }
 
-const wealthKey = (spaceId: string) => ['wealth', spaceId] as const
+export const wealthKey = (spaceId: string) => ['wealth', spaceId] as const
 
 export async function fetchAssets(spaceId: string): Promise<Asset[]> {
   const { data, error } = await supabase.from('assets').select('*').eq('space_id', spaceId).order('value', { ascending: false })

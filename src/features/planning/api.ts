@@ -13,7 +13,7 @@ export type Goal = {
   createdBy: string | null
 }
 
-const planningKey = (spaceId: string) => ['planning', spaceId] as const
+export const planningKey = (spaceId: string) => ['planning', spaceId] as const
 
 export async function fetchBudgets(spaceId: string): Promise<Budget[]> {
   const { data, error } = await supabase.from('budgets').select('id, category_id, amount').eq('space_id', spaceId)

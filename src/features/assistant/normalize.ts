@@ -34,6 +34,28 @@ export function normalizeText(s: string): string {
 // Vírgula seguida de espaço e ponto e vírgula viram tokens próprios (separam itens de uma lista).
 const TOKEN_RE = /[\p{L}\p{N}$%]+(?:[.,/:\-][\p{L}\p{N}$%]+)*|;|,(?=\s)/gu
 
+/** Abreviações comuns em mensagens ("qto", "vc", "hj"). */
+const ABBREVIATIONS: Record<string, string> = {
+  qto: 'quanto',
+  qnto: 'quanto',
+  qnt: 'quanto',
+  qta: 'quanta',
+  qtos: 'quantos',
+  qtas: 'quantas',
+  vc: 'voce',
+  vcs: 'voces',
+  hj: 'hoje',
+  tb: 'tambem',
+  tbm: 'tambem',
+  pq: 'porque',
+  q: 'que',
+  oq: 'o que',
+  msm: 'mesmo',
+  td: 'tudo',
+  mto: 'muito',
+  mt: 'muito',
+}
+
 export function normalize(original: string): Normalized {
   const tokens: Token[] = []
   let text = ''
@@ -44,7 +66,8 @@ export function normalize(original: string): Normalized {
     .replace(/(\d)(reais|real|mil|k)\b/gi, '$1 $2')
   for (const match of prepared.matchAll(TOKEN_RE)) {
     const raw = match[0]
-    const norm = stripAccents(raw.toLowerCase())
+    const lower = stripAccents(raw.toLowerCase())
+    const norm = ABBREVIATIONS[lower] ?? lower
     if (text) text += ' '
     const start = text.length
     text += norm
@@ -82,14 +105,14 @@ export function editDistance(a: string, b: string, limit = 2): number {
 
 /**
  * Corrige erros de digitação comuns trocando palavras parecidas por termos conhecidos
- * (só palavras com 5+ letras e no máximo 1 letra de diferença; 2 a partir de 9 letras).
+ * (só palavras com 5+ letras e no máximo 1 letra de diferença; 2 a partir de 10 letras).
  */
 export function correctTypos(text: string, vocabulary: ReadonlySet<string>): string {
   return text
     .split(' ')
     .map((word) => {
       if (word.length < 5 || vocabulary.has(word) || /\d/.test(word)) return word
-      const limit = word.length >= 9 ? 2 : 1
+      const limit = word.length >= 10 ? 2 : 1
       let best: string | null = null
       let bestDist = limit + 1
       for (const v of vocabulary) {

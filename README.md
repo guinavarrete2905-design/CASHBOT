@@ -4,7 +4,7 @@ Plataforma web de gestão financeira pessoal e familiar. Começa como ferramenta
 
 Esta é a **v2**, refeita do zero na branch `v2`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) e continua publicada a partir do `main` até a troca ser aprovada.
 
-## Estado atual (etapa 7 — patrimônio)
+## Estado atual (etapa 8 — Assistente Financeiro)
 
 Implementado:
 
@@ -22,8 +22,9 @@ Implementado:
 - **Transferências** entre contas (não contam como receita nem despesa), lançamentos ligados a uma conta ou cartão e filtro por conta na lista de movimentações.
 - **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
 - **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. Todas as áreas do menu estão implementadas.
+- **Assistente Financeiro (sem IA generativa):** chat que consulta os dados reais do espaço atual, registra movimentações com prévia e confirmação e explica conceitos financeiros. Detalhes em [Assistente Financeiro](#assistente-financeiro).
 
-Ainda **não** implementado (próximas etapas): contas e saldos, cartões e faturas, transferências, parcelamentos, recorrências, orçamentos, metas, projeções, investimentos, patrimônio, dívidas, relatórios, importação de extratos, Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
+Ainda **não** implementado (próximas etapas): central de lançamentos em massa, importação de extratos, Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
 
 ## Tecnologias
 
@@ -96,6 +97,7 @@ Migrações, em ordem:
 4. [`20261014190000_transaction_series.sql`](supabase/migrations/20261014190000_transaction_series.sql) — séries (parcelas e recorrências).
 5. [`20261014210000_planning.sql`](supabase/migrations/20261014210000_planning.sql) — orçamentos e metas.
 6. [`20261014230000_wealth.sql`](supabase/migrations/20261014230000_wealth.sql) — bens, dívidas e histórico do patrimônio.
+7. [`20261015010000_assistant.sql`](supabase/migrations/20261015010000_assistant.sql) — histórico do Assistente Financeiro e funções de consulta agregada.
 
 A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
 
@@ -113,9 +115,10 @@ A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos
 | `assets` | bens e investimentos com valor atual |
 | `liabilities` | dívidas e financiamentos: saldo devedor e parcela |
 | `net_worth_snapshots` | patrimônio de cada mês por espaço (gravado só pela função `record_net_worth_snapshot`) |
+| `assistant_messages` | histórico do Assistente Financeiro, por usuário e espaço (só o próprio usuário lê e apaga) |
 | `account_balances` (visão) | saldo de cada conta, só com o que já foi pago/recebido; respeita o RLS de quem consulta |
 
-Funções: `create_space`, `add_space_member`, `update_space_member_role` (validam o papel de quem chama) e `is_space_member`, `space_role`, `shares_space_with` (usadas pelas políticas, `SECURITY DEFINER` para evitar recursão).
+Funções: `create_space`, `add_space_member`, `update_space_member_role` (validam o papel de quem chama) e `is_space_member`, `space_role`, `shares_space_with` (usadas pelas políticas, `SECURITY DEFINER` para evitar recursão). Para o assistente: `assistant_period_summary`, `assistant_expenses_by_category`, `assistant_top_expenses` e `assistant_monthly_totals` — consultas agregadas `SECURITY INVOKER` (rodam com as permissões de quem chama, então o RLS vale), só para usuários autenticados.
 
 ### Regras de acesso (RLS)
 
@@ -131,6 +134,7 @@ Funções: `create_space`, `add_space_member`, `update_space_member_role` (valid
 - Contas: todos os participantes veem e usam nos lançamentos; só proprietário e administrador cadastram, editam, arquivam e excluem. Conta com movimentações não pode ser excluída. Conta não vira cartão (nem o contrário).
 - Orçamentos e metas: todos os participantes veem e editam; a categoria do orçamento precisa ser de despesa e do mesmo espaço; meta é excluída por quem criou ou pelo proprietário/administrador.
 - Patrimônio: participantes veem e editam bens e dívidas; exclusão por quem cadastrou ou proprietário/administrador. O histórico só é gravado pela função, que confere se quem chama participa do espaço.
+- Histórico do assistente: cada pessoa lê, grava e apaga só as próprias mensagens, e só em espaços dos quais participa. Não há edição.
 - Movimentações: todos os participantes do espaço veem, lançam e editam; excluir é permitido a quem lançou e ao proprietário/administrador. A categoria precisa ser do mesmo espaço e do mesmo tipo; uma movimentação não muda de espaço; o autor é sempre quem lançou. Excluir uma categoria deixa as movimentações sem categoria.
 
 ### Aplicar as migrações
@@ -142,18 +146,43 @@ No SQL Editor do Supabase, cole e execute cada arquivo de migração, na ordem. 
 ```bash
 npm run typecheck   # verificação de tipos
 npm run lint        # ESLint
-npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas, relatórios e patrimônio
+npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas, relatórios, patrimônio e assistente
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql) e [`supabase/tests/rls_assistant.sql`](supabase/tests/rls_assistant.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+
+Sem acesso ao registro do npm, os testes puros (sem React) também rodam direto no Node:
+
+```bash
+scripts/node-test/t.sh src/features/assistant/*.test.ts      # ou qualquer arquivo *.test.ts sem React
+node --experimental-strip-types --no-warnings --import ./scripts/node-test/register.mjs scripts/assistant/coverage.ts --write
+```
+
+## Assistente Financeiro
+
+Assistente conversacional **baseado em regras**: não usa OpenAI, Anthropic, Gemini nem qualquer modelo generativo, não envia mensagens para serviços externos e não tem custo recorrente. Botão "Assistente Financeiro" no menu lateral (desktop) e ícone no topo (celular); painel lateral no computador e tela cheia no celular. O código só é baixado quando o painel é aberto pela primeira vez.
+
+Arquitetura (`src/features/assistant/`):
+
+| Módulo | Arquivo | Papel |
+| --- | --- | --- |
+| A. Interpretador de intenções | `normalize.ts`, `parse.ts`, `intents.ts` | normaliza o texto (acentos, abreviações, erros de digitação), extrai valores, datas, períodos, parcelas, categorias e contas, e pontua ~50 intenções por regras |
+| B. Motor de regras | `engine.ts` | decide a intenção considerando contexto e ambiguidade (pergunta quando há empate) e chama o tratador |
+| C. Motor de consultas | `queries.ts` | consultas fixas e autorizadas ao Supabase com a sessão do usuário (RLS sempre vale); nada da mensagem vira SQL |
+| D. Motor de cálculos | `calc.ts` + funções já existentes (faturas, orçamento, metas, patrimônio) | variações, participações, juros simples/compostos, Price, planos de economia |
+| E. Base de conhecimento | `knowledge/` | 47 artigos em 5 categorias, carregados sob demanda; sem taxas atuais, temas que mudam marcados como "depende de atualização" |
+| F. Gerenciador de conversas | `types.ts` (`ConversationContext`) | último período, filtros e resultados ("E em outubro?", "Qual a diferença?"), perguntas em aberto e rascunhos pendentes |
+| G. Interface | `AssistantLauncher.tsx`, `AssistantPanel.tsx` | botão discreto, histórico, sugestões, cartões de confirmação, links para as telas |
+
+Lançamentos: o assistente prepara um rascunho (descrição, valor, data, categoria, conta/cartão, espaço, parcelamento) e mostra **CONFIRMAR / EDITAR / CANCELAR**. Nada é salvo sem confirmação. A gravação usa o mesmo serviço e as mesmas validações do formulário (`validateTransaction`), e cada rascunho tem um código único gravado em `external_ref` (`assistente:<id>`): confirmar duas vezes não duplica. EDITAR abre o formulário normal já preenchido. Até 5 itens por mensagem; para mais, o assistente indica Movimentações (a central de lançamentos em massa é uma etapa futura).
+
+Cobertura: [`docs/assistente-cobertura.md`](docs/assistente-cobertura.md) (conjunto de 210 perguntas de referência, gerado por `scripts/assistant/coverage.ts`).
+
+Limitações: não acessa taxas e cotações atuais; não dá orientação tributária, jurídica ou recomendação individual de investimento; não altera permissões nem edita/exclui movimentações; frases muito diferentes das previstas podem não ser entendidas (nesse caso ele diz que não entendeu e sugere perguntas). O histórico guarda o texto das mensagens (protegido por RLS e apagável pelo usuário).
 
 ## Próximas etapas
 
-1. Publicar a v2 no endereço oficial (trocar o `main`) e configurar as variáveis de produção na Vercel.
+1. Central de lançamentos em massa (tabela editável e importação de OFX/CSV), integrada ao assistente.
 2. Histórico de faturas e marcação de fatura paga.
-3. Orçamentos, metas e calendário de vencimentos.
-4. Importação de extratos (OFX/CSV), usando `transactions.external_ref` para não duplicar.
-5. Patrimônio, investimentos e dívidas.
-6. Relatórios.
-7. Remover as tabelas do CashBot antigo, quando você decidir.
+3. Remover as tabelas do CashBot antigo, quando você decidir.

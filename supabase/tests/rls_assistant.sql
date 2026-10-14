@@ -33,7 +33,7 @@ begin
     (v_space, 'expense', 'Fora do período', 999, '2026-09-30', v_food, 'paid');
 
   select * into r from public.assistant_period_summary(v_space, '2026-10-01', '2026-10-31');
-  if r.income <> 5000 or r.expense <> 470 or r.pending_expense <> 50 or r.tx_count <> 4 then
+  if r.income <> 5000 or r.expense <> 470 or r.pending_expense <> 50 or r.income_count <> 1 or r.expense_count <> 3 then
     raise exception 'FALHA: resumo do período incorreto: %', r;
   end if;
 
@@ -82,7 +82,7 @@ do $$
 declare r record; v int;
 begin
   select * into r from public.assistant_period_summary(current_setting('test.a_space')::uuid, '2026-01-01', '2026-12-31');
-  if r.income <> 0 or r.expense <> 0 or r.tx_count <> 0 then
+  if r.income <> 0 or r.expense <> 0 or r.income_count <> 0 or r.expense_count <> 0 then
     raise exception 'FALHA: Carla obteve totais do espaço da Ana: %', r;
   end if;
   select count(*) into v from public.assistant_top_expenses(current_setting('test.a_space')::uuid, '2026-01-01', '2026-12-31', 50);

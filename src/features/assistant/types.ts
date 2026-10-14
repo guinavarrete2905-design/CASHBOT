@@ -77,17 +77,24 @@ export type ResultMemo = {
   accountName: string | null
 }
 
-export type Awaiting =
-  | { slot: 'amount'; draft: Draft }
-  | { slot: 'description'; draft: Draft }
-  | { slot: 'account'; draft: Draft; options: Array<{ id: string; name: string; onCard: boolean }> }
-  | { slot: 'transfer-from'; draft: Draft; options: Array<{ id: string; name: string }> }
-  | { slot: 'transfer-to'; draft: Draft; options: Array<{ id: string; name: string }> }
+export type AccountOption = { id: string | null; name: string; onCard: boolean }
+
+/** Pergunta em aberto: a próxima mensagem do usuário é tratada como resposta a ela. */
+export type Awaiting = {
+  slot: 'amount' | 'description' | 'account' | 'transfer-from' | 'transfer-to' | 'clear-history'
+  drafts: Draft[]
+  options?: AccountOption[]
+  /** A conta já foi definida (inclusive "sem conta"), então não precisa perguntar de novo. */
+  accountDecided?: boolean
+}
 
 export type ConversationContext = {
   lastIntent: IntentId | null
   last: ResultMemo | null
   previous: ResultMemo | null
+  /** Período e filtros da última consulta, para "E com transporte?" e "E em outubro?". */
+  lastPeriod: Period | null
+  lastFilters: { categoryId: string | null; accountId: string | null }
   /** Lançamentos mostrados e ainda não confirmados nem cancelados. */
   pendingDrafts: Draft[]
   awaiting: Awaiting | null
@@ -98,6 +105,8 @@ export const EMPTY_CONTEXT: ConversationContext = {
   lastIntent: null,
   last: null,
   previous: null,
+  lastPeriod: null,
+  lastFilters: { categoryId: null, accountId: null },
   pendingDrafts: [],
   awaiting: null,
   turns: 0,
@@ -120,7 +129,14 @@ export type AccountData = {
 
 export type CategoryData = { id: string; name: string; kind: 'expense' | 'income'; archived: boolean }
 
-export type PeriodSummary = { income: number; expense: number; pendingIncome: number; pendingExpense: number; count: number }
+export type PeriodSummary = {
+  income: number
+  expense: number
+  pendingIncome: number
+  pendingExpense: number
+  incomeCount: number
+  expenseCount: number
+}
 
 export type CategoryTotal = { categoryId: string | null; name: string | null; total: number; count: number }
 

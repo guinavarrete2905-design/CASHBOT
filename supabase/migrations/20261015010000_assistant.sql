@@ -60,7 +60,8 @@ returns table (
   expense numeric,
   pending_income numeric,
   pending_expense numeric,
-  tx_count bigint
+  income_count bigint,
+  expense_count bigint
 )
 language sql
 stable
@@ -72,7 +73,8 @@ as $$
     coalesce(sum(t.amount) filter (where t.kind = 'expense'), 0),
     coalesce(sum(t.amount) filter (where t.kind = 'income' and t.status = 'pending'), 0),
     coalesce(sum(t.amount) filter (where t.kind = 'expense' and t.status = 'pending'), 0),
-    count(*) filter (where t.kind <> 'transfer')
+    count(*) filter (where t.kind = 'income'),
+    count(*) filter (where t.kind = 'expense')
   from public.transactions t
   where t.space_id = p_space_id
     and t.occurred_on between p_from and p_to

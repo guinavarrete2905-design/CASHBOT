@@ -330,6 +330,18 @@ export function mergeRange(text: string, periods: PeriodMatch[]): PeriodMatch | 
   return { from: a.from, to: b.to, kind: 'range', label: `de ${stripPrep(a.label)} a ${stripPrep(b.label)}`, start: a.start, end: b.end }
 }
 
+/** Rótulo sem a preposição inicial, para usar depois de "com": "no mês passado" → "o mês passado". */
+export function bareLabel(label: string): string {
+  return label
+    .replace(/^neste /, 'este ')
+    .replace(/^nesta /, 'esta ')
+    .replace(/^nos /, 'os ')
+    .replace(/^nas /, 'as ')
+    .replace(/^no /, 'o ')
+    .replace(/^na /, 'a ')
+    .replace(/^em /, '')
+}
+
 function stripPrep(label: string) {
   return label.replace(/^(em|no|na|neste|nesta) /, '')
 }
