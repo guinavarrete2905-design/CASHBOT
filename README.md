@@ -4,7 +4,7 @@ Plataforma web de gestão financeira pessoal e familiar. Começa como ferramenta
 
 Esta é a **v2**, refeita do zero na branch `v2`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) e continua publicada a partir do `main` até a troca ser aprovada.
 
-## Estado atual (etapa 6 — relatórios)
+## Estado atual (etapa 7 — patrimônio)
 
 Implementado:
 
@@ -18,9 +18,10 @@ Implementado:
 - **Parcelas e recorrências:** ao lançar, escolha "Parcelado" (informa o total e o número de parcelas; os centavos são distribuídos sem perda) ou "Todo mês" (repete o mesmo valor por N meses). As ocorrências futuras ficam pendentes; no cartão, cada parcela entra na fatura do seu mês. Na edição e na exclusão, escolha "Só esta", "Esta e as próximas" ou "Todas". As listas mostram a posição (ex.: 3/10).
 - **Planejamento:** orçamento mensal por categoria de despesa (limite que vale todos os meses), com barra de uso, aviso a partir de 80% e quando passa do limite, e lista de gastos em categorias sem limite. Metas com valor, quanto já foi guardado, prazo opcional e quanto guardar por mês. Próximos vencimentos (atrasados e próximos 60 dias). O Início mostra o resumo do orçamento.
 - **Relatórios:** período de 3, 6 ou 12 meses ou o ano atual, considerando tudo ou só o que já foi pago/recebido. Totais (receitas, despesas, resultado e quanto sobrou da renda), gastos por categoria com participação, receitas x despesas por mês e comparativo de despesas por categoria com o mês anterior. Exportação em CSV no padrão do Excel em português (";" e vírgula decimal).
+- **Patrimônio:** bens e investimentos (imóvel, veículo, aplicação, outros) com valor atual; dívidas e financiamentos com saldo devedor e parcela; patrimônio líquido = contas + bens − dívidas − cartões. O histórico mensal é gravado pelo banco (função `record_net_worth_snapshot`) ao abrir a página e a cada alteração, e vira o gráfico de evolução.
 - **Transferências** entre contas (não contam como receita nem despesa), lançamentos ligados a uma conta ou cartão e filtro por conta na lista de movimentações.
 - **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
-- **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. As áreas Contas e cartões, Planejamento, Patrimônio e Relatórios mostram o que está por vir, sem botões que não funcionam.
+- **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. Todas as áreas do menu estão implementadas.
 
 Ainda **não** implementado (próximas etapas): contas e saldos, cartões e faturas, transferências, parcelamentos, recorrências, orçamentos, metas, projeções, investimentos, patrimônio, dívidas, relatórios, importação de extratos, Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
 
@@ -94,6 +95,7 @@ Migrações, em ordem:
 3. [`20261014170000_accounts.sql`](supabase/migrations/20261014170000_accounts.sql) — contas, cartões, transferências e a visão `account_balances`.
 4. [`20261014190000_transaction_series.sql`](supabase/migrations/20261014190000_transaction_series.sql) — séries (parcelas e recorrências).
 5. [`20261014210000_planning.sql`](supabase/migrations/20261014210000_planning.sql) — orçamentos e metas.
+6. [`20261014230000_wealth.sql`](supabase/migrations/20261014230000_wealth.sql) — bens, dívidas e histórico do patrimônio.
 
 A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
 
@@ -108,6 +110,9 @@ A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos
 | `accounts` | contas e cartões: tipo, saldo inicial, limite, dias de fechamento e vencimento, arquivada |
 | `budgets` | limite mensal por categoria de despesa (um por categoria) |
 | `goals` | metas: nome, valor, quanto já foi guardado, prazo, autor |
+| `assets` | bens e investimentos com valor atual |
+| `liabilities` | dívidas e financiamentos: saldo devedor e parcela |
+| `net_worth_snapshots` | patrimônio de cada mês por espaço (gravado só pela função `record_net_worth_snapshot`) |
 | `account_balances` (visão) | saldo de cada conta, só com o que já foi pago/recebido; respeita o RLS de quem consulta |
 
 Funções: `create_space`, `add_space_member`, `update_space_member_role` (validam o papel de quem chama) e `is_space_member`, `space_role`, `shares_space_with` (usadas pelas políticas, `SECURITY DEFINER` para evitar recursão).
@@ -125,6 +130,7 @@ Funções: `create_space`, `add_space_member`, `update_space_member_role` (valid
 - Preferências: só o próprio usuário, e o espaço em uso precisa ser um espaço do qual ele participa.
 - Contas: todos os participantes veem e usam nos lançamentos; só proprietário e administrador cadastram, editam, arquivam e excluem. Conta com movimentações não pode ser excluída. Conta não vira cartão (nem o contrário).
 - Orçamentos e metas: todos os participantes veem e editam; a categoria do orçamento precisa ser de despesa e do mesmo espaço; meta é excluída por quem criou ou pelo proprietário/administrador.
+- Patrimônio: participantes veem e editam bens e dívidas; exclusão por quem cadastrou ou proprietário/administrador. O histórico só é gravado pela função, que confere se quem chama participa do espaço.
 - Movimentações: todos os participantes do espaço veem, lançam e editam; excluir é permitido a quem lançou e ao proprietário/administrador. A categoria precisa ser do mesmo espaço e do mesmo tipo; uma movimentação não muda de espaço; o autor é sempre quem lançou. Excluir uma categoria deixa as movimentações sem categoria.
 
 ### Aplicar as migrações
@@ -136,15 +142,15 @@ No SQL Editor do Supabase, cole e execute cada arquivo de migração, na ordem. 
 ```bash
 npm run typecheck   # verificação de tipos
 npm run lint        # ESLint
-npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas e relatórios
+npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas, relatórios e patrimônio
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql) e [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
 
 ## Próximas etapas
 
-1. Patrimônio: investimentos, bens, dívidas e evolução do patrimônio líquido.
+1. Publicar a v2 no endereço oficial (trocar o `main`) e configurar as variáveis de produção na Vercel.
 2. Histórico de faturas e marcação de fatura paga.
 3. Orçamentos, metas e calendário de vencimentos.
 4. Importação de extratos (OFX/CSV), usando `transactions.external_ref` para não duplicar.

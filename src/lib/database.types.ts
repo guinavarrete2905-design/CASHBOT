@@ -60,6 +60,45 @@ export type Database = {
           },
         ]
       }
+      assets: {
+        Row: {
+          archived: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          notes: string | null
+          space_id: string
+          type: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          archived?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          space_id: string
+          type: string
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          archived?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          space_id?: string
+          type?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
+      }
       budgets: {
         Row: {
           amount: number
@@ -163,6 +202,78 @@ export type Database = {
           space_id?: string
           target_amount?: number
           target_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      liabilities: {
+        Row: {
+          archived: boolean
+          balance: number
+          created_at: string
+          created_by: string | null
+          id: string
+          monthly_payment: number | null
+          name: string
+          notes: string | null
+          space_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean
+          balance: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          monthly_payment?: number | null
+          name: string
+          notes?: string | null
+          space_id: string
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean
+          balance?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          monthly_payment?: number | null
+          name?: string
+          notes?: string | null
+          space_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      net_worth_snapshots: {
+        Row: {
+          accounts: number
+          assets: number
+          liabilities: number
+          month: string
+          net_worth: number
+          space_id: string
+          updated_at: string
+        }
+        Insert: {
+          accounts: number
+          assets: number
+          liabilities: number
+          month: string
+          net_worth: number
+          space_id: string
+          updated_at?: string
+        }
+        Update: {
+          accounts?: number
+          assets?: number
+          liabilities?: number
+          month?: string
+          net_worth?: number
+          space_id?: string
           updated_at?: string
         }
         Relationships: []
@@ -401,6 +512,18 @@ export type Database = {
         Returns: string
       }
       is_space_member: { Args: { p_space_id: string }; Returns: boolean }
+      record_net_worth_snapshot: {
+        Args: { p_space_id: string }
+        Returns: {
+          accounts: number
+          assets: number
+          liabilities: number
+          month: string
+          net_worth: number
+          space_id: string
+          updated_at: string
+        }
+      }
       shares_space_with: { Args: { p_user_id: string }; Returns: boolean }
       space_role: { Args: { p_space_id: string }; Returns: string }
       update_space_member_role: {

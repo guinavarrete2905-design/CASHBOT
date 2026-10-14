@@ -5,13 +5,13 @@ import { LoginPage } from './auth/LoginPage'
 import { ResetPasswordPage } from './auth/ResetPasswordPage'
 import { SignupPage } from './auth/SignupPage'
 import { AccountsPage } from './app/AccountsPage'
-import { ComingSoonPage } from './app/ComingSoonPage'
 import { DashboardPage } from './app/DashboardPage'
 import { NotFoundPage } from './app/NotFoundPage'
 import { PlanningPage } from './app/PlanningPage'
 import { ReportsPage } from './app/ReportsPage'
 import { SettingsPage } from './app/settings/SettingsPage'
 import { TransactionsPage } from './app/TransactionsPage'
+import { WealthPage } from './app/WealthPage'
 import { ProtectedRoute, PublicOnlyRoute } from './guards'
 
 export function AppRoutes() {
@@ -30,7 +30,7 @@ export function AppRoutes() {
           <Route path="movimentacoes" element={<TransactionsPage />} />
           <Route path="contas" element={<AccountsPage />} />
           <Route path="planejamento" element={<PlanningPage />} />
-          <Route path="patrimonio" element={<ComingSoonPage area="wealth" />} />
+          <Route path="patrimonio" element={<WealthPage />} />
           <Route path="relatorios" element={<ReportsPage />} />
           <Route path="configuracoes" element={<Navigate to="/configuracoes/perfil" replace />} />
           <Route path="configuracoes/:section" element={<SettingsPage />} />
