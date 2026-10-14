@@ -60,6 +60,33 @@ export type Database = {
           },
         ]
       }
+      budgets: {
+        Row: {
+          amount: number
+          category_id: string
+          created_at: string
+          id: string
+          space_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category_id: string
+          created_at?: string
+          id?: string
+          space_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string
+          created_at?: string
+          id?: string
+          space_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           archived: boolean
@@ -100,6 +127,45 @@ export type Database = {
             referencedColumns: ['id']
           },
         ]
+      }
+      goals: {
+        Row: {
+          archived: boolean
+          created_at: string
+          created_by: string | null
+          id: string
+          name: string
+          saved_amount: number
+          space_id: string
+          target_amount: number
+          target_date: string | null
+          updated_at: string
+        }
+        Insert: {
+          archived?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name: string
+          saved_amount?: number
+          space_id: string
+          target_amount: number
+          target_date?: string | null
+          updated_at?: string
+        }
+        Update: {
+          archived?: boolean
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          name?: string
+          saved_amount?: number
+          space_id?: string
+          target_amount?: number
+          target_date?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {

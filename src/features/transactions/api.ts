@@ -109,6 +109,26 @@ export function usePendingTransactions(spaceId: string | undefined, limit = 6) {
   })
 }
 
+/** Pendências até `days` dias à frente, incluindo as atrasadas (para o calendário de vencimentos). */
+export function useUpcomingTransactions(spaceId: string | undefined, days = 60) {
+  return useQuery({
+    queryKey: [...transactionsRoot(spaceId ?? 'none'), 'upcoming', days],
+    enabled: Boolean(spaceId),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('space_id', spaceId!)
+        .eq('status', 'pending')
+        .lte('occurred_on', todayISO(new Date(Date.now() + days * 24 * 60 * 60 * 1000)))
+        .order('occurred_on', { ascending: true })
+        .limit(200)
+      if (error) throw error
+      return (data ?? []).map(normalize)
+    },
+  })
+}
+
 export type MonthTotals = { month: YearMonth; income: number; expense: number }
 
 /** Totais de receitas e despesas dos últimos `months` meses (inclui o mês atual). */

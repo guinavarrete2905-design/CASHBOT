@@ -17,6 +17,9 @@ import {
   type Transaction,
 } from '@/features/transactions/api'
 import { MonthlyChart } from '@/features/transactions/MonthlyChart'
+import { useBudgets } from '@/features/planning/api'
+import { budgetStatus, spentByCategory } from '@/features/planning/calc'
+import { ProgressBar } from '@/features/planning/ProgressBar'
 import { TransactionDialog } from '@/features/transactions/TransactionDialog'
 import { buildLookup, TransactionRow } from '@/features/transactions/TransactionList'
 import { isCard, useAccounts } from '@/features/accounts/api'
@@ -148,6 +151,22 @@ export function DashboardPage() {
     accounts.filter((a) => !a.archived && isCard(a)).reduce((sum, a) => sum + Math.round(Math.max(0, -a.balance) * 100), 0) / 100
 
   const [dialog, setDialog] = useState<{ transaction?: Transaction } | null>(null)
+  const budgetsQuery = useBudgets(spaceId)
+  const budgetSummary = useMemo(() => {
+    const budgets = budgetsQuery.data ?? []
+    if (budgets.length === 0) return null
+    const spent = spentByCategory(monthTx.data ?? [])
+    const rows = budgets.map((b) => budgetStatus(spent.get(b.categoryId) ?? 0, b.amount))
+    const total = budgets.reduce((s, b) => s + Math.round(b.amount * 100), 0) / 100
+    const used = budgets.reduce((s, b) => s + Math.round((spent.get(b.categoryId) ?? 0) * 100), 0) / 100
+    return {
+      total,
+      used,
+      status: budgetStatus(used, total),
+      over: rows.filter((r) => r.state === 'over').length,
+      warning: rows.filter((r) => r.state === 'warning').length,
+    }
+  }, [budgetsQuery.data, monthTx.data])
 
   const recentItems = recent.data ?? []
   const pendingItems = pending.data ?? []
@@ -332,6 +351,30 @@ export function DashboardPage() {
               </>
             )}
           </Panel>
+
+          {budgetSummary && (
+            <Panel
+              title="Orçamento do mês"
+              action={
+                <Link to="/planejamento" className={cn(linkClass, 'text-sm')}>
+                  Detalhes <ArrowRight className="size-3.5" aria-hidden="true" />
+                </Link>
+              }
+            >
+              <p className="tabular text-sm">
+                <span className="font-display text-xl font-semibold">{formatMoney(budgetSummary.used)}</span>{' '}
+                <span className="text-muted-foreground">de {formatMoney(budgetSummary.total)}</span>
+              </p>
+              <ProgressBar className="mt-3" value={budgetSummary.status.pct} tone={budgetSummary.status.state} label="Uso do orçamento do mês" />
+              <p className={cn('mt-2 text-xs', budgetSummary.over > 0 ? 'text-negative' : budgetSummary.warning > 0 ? 'text-warning' : 'text-muted-foreground')}>
+                {budgetSummary.over > 0
+                  ? `${budgetSummary.over} ${budgetSummary.over === 1 ? 'categoria passou' : 'categorias passaram'} do limite`
+                  : budgetSummary.warning > 0
+                    ? `${budgetSummary.warning} ${budgetSummary.warning === 1 ? 'categoria está' : 'categorias estão'} perto do limite`
+                    : 'Todas as categorias dentro do limite'}
+              </p>
+            </Panel>
+          )}
 
           <Panel title="Primeiros passos">
             <ol className="grid gap-4">

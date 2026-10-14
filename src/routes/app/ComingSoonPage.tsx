@@ -1,17 +1,11 @@
-import { ChartPie, PiggyBank, Target, type LucideIcon } from 'lucide-react'
+import { ChartPie, PiggyBank, type LucideIcon } from 'lucide-react'
 import { EmptyState } from '@/components/feedback'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { useCurrentSpace } from '@/providers/SpaceProvider'
 
-type Area = 'planning' | 'wealth' | 'reports'
+type Area = 'wealth' | 'reports'
 
 const CONTENT: Record<Area, { title: string; description: string; icon: LucideIcon; upcoming: string[] }> = {
-  planning: {
-    title: 'Planejamento',
-    description: 'Orçamentos, metas e calendário de vencimentos.',
-    icon: Target,
-    upcoming: ['Orçamento mensal por categoria', 'Metas financeiras', 'Calendário de vencimentos', 'Projeção de saldo'],
-  },
   wealth: {
     title: 'Patrimônio',
     description: 'Investimentos, bens, dívidas e financiamentos.',
