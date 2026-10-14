@@ -197,6 +197,10 @@ export type Database = {
           kind: string
           notes: string | null
           occurred_on: string
+          series_id: string | null
+          series_index: number | null
+          series_kind: string | null
+          series_total: number | null
           space_id: string
           status: string
           transfer_account_id: string | null
@@ -214,6 +218,10 @@ export type Database = {
           kind: string
           notes?: string | null
           occurred_on: string
+          series_id?: string | null
+          series_index?: number | null
+          series_kind?: string | null
+          series_total?: number | null
           space_id: string
           status?: string
           transfer_account_id?: string | null
@@ -231,6 +239,10 @@ export type Database = {
           kind?: string
           notes?: string | null
           occurred_on?: string
+          series_id?: string | null
+          series_index?: number | null
+          series_kind?: string | null
+          series_total?: number | null
           space_id?: string
           status?: string
           transfer_account_id?: string | null

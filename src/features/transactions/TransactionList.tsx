@@ -4,6 +4,7 @@ import { formatDayHeading } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import type { Transaction } from './api'
+import { seriesLabel, type SeriesKind } from './series'
 import { groupByDay, statusLabel, summarize } from './summary'
 
 export function SignedAmount({ kind, amount, className }: { kind: Transaction['kind']; amount: number; className?: string }) {
@@ -48,6 +49,8 @@ function describeMeta(t: Transaction, names: NameLookup, showDate: boolean) {
     const account = t.account_id ? names.accounts.get(t.account_id) : undefined
     if (account) parts.push(account)
   }
+  const series = seriesLabel(t.series_kind as SeriesKind | null, t.series_index, t.series_total)
+  if (series) parts.push(series)
   if (showDate) parts.push(t.occurred_on.split('-').reverse().slice(0, 2).join('/'))
   return parts.join(' · ')
 }

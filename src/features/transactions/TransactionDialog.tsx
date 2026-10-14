@@ -14,7 +14,7 @@ import { isCard, useAccounts, type Account } from '@/features/accounts/api'
 import type { Category } from '@/features/categories/api'
 import { toUserMessage } from '@/lib/errors'
 import { formatMoney, formatMoneyInput, parseMoneyInput } from '@/lib/money'
-import { todayISO } from '@/lib/dates'
+import { formatMonth, parseISODate, todayISO } from '@/lib/dates'
 import {
   useCreateTransaction,
   useDeleteTransaction,
@@ -23,6 +23,7 @@ import {
   type TransactionKind,
   type TransactionStatus,
 } from './api'
+import { buildSeries, SCOPE_LABEL, type SeriesKind, type SeriesScope } from './series'
 
 export type TransactionPrefill = Partial<{
   kind: TransactionKind
@@ -114,6 +115,10 @@ export function TransactionDialog({
   )
   const [status, setStatus] = useState<TransactionStatus>(transaction?.status ?? 'paid')
   const [notes, setNotes] = useState(transaction?.notes ?? '')
+  const [repeat, setRepeat] = useState<'none' | SeriesKind>('none')
+  const [repeatCount, setRepeatCount] = useState('2')
+  const [scope, setScope] = useState<SeriesScope>('this')
+  const [deleteScope, setDeleteScope] = useState<SeriesScope>('this')
   const [error, setError] = useState<string | null>(null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const keepOpenRef = useRef(false)
@@ -132,9 +137,21 @@ export function TransactionDialog({
 
   const amount = parseMoneyInput(amountText)
   const saving = create.isPending || update.isPending
+  const inSeries = Boolean(transaction?.series_id)
+  const count = Number(repeatCount)
+  const preview =
+    !editing && repeat !== 'none' && amount && amount > 0 && occurredOn
+      ? buildSeries({ kind: repeat, amount, count, start: occurredOn, status, futurePending: !(kind !== 'transfer' && onCard) })
+      : null
+
+  function chooseRepeat(next: 'none' | SeriesKind) {
+    setRepeat(next)
+    setRepeatCount(next === 'recurring' ? '12' : '2')
+  }
 
   function changeKind(next: TransactionKind) {
     setKind(next)
+    if (next === 'transfer' && repeat === 'installment') setRepeat('none')
     // A categoria precisa ser do mesmo tipo.
     if (categoryId && !categories.some((c) => c.id === categoryId && c.kind === next)) setCategoryId('')
   }
@@ -143,6 +160,7 @@ export function TransactionDialog({
     setAmountText('')
     setDescription('')
     setNotes('')
+    setRepeat('none')
     setError(null)
     amountRef.current?.focus()
   }
@@ -184,12 +202,22 @@ export function TransactionDialog({
       // Compras no cartão entram na fatura; a situação de pagamento é a da fatura.
       status: kind !== 'transfer' && onCard ? ('paid' as const) : status,
       notes,
+      series:
+        !transaction && repeat !== 'none'
+          ? { kind: repeat, count, futurePending: !(kind !== 'transfer' && onCard) }
+          : undefined,
     }
     const onError = (err: unknown) => setError(toUserMessage(err, 'Não foi possível salvar a movimentação.'))
 
     if (transaction) {
       update.mutate(
-        { id: transaction.id, ...input },
+        {
+          id: transaction.id,
+          ...input,
+          scope: inSeries ? scope : 'this',
+          seriesId: transaction.series_id,
+          seriesIndex: transaction.series_index,
+        },
         {
           onSuccess: () => {
             toast.success('Movimentação atualizada.')
@@ -201,8 +229,12 @@ export function TransactionDialog({
     } else {
       const keepOpen = keepOpenRef.current
       create.mutate(input, {
-        onSuccess: () => {
-          toast.success(`${KIND_NOUN[kind]} de ${formatMoney(amount)} lançada.`)
+        onSuccess: (created) => {
+          toast.success(
+            created > 1
+              ? `${created} ${repeat === 'installment' ? 'parcelas lançadas' : 'lançamentos mensais criados'}.`
+              : `${KIND_NOUN[kind]} de ${formatMoney(amount)} lançada.`,
+          )
           if (keepOpen) resetForNext()
           else onClose()
         },
@@ -241,7 +273,9 @@ export function TransactionDialog({
             />
 
             <div className="grid gap-2">
-              <Label htmlFor="tx-amount">Valor</Label>
+              <Label htmlFor="tx-amount">
+                {repeat === 'installment' ? 'Valor total' : repeat === 'recurring' ? 'Valor por mês' : 'Valor'}
+              </Label>
               <div className="relative">
                 <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
                   R$
@@ -352,6 +386,89 @@ export function TransactionDialog({
               </div>
             )}
 
+            {!editing && (
+              <div className="grid gap-2">
+                <span className="text-sm font-medium" aria-hidden="true">
+                  Repetir
+                </span>
+                <Segmented
+                  label="Repetir"
+                  value={repeat}
+                  onChange={chooseRepeat}
+                  className="w-full"
+                  options={
+                    kind === 'transfer'
+                      ? [
+                          { value: 'none', label: 'Não' },
+                          { value: 'recurring', label: 'Todo mês' },
+                        ]
+                      : [
+                          { value: 'none', label: 'Não' },
+                          { value: 'installment', label: 'Parcelado' },
+                          { value: 'recurring', label: 'Todo mês' },
+                        ]
+                  }
+                />
+                {repeat !== 'none' && (
+                  <div className="grid gap-2 rounded-md bg-secondary/60 p-3">
+                    <label htmlFor="tx-repeat-count" className="text-sm">
+                      {repeat === 'installment' ? 'Número de parcelas' : 'Por quantos meses'}
+                    </label>
+                    <NativeSelect id="tx-repeat-count" value={repeatCount} onChange={(e) => setRepeatCount(e.target.value)}>
+                      {Array.from({ length: repeat === 'installment' ? 47 : 59 }, (_, i) => i + 2).map((n) => (
+                        <option key={n} value={n}>
+                          {repeat === 'installment' ? `${n}x` : `${n} meses`}
+                        </option>
+                      ))}
+                    </NativeSelect>
+                    {preview && (
+                      <p className="text-xs text-muted-foreground" aria-live="polite">
+                        {repeat === 'installment'
+                          ? `${count}x de ${formatMoney(preview[0].amount)}`
+                          : `${count} lançamentos de ${formatMoney(preview[0].amount)}`}
+                        {' · '}
+                        de {formatMonth(preview[0].occurredOn.slice(0, 7)).toLowerCase()} a{' '}
+                        {formatMonth(preview[preview.length - 1].occurredOn.slice(0, 7)).toLowerCase()}.
+                        {kind !== 'transfer' && onCard
+                          ? ' Cada parcela entra na fatura do seu mês.'
+                          : ' Os meses futuros ficam como pendentes.'}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {editing && inSeries && transaction && (
+              <div className="grid gap-2 rounded-md bg-secondary/60 p-3">
+                <p className="text-sm">
+                  {transaction.series_kind === 'installment' ? 'Parcela' : 'Lançamento mensal'}{' '}
+                  <strong className="font-medium">
+                    {transaction.series_index} de {transaction.series_total}
+                  </strong>
+                  {' · '}
+                  {parseISODate(transaction.occurred_on).toLocaleDateString('pt-BR')}
+                </p>
+                <span className="text-xs text-muted-foreground" aria-hidden="true">
+                  Aplicar alterações em
+                </span>
+                <Segmented
+                  label="Aplicar alterações em"
+                  size="sm"
+                  value={scope}
+                  onChange={setScope}
+                  className="w-full"
+                  options={(['this', 'next', 'all'] as const).map((v) => ({ value: v, label: SCOPE_LABEL[v] }))}
+                />
+                {scope !== 'this' && (
+                  <p className="text-xs text-muted-foreground">
+                    A data e a situação de cada uma não mudam; o resto (valor, descrição, conta, categoria) vale para as
+                    escolhidas.
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="grid gap-2">
               <Label htmlFor="tx-notes">
                 Observações <span className="font-normal text-muted-foreground">(opcional)</span>
@@ -404,16 +521,33 @@ export function TransactionDialog({
           onOpenChange={setConfirmDelete}
           title="Excluir movimentação?"
           description={
-            <>
-              <strong className="font-medium text-foreground">{transaction.description}</strong> (
-              {formatMoney(transaction.amount)}) será excluída definitivamente.
-            </>
+            <div className="grid gap-3">
+              <p>
+                <strong className="font-medium text-foreground">{transaction.description}</strong> (
+                {formatMoney(transaction.amount)}) será excluída definitivamente.
+              </p>
+              {inSeries && (
+                <Segmented
+                  label="O que excluir"
+                  size="sm"
+                  value={deleteScope}
+                  onChange={setDeleteScope}
+                  className="w-full"
+                  options={(['this', 'next', 'all'] as const).map((v) => ({ value: v, label: SCOPE_LABEL[v] }))}
+                />
+              )}
+            </div>
           }
           confirmLabel="Excluir"
           onConfirm={async () => {
             try {
-              await remove.mutateAsync(transaction.id)
-              toast.success('Movimentação excluída.')
+              const removed = await remove.mutateAsync({
+                id: transaction.id,
+                scope: inSeries ? deleteScope : 'this',
+                seriesId: transaction.series_id,
+                seriesIndex: transaction.series_index,
+              })
+              toast.success(removed > 1 ? `${removed} movimentações excluídas.` : 'Movimentação excluída.')
               onClose()
             } catch (err) {
               toast.error(toUserMessage(err, 'Não foi possível excluir a movimentação.'))

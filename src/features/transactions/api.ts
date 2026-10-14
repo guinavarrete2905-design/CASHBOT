@@ -2,10 +2,12 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { supabase } from '@/lib/supabase'
 import type { Tables } from '@/lib/database.types'
 import { monthRange, shiftMonth, todayISO, type YearMonth } from '@/lib/dates'
+import { buildSeries, type SeriesKind, type SeriesScope } from './series'
 import type { TransactionKind, TransactionStatus } from './summary'
 
 export type { TransactionKind, TransactionStatus } from './summary'
 export { statusLabel, summarize } from './summary'
+export type { SeriesKind, SeriesScope } from './series'
 
 export type Transaction = Omit<Tables<'transactions'>, 'kind' | 'status' | 'amount'> & {
   kind: TransactionKind
@@ -24,6 +26,8 @@ export type TransactionInput = {
   transferAccountId: string | null
   status: TransactionStatus
   notes: string
+  /** Somente ao criar: gera parcelas ou ocorrências mensais. */
+  series?: { kind: SeriesKind; count: number; futurePending: boolean }
 }
 
 const transactionsRoot = (spaceId: string) => ['transactions', spaceId] as const
@@ -95,6 +99,8 @@ export function usePendingTransactions(spaceId: string | undefined, limit = 6) {
         .select('*')
         .eq('space_id', spaceId!)
         .eq('status', 'pending')
+        // Atrasadas e as dos próximos 30 dias.
+        .lte('occurred_on', todayISO(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)))
         .order('occurred_on', { ascending: true })
         .limit(limit)
       if (error) throw error
@@ -164,18 +170,64 @@ export function useCreateTransaction(spaceId: string) {
   const invalidate = useInvalidate(spaceId)
   return useMutation({
     mutationFn: async (input: TransactionInput) => {
-      const { error } = await supabase.from('transactions').insert({ space_id: spaceId, ...toRow(input) })
+      const base = { space_id: spaceId, ...toRow(input) }
+      if (!input.series) {
+        const { error } = await supabase.from('transactions').insert(base)
+        if (error) throw error
+        return 1
+      }
+      // Série: todas as parcelas/ocorrências num único insert (tudo ou nada).
+      const seriesId = crypto.randomUUID()
+      const items = buildSeries({
+        kind: input.series.kind,
+        amount: input.amount,
+        count: input.series.count,
+        start: input.occurredOn,
+        status: input.status,
+        futurePending: input.series.futurePending,
+      })
+      const rows = items.map((item) => ({
+        ...base,
+        amount: item.amount,
+        occurred_on: item.occurredOn,
+        status: item.status,
+        series_id: seriesId,
+        series_kind: input.series!.kind,
+        series_index: item.index,
+        series_total: input.series!.count,
+      }))
+      const { error } = await supabase.from('transactions').insert(rows)
       if (error) throw error
+      return rows.length
     },
     onSuccess: invalidate,
   })
 }
 
+type UpdateArgs = TransactionInput & {
+  id: string
+  /** Para movimentações de uma série: até onde a mudança vale. */
+  scope?: SeriesScope
+  seriesId?: string | null
+  seriesIndex?: number | null
+}
+
 export function useUpdateTransaction(spaceId: string) {
   const invalidate = useInvalidate(spaceId)
   return useMutation({
-    mutationFn: async ({ id, ...input }: TransactionInput & { id: string }) => {
-      const { data, error } = await supabase.from('transactions').update(toRow(input)).eq('id', id).select('id')
+    mutationFn: async ({ id, scope = 'this', seriesId, seriesIndex, ...input }: UpdateArgs) => {
+      const row = toRow(input)
+      if (seriesId && scope !== 'this') {
+        // Nas outras da série muda tudo, menos a data e a situação de cada uma.
+        const { occurred_on: _date, status: _status, ...shared } = row
+        void _date
+        void _status
+        let query = supabase.from('transactions').update(shared).eq('series_id', seriesId).neq('id', id)
+        if (scope === 'next' && seriesIndex) query = query.gt('series_index', seriesIndex)
+        const { error: seriesError } = await query
+        if (seriesError) throw seriesError
+      }
+      const { data, error } = await supabase.from('transactions').update(row).eq('id', id).select('id')
       if (error) throw error
       if (!data || data.length === 0) throw new Error('Você não tem permissão para editar esta movimentação.')
     },
@@ -196,15 +248,22 @@ export function useSetTransactionStatus(spaceId: string) {
   })
 }
 
+type DeleteArgs = { id: string; scope?: SeriesScope; seriesId?: string | null; seriesIndex?: number | null }
+
 export function useDeleteTransaction(spaceId: string) {
   const invalidate = useInvalidate(spaceId)
   return useMutation({
-    mutationFn: async (id: string) => {
-      const { data, error } = await supabase.from('transactions').delete().eq('id', id).select('id')
+    mutationFn: async ({ id, scope = 'this', seriesId, seriesIndex }: DeleteArgs) => {
+      let query = supabase.from('transactions').delete()
+      if (seriesId && scope === 'all') query = query.eq('series_id', seriesId)
+      else if (seriesId && scope === 'next' && seriesIndex) query = query.eq('series_id', seriesId).gte('series_index', seriesIndex)
+      else query = query.eq('id', id)
+      const { data, error } = await query.select('id')
       if (error) throw error
       if (!data || data.length === 0) {
         throw new Error('Só quem lançou, o proprietário ou um administrador pode excluir esta movimentação.')
       }
+      return data.length
     },
     onSuccess: invalidate,
   })

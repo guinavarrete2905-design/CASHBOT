@@ -4,7 +4,7 @@ Plataforma web de gestão financeira pessoal e familiar. Começa como ferramenta
 
 Esta é a **v2**, refeita do zero na branch `v2`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) e continua publicada a partir do `main` até a troca ser aprovada.
 
-## Estado atual (etapa 3 — contas e cartões)
+## Estado atual (etapa 4 — parcelas e recorrências)
 
 Implementado:
 
@@ -15,6 +15,7 @@ Implementado:
 - **Configurações:** perfil (nome, troca de senha), aparência (automático/claro/escuro, salvo na conta), espaços, categorias e moeda principal.
 - **Movimentações:** receitas e despesas por espaço, com valor, descrição, data, categoria, situação (paga/a pagar, recebida/a receber) e observações. Lista por mês agrupada por dia, navegação entre meses, filtros por tipo, categoria e busca, edição e exclusão com confirmação, atalho "Salvar e lançar outra" e botão flutuante no celular.
 - **Contas e cartões:** conta corrente, poupança, dinheiro, investimento e cartão de crédito. Cada conta tem saldo inicial e saldo atualizado a cada lançamento pago. Cartões têm limite, dia de fechamento e de vencimento, valor em aberto, fatura atual e última fatura fechada, e botão "Pagar fatura" (gera uma transferência da conta para o cartão). Contas podem ser arquivadas; só podem ser excluídas se não tiverem movimentações.
+- **Parcelas e recorrências:** ao lançar, escolha "Parcelado" (informa o total e o número de parcelas; os centavos são distribuídos sem perda) ou "Todo mês" (repete o mesmo valor por N meses). As ocorrências futuras ficam pendentes; no cartão, cada parcela entra na fatura do seu mês. Na edição e na exclusão, escolha "Só esta", "Esta e as próximas" ou "Todas". As listas mostram a posição (ex.: 3/10).
 - **Transferências** entre contas (não contam como receita nem despesa), lançamentos ligados a uma conta ou cartão e filtro por conta na lista de movimentações.
 - **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
 - **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. As áreas Contas e cartões, Planejamento, Patrimônio e Relatórios mostram o que está por vir, sem botões que não funcionam.
@@ -89,6 +90,7 @@ Migrações, em ordem:
 1. [`20261014130000_foundation_spaces.sql`](supabase/migrations/20261014130000_foundation_spaces.sql) — perfis, espaços, membros, preferências, categorias.
 2. [`20261014150000_transactions.sql`](supabase/migrations/20261014150000_transactions.sql) — movimentações.
 3. [`20261014170000_accounts.sql`](supabase/migrations/20261014170000_accounts.sql) — contas, cartões, transferências e a visão `account_balances`.
+4. [`20261014190000_transaction_series.sql`](supabase/migrations/20261014190000_transaction_series.sql) — séries (parcelas e recorrências).
 
 A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
 
@@ -99,7 +101,7 @@ A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos
 | `space_members` | quem participa de cada espaço e com qual papel (`owner`, `admin`, `member`) |
 | `user_preferences` | tema, moeda, idioma e espaço em uso |
 | `categories` | categorias de receita e despesa de cada espaço |
-| `transactions` | movimentações: tipo (receita, despesa, transferência), valor (sempre positivo), data, categoria, conta, conta de destino, situação, observações, autor |
+| `transactions` | movimentações: tipo (receita, despesa, transferência), valor (sempre positivo), data, categoria, conta, conta de destino, situação, observações, autor e, quando fizer parte de uma série, `series_id`, tipo da série (parcelado/mensal), posição e total |
 | `accounts` | contas e cartões: tipo, saldo inicial, limite, dias de fechamento e vencimento, arquivada |
 | `account_balances` (visão) | saldo de cada conta, só com o que já foi pago/recebido; respeita o RLS de quem consulta |
 
@@ -128,15 +130,15 @@ No SQL Editor do Supabase, cole e execute cada arquivo de migração, na ordem. 
 ```bash
 npm run typecheck   # verificação de tipos
 npm run lint        # ESLint
-npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais e faturas de cartão
+npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas e parcelas
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) e [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
 
 ## Próximas etapas
 
-1. Parcelamentos (compra parcelada no cartão) e recorrências.
+1. Orçamento mensal por categoria e metas (área Planejamento).
 2. Histórico de faturas e marcação de fatura paga.
 3. Orçamentos, metas e calendário de vencimentos.
 4. Importação de extratos (OFX/CSV), usando `transactions.external_ref` para não duplicar.
