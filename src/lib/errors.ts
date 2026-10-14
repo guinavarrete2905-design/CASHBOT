@@ -12,6 +12,9 @@ const AUTH_MESSAGES: Array<[RegExp, string]> = [
   [/failed to fetch|networkerror|load failed/i, 'Não foi possível conectar. Verifique sua internet e tente de novo.'],
 ]
 
+// Mensagens das funções e gatilhos do banco já são escritas em português.
+const PORTUGUESE = /[áéíóúãõçê]|você|não|espaço|membro|proprietário|papel/i
+
 /**
  * Converte erros do Supabase (Auth e Postgres) em mensagens claras em português.
  * Mensagens que já vêm em português das funções do banco são mantidas.
@@ -26,7 +29,7 @@ export function toUserMessage(error: unknown, fallback = 'Algo deu errado. Tente
   if (err?.code === '23505' && /duplicate key|unique/i.test(message)) {
     return 'Já existe um item com esse nome.'
   }
-  if (err?.code === '23514') {
+  if (err?.code === '23514' && !PORTUGUESE.test(message)) {
     return 'Algum valor informado não é válido. Revise os campos.'
   }
 
@@ -35,8 +38,7 @@ export function toUserMessage(error: unknown, fallback = 'Algo deu errado. Tente
     if (match) return text.replace('$1', match[1] ?? '')
   }
 
-  // Mensagens das funções do banco já são escritas em português.
-  if (message && /[áéíóúãõçê]|você|não|espaço|membro|proprietário|papel/i.test(message)) {
+  if (message && PORTUGUESE.test(message)) {
     return message
   }
 

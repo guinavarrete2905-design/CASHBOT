@@ -8,6 +8,7 @@ import { ComingSoonPage } from './app/ComingSoonPage'
 import { DashboardPage } from './app/DashboardPage'
 import { NotFoundPage } from './app/NotFoundPage'
 import { SettingsPage } from './app/settings/SettingsPage'
+import { TransactionsPage } from './app/TransactionsPage'
 import { ProtectedRoute, PublicOnlyRoute } from './guards'
 
 export function AppRoutes() {
@@ -23,7 +24,7 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
-          <Route path="movimentacoes" element={<ComingSoonPage area="transactions" />} />
+          <Route path="movimentacoes" element={<TransactionsPage />} />
           <Route path="contas" element={<ComingSoonPage area="accounts" />} />
           <Route path="planejamento" element={<ComingSoonPage area="planning" />} />
           <Route path="patrimonio" element={<ComingSoonPage area="wealth" />} />

@@ -134,6 +134,69 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string
+          external_ref: string | null
+          id: string
+          kind: string
+          notes: string | null
+          occurred_on: string
+          space_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description: string
+          external_ref?: string | null
+          id?: string
+          kind: string
+          notes?: string | null
+          occurred_on: string
+          space_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          external_ref?: string | null
+          id?: string
+          kind?: string
+          notes?: string | null
+          occurred_on?: string
+          space_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'transactions_category_id_fkey'
+            columns: ['category_id']
+            isOneToOne: false
+            referencedRelation: 'categories'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'transactions_space_id_fkey'
+            columns: ['space_id']
+            isOneToOne: false
+            referencedRelation: 'spaces'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       user_preferences: {
         Row: {
           currency: string

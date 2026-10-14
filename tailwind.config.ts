@@ -41,6 +41,8 @@ export default {
         positive: 'hsl(var(--positive))',
         negative: 'hsl(var(--negative))',
         warning: 'hsl(var(--warning))',
+        'chart-income': 'hsl(var(--chart-income))',
+        'chart-expense': 'hsl(var(--chart-expense))',
         popover: {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',

@@ -277,7 +277,7 @@ export function CategoriesSection() {
         description={
           <>
             A categoria <strong className="font-medium text-foreground">{deleting?.name}</strong> será excluída
-            definitivamente. Se quiser apenas escondê-la, use Arquivar.
+            definitivamente. As movimentações dela continuam lançadas, mas ficam sem categoria. Se quiser apenas escondê-la, use Arquivar.
           </>
         }
         confirmLabel="Excluir"

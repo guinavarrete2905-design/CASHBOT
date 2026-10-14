@@ -12,7 +12,7 @@ export type NavItem = {
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Início', short: 'Início', icon: House, primaryOnMobile: true },
-  { to: '/movimentacoes', label: 'Movimentações', short: 'Movimentações', icon: ArrowLeftRight, primaryOnMobile: true },
+  { to: '/movimentacoes', label: 'Movimentações', short: 'Movimentos', icon: ArrowLeftRight, primaryOnMobile: true },
   { to: '/contas', label: 'Contas e cartões', short: 'Contas', icon: CreditCard, primaryOnMobile: true },
   { to: '/planejamento', label: 'Planejamento', short: 'Planejar', icon: Target, primaryOnMobile: true },
   { to: '/patrimonio', label: 'Patrimônio', short: 'Patrimônio', icon: PiggyBank, primaryOnMobile: false },

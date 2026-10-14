@@ -4,7 +4,7 @@ Plataforma web de gestão financeira pessoal e familiar. Começa como ferramenta
 
 Esta é a **v2**, refeita do zero na branch `v2`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) e continua publicada a partir do `main` até a troca ser aprovada.
 
-## Estado atual (etapa 1 — fundação)
+## Estado atual (etapa 2 — movimentações)
 
 Implementado:
 
@@ -13,9 +13,11 @@ Implementado:
 - **Papéis:** proprietário, administrador e membro, com as regras aplicadas no banco (RLS + funções) e espelhadas na interface.
 - **Categorias por espaço:** 12 categorias iniciais criadas automaticamente; criar, renomear, arquivar/reativar e excluir.
 - **Configurações:** perfil (nome, troca de senha), aparência (automático/claro/escuro, salvo na conta), espaços, categorias e moeda principal.
-- **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular, dashboard com estados vazios (sem valores fictícios) e orientações de primeiros passos. As áreas Movimentações, Contas e cartões, Planejamento, Patrimônio e Relatórios mostram o que está por vir, sem botões que não funcionam.
+- **Movimentações:** receitas e despesas por espaço, com valor, descrição, data, categoria, situação (paga/a pagar, recebida/a receber) e observações. Lista por mês agrupada por dia, navegação entre meses, filtros por tipo, categoria e busca, edição e exclusão com confirmação, atalho "Salvar e lançar outra" e botão flutuante no celular.
+- **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
+- **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. As áreas Contas e cartões, Planejamento, Patrimônio e Relatórios mostram o que está por vir, sem botões que não funcionam.
 
-Ainda **não** implementado (próximas etapas): movimentações, contas, cartões, parcelamentos, recorrências, orçamentos, metas, calendário, projeções, investimentos, patrimônio, dívidas, relatórios, Open Finance e cobrança.
+Ainda **não** implementado (próximas etapas): contas e saldos, cartões e faturas, transferências, parcelamentos, recorrências, orçamentos, metas, projeções, investimentos, patrimônio, dívidas, relatórios, importação de extratos, Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
 
 ## Tecnologias
 
@@ -80,7 +82,12 @@ Sem isso, os links de confirmação de cadastro e de recuperação de senha não
 
 ## Banco de dados
 
-Migração: [`supabase/migrations/20261014130000_foundation_spaces.sql`](supabase/migrations/20261014130000_foundation_spaces.sql). Ela **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
+Migrações, em ordem:
+
+1. [`20261014130000_foundation_spaces.sql`](supabase/migrations/20261014130000_foundation_spaces.sql) — perfis, espaços, membros, preferências, categorias.
+2. [`20261014150000_transactions.sql`](supabase/migrations/20261014150000_transactions.sql) — movimentações.
+
+A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
 
 | Tabela | Conteúdo |
 | --- | --- |
@@ -89,6 +96,7 @@ Migração: [`supabase/migrations/20261014130000_foundation_spaces.sql`](supabas
 | `space_members` | quem participa de cada espaço e com qual papel (`owner`, `admin`, `member`) |
 | `user_preferences` | tema, moeda, idioma e espaço em uso |
 | `categories` | categorias de receita e despesa de cada espaço |
+| `transactions` | movimentações: tipo, valor (sempre positivo), data, categoria, situação, observações, autor |
 
 Funções: `create_space`, `add_space_member`, `update_space_member_role` (validam o papel de quem chama) e `is_space_member`, `space_role`, `shares_space_with` (usadas pelas políticas, `SECURITY DEFINER` para evitar recursão).
 
@@ -103,28 +111,29 @@ Funções: `create_space`, `add_space_member`, `update_space_member_role` (valid
 - Adicionar pessoas: proprietário (como membro ou administrador) ou administrador (só como membro). Trocar papéis: só proprietário. O proprietário não pode ser removido.
 - Categorias: membros leem, criam e editam; proprietário e administrador excluem.
 - Preferências: só o próprio usuário, e o espaço em uso precisa ser um espaço do qual ele participa.
+- Movimentações: todos os participantes do espaço veem, lançam e editam; excluir é permitido a quem lançou e ao proprietário/administrador. A categoria precisa ser do mesmo espaço e do mesmo tipo; uma movimentação não muda de espaço; o autor é sempre quem lançou. Excluir uma categoria deixa as movimentações sem categoria.
 
-### Aplicar a migração
+### Aplicar as migrações
 
-No SQL Editor do Supabase, cole e execute o arquivo da migração. Com a CLI: `supabase db push` (projeto vinculado com `supabase link`).
+No SQL Editor do Supabase, cole e execute cada arquivo de migração, na ordem. Com a CLI: `supabase db push` (projeto vinculado com `supabase link`).
 
 ## Testes
 
 ```bash
 npm run typecheck   # verificação de tipos
 npm run lint        # ESLint
-npm test            # Vitest: regras de permissão, mensagens de erro e proteção de rotas
+npm test            # Vitest: permissões, mensagens de erro, proteção de rotas, valores em reais, datas e totais
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql) no SQL Editor. Ele cria usuários de teste dentro de uma transação, verifica cerca de 40 regras e termina com o erro proposital `OK: todos os testes de RLS passaram`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql) e [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
 
 ## Próximas etapas
 
-1. Módulo de movimentações (receitas, despesas, transferências) ligado a categorias e espaços.
-2. Contas bancárias e cartões de crédito, com faturas.
-3. Parcelamentos e recorrências.
-4. Orçamentos, metas e calendário de vencimentos.
+1. Contas bancárias e cartões de crédito (com faturas), ligando cada movimentação a uma conta e habilitando saldo atual e transferências.
+2. Parcelamentos e recorrências.
+3. Orçamentos, metas e calendário de vencimentos.
+4. Importação de extratos (OFX/CSV), usando `transactions.external_ref` para não duplicar.
 5. Patrimônio, investimentos e dívidas.
 6. Relatórios.
-7. Migrar os lançamentos do CashBot antigo para o novo modelo e, depois, remover as tabelas antigas.
+7. Remover as tabelas do CashBot antigo, quando você decidir.

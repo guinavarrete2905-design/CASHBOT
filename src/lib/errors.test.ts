@@ -24,6 +24,10 @@ describe('toUserMessage', () => {
     expect(toUserMessage({ code: '42501', message: 'Somente o proprietário pode alterar papéis.' })).toBe(
       'Somente o proprietário pode alterar papéis.',
     )
+    expect(
+      toUserMessage({ code: '23514', message: 'A categoria escolhida não combina com o tipo da movimentação.' }),
+    ).toBe('A categoria escolhida não combina com o tipo da movimentação.')
+    expect(toUserMessage({ code: '23514', message: 'new row violates check constraint' })).toMatch(/não é válido/)
   })
 
   it('usa a mensagem padrão para erros desconhecidos', () => {

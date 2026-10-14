@@ -1,17 +1,11 @@
-import { ArrowLeftRight, ChartPie, CreditCard, PiggyBank, Target, type LucideIcon } from 'lucide-react'
+import { ChartPie, CreditCard, PiggyBank, Target, type LucideIcon } from 'lucide-react'
 import { EmptyState } from '@/components/feedback'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { useCurrentSpace } from '@/providers/SpaceProvider'
 
-type Area = 'transactions' | 'accounts' | 'planning' | 'wealth' | 'reports'
+type Area = 'accounts' | 'planning' | 'wealth' | 'reports'
 
 const CONTENT: Record<Area, { title: string; description: string; icon: LucideIcon; upcoming: string[] }> = {
-  transactions: {
-    title: 'Movimentações',
-    description: 'Receitas, despesas e transferências do espaço.',
-    icon: ArrowLeftRight,
-    upcoming: ['Lançar receitas e despesas', 'Compras parceladas', 'Pagamentos recorrentes', 'Busca e filtros por período'],
-  },
   accounts: {
     title: 'Contas e cartões',
     description: 'Contas bancárias, carteiras e cartões de crédito.',

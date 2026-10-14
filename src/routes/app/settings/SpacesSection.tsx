@@ -225,7 +225,7 @@ export function SpacesSection() {
     <>
       <SettingsBlock
         title="Seus espaços"
-        description="Cada espaço tem suas próprias categorias e, nas próximas etapas, suas próprias contas e movimentações."
+        description="Cada espaço tem suas próprias movimentações e categorias."
       >
         {isLoading ? (
           <div className="grid gap-3">
@@ -259,8 +259,8 @@ export function SpacesSection() {
         title="Excluir espaço?"
         description={
           <>
-            O espaço <strong className="font-medium text-foreground">{pending?.space.name}</strong>, suas categorias e
-            a participação de todos os membros serão excluídos definitivamente. Essa ação não pode ser desfeita.
+            O espaço <strong className="font-medium text-foreground">{pending?.space.name}</strong>, todas as suas
+            movimentações e categorias e a participação dos membros serão excluídos definitivamente. Essa ação não pode ser desfeita.
           </>
         }
         confirmLabel="Excluir espaço"
