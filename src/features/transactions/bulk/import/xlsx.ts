@@ -49,7 +49,7 @@ function readEntries(bytes: Uint8Array): Map<string, ZipEntry> {
 }
 
 async function inflateRaw(data: Uint8Array): Promise<Uint8Array> {
-  const stream = new Blob([data as BlobPart]).stream().pipeThrough(new DecompressionStream('deflate-raw'))
+  const stream = new Response(data as BodyInit).body!.pipeThrough(new DecompressionStream('deflate-raw'))
   return new Uint8Array(await new Response(stream).arrayBuffer())
 }
 

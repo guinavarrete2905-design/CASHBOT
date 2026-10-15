@@ -32,7 +32,7 @@ export function normalizeText(s: string): string {
 
 // Pontuação que faz parte de valores e datas fica dentro do token: 1.250,90 · 10/03 · R$ · 15% · 10x.
 // Vírgula seguida de espaço e ponto e vírgula viram tokens próprios (separam itens de uma lista).
-const TOKEN_RE = /[\p{L}\p{N}$%]+(?:[.,/:\-][\p{L}\p{N}$%]+)*|;|,(?=\s)/gu
+const TOKEN_RE = /[\p{L}\p{N}$%]+(?:[.,/:-][\p{L}\p{N}$%]+)*|;|,(?=\s)/gu
 
 /** Abreviações comuns em mensagens ("qto", "vc", "hj"). */
 const ABBREVIATIONS: Record<string, string> = {

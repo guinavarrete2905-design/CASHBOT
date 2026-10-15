@@ -121,7 +121,7 @@ export function detectNumberFormat(values: Cell[]): NumberFormat {
  */
 export function parseAmountCell(c: Cell | undefined, fmt: NumberFormat): number | null {
   if (typeof c === 'number') return Number.isFinite(c) ? Math.round(c * 100) : null
-  let s = cellText(c).replace(/ /g, ' ')
+  let s = cellText(c).replace(/\u00A0/g, ' ')
   if (!s) return null
   let sign = 1
   if (/^\(.*\)$/.test(s)) {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { formatMoney, formatMoneyInput, parseMoneyInput } from './money'
 
-const nbsp = (s: string) => s.replace(/ /g, ' ')
+const nbsp = (s: string) => s.replace(/\u00A0/g, ' ')
 
 describe('parseMoneyInput', () => {
   it('entende o formato brasileiro', () => {

@@ -24,7 +24,7 @@ export function formatMoneyInput(value: number): string {
  * Devolve null quando não é um número válido. Arredonda para centavos.
  */
 export function parseMoneyInput(raw: string): number | null {
-  let s = raw.replace(/[R$\s ]/g, '').replace(/[A-Za-z€]/g, '')
+  let s = raw.replace(/[R$\s\u00A0]/g, '').replace(/[A-Za-z€]/g, '')
   if (!s) return null
   if (s.startsWith('-')) return null
 

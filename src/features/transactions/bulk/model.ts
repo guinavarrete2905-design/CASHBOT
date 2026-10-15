@@ -133,7 +133,7 @@ export function parseDateBR(input: string): { iso: string } | { error: string } 
  * "1.234" ou "1,234" (um separador seguido de três dígitos) é ambíguo: vira erro, não um palpite.
  */
 export function parseAmountBR(input: string): { cents: number } | { error: string } | null {
-  const s = input.replace(/\s| /g, '').replace(/^R\$/i, '')
+  const s = input.replace(/\s|\u00A0/g, '').replace(/^R\$/i, '')
   if (!s) return null
   if (s.startsWith('-')) return { error: 'O valor deve ser maior que zero.' }
   let intPart: string
