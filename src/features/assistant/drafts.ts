@@ -253,7 +253,7 @@ function pickOption(e: Entities, options: AccountOption[]): AccountOption | null
 }
 
 /** Trata a mensagem como resposta à pergunta em aberto. Devolve null quando é um assunto novo. */
-export async function answerSlot(e: Entities, ctx: ConversationContext, _ds: DataSource): Promise<HandlerResult | null> {
+export async function answerSlot(e: Entities, ctx: ConversationContext): Promise<HandlerResult | null> {
   const aw = ctx.awaiting as Awaiting
   const words = e.n.tokens.length
 
