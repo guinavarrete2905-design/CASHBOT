@@ -224,7 +224,7 @@ export async function respond(message: string, ctx: ConversationContext, ds: Dat
 
   // Resposta a uma pergunta em aberto (valor, descrição, conta...).
   if (ctx.awaiting) {
-    const slot = await answerSlot(e, ctx, ds)
+    const slot = await answerSlot(e, ctx)
     if (slot) return { reply: slot.reply, ctx: applyResult(ctx, 'slot_answer', slot) }
   }
 
