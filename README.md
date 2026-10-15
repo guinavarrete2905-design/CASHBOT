@@ -2,11 +2,11 @@
 
 Plataforma web de gestão financeira pessoal e familiar. Começa como ferramenta de uso próprio, com arquitetura preparada para vários usuários, espaços compartilhados e futura comercialização.
 
-Esta é a **v2**, refeita do zero na branch `v2`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) e continua publicada a partir do `main` até a troca ser aprovada.
+Esta é a **v2**, refeita do zero em React + Supabase e publicada na Vercel a partir do `main`. A versão anterior (HTML/JS puro) foi preservada em [`legacy/`](legacy/) apenas como referência; ela não é mais publicada.
 
-## Estado atual (etapa 8 — Assistente Financeiro)
+## O que já funciona
 
-Implementado:
+
 
 - **Autenticação real (Supabase Auth):** cadastro com e-mail e senha, confirmação por e-mail, login, logout, recuperação e redefinição de senha, sessão persistente, rotas protegidas, mensagens de erro em português e estados de carregamento.
 - **Espaços financeiros:** todo usuário ganha um espaço **Pessoal** no cadastro. É possível criar espaços **Casal** e **Família**, alternar entre eles (a escolha é salva e vale em todos os dispositivos), renomear, excluir (só o proprietário), adicionar pessoas pelo e-mail, trocar papéis e sair do espaço.
@@ -25,7 +25,16 @@ Implementado:
 - **Lançamento em massa:** em Movimentações, botão "Lançamento em massa" abre uma planilha editável (Data, Tipo, Descrição, Valor, Conta, Categoria/destino, Situação, Repetição, Observações). Adicionar 1 ou 10 linhas, duplicar, excluir, repetir data/conta/categoria/situação para baixo, navegação por teclado e colagem direto do Excel/Google Planilhas. Valida cada célula com as mesmas regras do formulário, mostra resumo ao vivo, revisão com alerta de possíveis duplicados e grava tudo de uma vez (tudo ou nada). No celular, cada linha vira um cartão.
 - **Assistente Financeiro (sem IA generativa):** chat que consulta os dados reais do espaço atual, registra movimentações com prévia e confirmação e explica conceitos financeiros. Detalhes em [Assistente Financeiro](#assistente-financeiro).
 
-Ainda **não** implementado (próximas etapas): Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
+Ainda **não** implementado:
+
+- **Open Finance:** não há conexão automática com bancos; extratos e faturas entram por arquivo (CSV, OFX, XLSX) no Lançamento em massa.
+- **Cobrança e planos:** não há assinatura, pagamento nem limites por plano.
+- **Histórico de faturas:** o cartão mostra só a fatura atual e a última fechada; "Pagar fatura" gera a transferência, mas a fatura não fica marcada como paga.
+- **Convites por e-mail:** só dá para adicionar ao espaço quem já tem conta no CashBot; nenhum e-mail de convite é enviado.
+- **Foto de perfil:** o campo existe no banco (`profiles.avatar_url`), mas não há envio de imagem.
+- **Importação de PDF e de `.xls` antigo:** só CSV, OFX e XLSX.
+- **Outros idiomas:** a interface é só em português (o campo `user_preferences.locale` existe no banco, sem tela).
+- **Dados do CashBot antigo:** os lançamentos não foram importados (decisão de começar do zero) e as tabelas antigas continuam no banco, intactas.
 
 ## Tecnologias
 
@@ -34,26 +43,39 @@ React 18 + TypeScript · Vite · Tailwind CSS · componentes no padrão shadcn/u
 ## Estrutura de pastas
 
 ```
-├── legacy/                     # site antigo, preservado sem alterações
+├── docs/                       # cobertura do Assistente Financeiro
+├── legacy/                     # site antigo (HTML/JS), só como referência
 ├── public/                     # arquivos estáticos (favicon)
+├── scripts/
+│   ├── assistant/coverage.ts   # gera docs/assistente-cobertura.md
+│   └── node-test/              # roda testes sem React direto no Node
 ├── src/
 │   ├── components/
 │   │   ├── ui/                 # componentes base (button, input, dialog, ...)
 │   │   ├── layout/             # AppShell, navegação, seletor de espaço, logo
 │   │   ├── ConfirmDialog.tsx   # confirmação de ações destrutivas
 │   │   └── feedback.tsx        # carregamento, vazio, erro
-│   ├── features/               # acesso a dados por domínio (TanStack Query)
-│   │   ├── categories/ preferences/ profile/ spaces/
-│   ├── lib/                    # supabase, tipos do banco, permissões, erros, utils
+│   ├── features/               # dados (TanStack Query), regras e diálogos por domínio
+│   │   ├── accounts/           # contas, cartões e faturas
+│   │   ├── assistant/          # Assistente Financeiro
+│   │   ├── planning/           # orçamento e metas
+│   │   ├── reports/            # relatórios
+│   │   ├── transactions/       # movimentações, parcelas, recorrências
+│   │   │   └── bulk/           # lançamento em massa e importação de arquivos
+│   │   ├── wealth/             # patrimônio
+│   │   └── categories/ preferences/ profile/ spaces/
+│   ├── lib/                    # supabase, tipos do banco, dinheiro, datas, permissões, erros
 │   ├── providers/              # Auth, Theme, Space (espaço ativo)
 │   ├── routes/
 │   │   ├── auth/               # entrar, cadastro, recuperar e redefinir senha
-│   │   ├── app/                # dashboard, áreas futuras, configurações
+│   │   ├── app/                # início, movimentações, contas, planejamento,
+│   │   │                       # patrimônio, relatórios, configurações
+│   │   ├── ConfigMissingPage.tsx  # aviso quando faltam as variáveis do Supabase
 │   │   └── guards.tsx          # rotas protegidas / só para visitantes
 │   └── test/setup.ts
 ├── supabase/
 │   ├── migrations/             # migrações versionadas do banco
-│   └── tests/rls_spaces.sql    # testes de autorização (RLS)
+│   └── tests/                  # testes de autorização (RLS), um por área
 ├── vercel.json                 # build, SPA e cabeçalhos de segurança
 └── .env.example
 ```
@@ -77,7 +99,11 @@ npm run dev                  # http://localhost:5173
 
 Use somente a chave pública. A `service_role` **nunca** vai para o frontend. Sem as variáveis, o app mostra uma tela explicando a configuração pendente em vez de quebrar.
 
-Na Vercel, cadastre as mesmas duas variáveis em Project Settings → Environment Variables (Preview e Production).
+### Publicação na Vercel
+
+O projeto da Vercel é ligado a este repositório: cada push no `main` publica em produção e cada branch ganha uma prévia. O [`vercel.json`](vercel.json) define o build (`npm run build`, saída em `dist/`), o redirecionamento de todas as rotas para o `index.html` (SPA) e cabeçalhos de segurança.
+
+Cadastre as mesmas duas variáveis em Project Settings → Environment Variables, para Preview e Production. Como o Vite embute as variáveis no build, depois de alterar alguma é preciso publicar de novo.
 
 ### Supabase Auth
 
@@ -148,11 +174,11 @@ No SQL Editor do Supabase, cole e execute cada arquivo de migração, na ordem. 
 ```bash
 npm run typecheck   # verificação de tipos
 npm run lint        # ESLint
-npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas, relatórios, patrimônio e assistente
+npm test            # Vitest: permissões, erros, rotas, valores em reais, datas, totais, faturas, parcelas, orçamento, metas, relatórios, patrimônio, lançamento em massa, importação e assistente
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql) e [`supabase/tests/rls_assistant.sql`](supabase/tests/rls_assistant.sql) e [`supabase/tests/rls_batch.sql`](supabase/tests/rls_batch.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor cada arquivo de [`supabase/tests/`](supabase/tests/) (`rls_spaces`, `rls_transactions`, `rls_accounts`, `rls_series`, `rls_planning`, `rls_wealth`, `rls_assistant` e `rls_batch`), depois de aplicar as migrações. Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
 
 Sem acesso ao registro do npm, os testes puros (sem React) também rodam direto no Node:
 
@@ -199,5 +225,8 @@ Limitações: não acessa taxas e cotações atuais; não dá orientação tribu
 
 ## Próximas etapas
 
-2. Histórico de faturas e marcação de fatura paga.
-3. Remover as tabelas do CashBot antigo, quando você decidir.
+1. Histórico de faturas e marcação de fatura paga.
+2. Convite por e-mail para quem ainda não tem conta.
+3. Open Finance (importação automática de extratos e faturas).
+4. Cobrança e planos, para a comercialização.
+5. Remover as tabelas do CashBot antigo, quando você decidir.
