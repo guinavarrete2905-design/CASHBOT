@@ -149,11 +149,11 @@ const bulkEntry: Handler = async () =>
     'bulk_entry',
     [
       text('Para muitos lançamentos de uma vez, o melhor caminho é um formulário estruturado — interpretar listas longas pelo chat seria pouco confiável.'),
-      text('A central de lançamentos em massa (tabela editável e importação de arquivos) ainda está a caminho. Por enquanto:'),
+      text('Use o **Lançamento em massa**, em Movimentações:'),
       list([
-        'Em **Movimentações**, use "Nova movimentação" — o formulário tem a opção "Salvar e lançar outra".',
-        'Aqui no chat, mande até 5 itens numa mensagem: "Gastei 80 de combustível e 45 de estacionamento".',
-        'Para contas que se repetem, use "Repetir" no formulário (parcelas ou todo mês).',
+        'Uma planilha para preencher várias movimentações de uma vez (dá para colar do Excel ou Google Planilhas).',
+        '"Importar arquivo" lê extrato do banco ou fatura do cartão em **CSV, OFX ou XLSX**; você revisa antes de salvar.',
+        'Aqui no chat, até 5 itens numa mensagem: "Gastei 80 de combustível e 45 de estacionamento".',
       ]),
     ],
     { links: [LINKS.transactions], suggestions: ['Gastei 80 de combustível e 45 de estacionamento'] },

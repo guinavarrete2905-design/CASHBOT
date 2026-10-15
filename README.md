@@ -25,7 +25,7 @@ Implementado:
 - **Lançamento em massa:** em Movimentações, botão "Lançamento em massa" abre uma planilha editável (Data, Tipo, Descrição, Valor, Conta, Categoria/destino, Situação, Repetição, Observações). Adicionar 1 ou 10 linhas, duplicar, excluir, repetir data/conta/categoria/situação para baixo, navegação por teclado e colagem direto do Excel/Google Planilhas. Valida cada célula com as mesmas regras do formulário, mostra resumo ao vivo, revisão com alerta de possíveis duplicados e grava tudo de uma vez (tudo ou nada). No celular, cada linha vira um cartão.
 - **Assistente Financeiro (sem IA generativa):** chat que consulta os dados reais do espaço atual, registra movimentações com prévia e confirmação e explica conceitos financeiros. Detalhes em [Assistente Financeiro](#assistente-financeiro).
 
-Ainda **não** implementado (próximas etapas): importação de arquivos de extrato (OFX/CSV), Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
+Ainda **não** implementado (próximas etapas): Open Finance e cobrança. Os lançamentos do CashBot antigo **não** foram importados (decisão de começar do zero).
 
 ## Tecnologias
 
@@ -172,6 +172,7 @@ Decisões:
 - **Estados das linhas:** em branco (ignorada), incompleta, com erro, válida. Só dá para revisar com todas as linhas preenchidas válidas.
 - **Valores no resumo:** como informados na linha (parcelado = total da compra; todo mês = valor de um mês). Na revisão, os totais somam todas as movimentações que serão criadas, com as parcelas e meses futuros contados à parte.
 - **Duplicados:** mesma data + valor + descrição + conta, na planilha ou já gravado. É só um alerta: dá para remover a linha ou salvar assim mesmo.
+- **Importar arquivo:** extrato do banco ou fatura do cartão em CSV, OFX ou XLSX (`bulk/import/`). OFX é lido direto; CSV/XLSX têm detecção de cabeçalho, colunas (data, descrição, valor ou crédito/débito, tipo C/D), formato de data e de número, que o usuário confirma ou ajusta. Extrato: negativo = saída; fatura: positivo = compra, negativo = estorno, e "pagamento" vira transferência para o cartão com a origem em aberto. Linhas de saldo/total são ignoradas com o motivo. Categoria sugerida pelas palavras-chave do assistente. Tudo entra na planilha para revisão; o alerta de duplicados acusa o que já foi lançado. O leitor de XLSX é próprio (ZIP + XML com `DecompressionStream`), sem dependências; `.xls` antigo não é suportado.
 - **Gravação:** uma chamada a `create_transactions_batch`. Tudo ou nada; o id do lote é mantido enquanto o conteúdo não muda, então tentar de novo depois de uma falha nunca duplica.
 
 ## Assistente Financeiro
@@ -198,6 +199,5 @@ Limitações: não acessa taxas e cotações atuais; não dá orientação tribu
 
 ## Próximas etapas
 
-1. Importação de arquivos (OFX/CSV) usando a mesma planilha de lançamento em massa.
 2. Histórico de faturas e marcação de fatura paga.
 3. Remover as tabelas do CashBot antigo, quando você decidir.

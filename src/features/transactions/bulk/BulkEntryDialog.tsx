@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ClipboardEvent, type KeyboardEvent, type ReactNode } from 'react'
-import { ArrowDownToLine, CalendarDays, Copy, Plus, Trash2, TriangleAlert } from 'lucide-react'
+import { ArrowDownToLine, CalendarDays, Copy, FileUp, Plus, Trash2, TriangleAlert } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -19,6 +19,7 @@ import { toUserMessage } from '@/lib/errors'
 import { formatMoney } from '@/lib/money'
 import { cn } from '@/lib/utils'
 import { fetchExistingForDuplicates, useCreateBatch } from './api'
+import { ImportDialog } from './import/ImportDialog'
 import {
   applyPaste,
   buildBatch,
@@ -118,6 +119,7 @@ export function BulkEntryDialog({ spaceId, spaceName, onClose }: { spaceId: stri
   const [activeRow, setActiveRow] = useState(0)
   const [showIssues, setShowIssues] = useState(false)
   const [confirmLeave, setConfirmLeave] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
   const [review, setReview] = useState<null | { loading: boolean; duplicates: DuplicateHint[]; error: string | null }>(null)
   const tableRef = useRef<HTMLDivElement>(null)
   const batchRef = useRef<{ key: string; id: string } | null>(null)
@@ -707,6 +709,10 @@ export function BulkEntryDialog({ spaceId, spaceName, onClose }: { spaceId: stri
               <Button type="button" variant="ghost" size="sm" onClick={() => addRows(10)}>
                 Adicionar 10 linhas
               </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={() => setImportOpen(true)} disabled={loading}>
+                <FileUp aria-hidden="true" />
+                Importar arquivo (CSV, OFX, XLSX)
+              </Button>
             </div>
 
             {showIssues && issues.length > 0 && (
@@ -845,6 +851,23 @@ export function BulkEntryDialog({ spaceId, spaceName, onClose }: { spaceId: stri
           )}
         </DialogContent>
       </Dialog>
+
+      {importOpen && (
+        <ImportDialog
+          accounts={ctx.accounts}
+          categories={ctx.categories}
+          maxRows={MAX_ROWS - rows.filter((r) => evaluateRow(r, ctx).state !== 'empty').length}
+          onClose={() => setImportOpen(false)}
+          onImport={(imported, fileName) => {
+            // Linhas em branco dão lugar às importadas.
+            const kept = rows.filter((r) => evaluateRow(r, ctx).state !== 'empty')
+            setRows([...kept, ...imported])
+            setImportOpen(false)
+            setShowIssues(true)
+            toast.success(`${imported.length} ${imported.length === 1 ? 'linha importada' : 'linhas importadas'} de ${fileName}. Revise antes de salvar.`)
+          }}
+        />
+      )}
 
       {/* Sair sem salvar */}
       <AlertDialog open={confirmLeave} onOpenChange={setConfirmLeave}>
