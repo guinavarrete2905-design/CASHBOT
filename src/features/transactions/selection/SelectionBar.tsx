@@ -15,7 +15,7 @@ import { useDeleteTransactionsBatch, useUpdateTransactionsBatch } from './api'
 import { accountChangeProblem, categoryChange, deleteBlockedCount, selectionTotals } from './rules'
 
 /*
-  Barra de ações em massa da lista de movimentações (aparece no modo de seleção).
+  Barra de ações em massa da lista de movimentações (aparece quando há movimentações marcadas).
   Excluir, trocar conta e trocar categoria: cada ação vale para todas as selecionadas ou para nenhuma.
   Em parcelas e recorrências, a ação vale só para as movimentações selecionadas (como "Só esta").
 */
@@ -162,7 +162,7 @@ export function SelectionBar({
               <Trash2 aria-hidden="true" />
               Excluir
             </Button>
-            <Button size="icon" variant="ghost" className="size-8" onClick={onExit} aria-label="Sair da seleção" title="Sair da seleção (Esc)">
+            <Button size="icon" variant="ghost" className="size-8" onClick={onExit} aria-label="Limpar seleção" title="Limpar seleção (Esc)">
               <X aria-hidden="true" />
             </Button>
           </div>

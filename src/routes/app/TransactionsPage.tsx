@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { CheckSquare, ChevronLeft, ChevronRight, FileSpreadsheet, ListOrdered, Plus, Search } from 'lucide-react'
+import { ChevronLeft, ChevronRight, FileSpreadsheet, ListOrdered, Plus, Search } from 'lucide-react'
 import { EmptyState, ErrorState } from '@/components/feedback'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
@@ -70,7 +70,6 @@ export function TransactionsPage() {
   const [accountFilter, setAccountFilter] = useState('')
   const [search, setSearch] = useState('')
   const [bulkOpen, setBulkOpen] = useState(false)
-  const [selecting, setSelecting] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
   const anchorRef = useRef<string | null>(null)
   const [dialog, setDialog] = useState<{ mode: 'create' } | { mode: 'edit'; transaction: Transaction } | null>(null)
@@ -109,23 +108,22 @@ export function TransactionsPage() {
 
   // Seleção: só vale para o que está visível (mês e filtros atuais).
   const selectedVisible = useMemo(() => filtered.filter((t) => selectedIds.has(t.id)), [filtered, selectedIds])
+  const hasSelection = selectedVisible.length > 0
   const exitSelection = () => {
-    setSelecting(false)
     setSelectedIds(new Set())
     anchorRef.current = null
   }
   useEffect(() => {
-    if (!selecting) return
+    if (!hasSelection) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && !document.querySelector('[role="dialog"], [role="alertdialog"]')) exitSelection()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [selecting])
+  }, [hasSelection])
   useEffect(() => exitSelection(), [month, spaceId])
 
-  const selection: Selection | undefined = selecting
-    ? {
+  const selection: Selection = {
         selected: selectedIds,
         onToggle: (t, { shiftKey }) => {
           setSelectedIds((prev) => {
@@ -151,8 +149,7 @@ export function TransactionsPage() {
             ids.forEach((id) => (select ? next.add(id) : next.delete(id)))
             return next
           }),
-      }
-    : undefined
+  }
 
   const categoryOptions = categories.filter((c) => kindFilter === 'all' || c.kind === kindFilter)
   const accountOptions = accounts.filter((a) => !a.archived || all.some((t) => t.account_id === a.id))
@@ -332,29 +329,23 @@ export function TransactionsPage() {
         />
       ) : (
         <>
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">
-              {filtering ? `${filtered.length} de ${all.length} movimentações` : selecting ? 'Toque nas movimentações para selecionar. Shift+clique seleciona um intervalo.' : ''}
+          {filtering && (
+            <p className="mb-3 text-xs text-muted-foreground">
+              {filtered.length} de {all.length} movimentações
             </p>
-            {!selecting && (
-              <Button variant="ghost" size="sm" onClick={() => setSelecting(true)} className="text-muted-foreground hover:text-foreground">
-                <CheckSquare aria-hidden="true" />
-                Selecionar
-              </Button>
-            )}
-          </div>
+          )}
           <TransactionList
             items={filtered}
             names={names}
             onSelect={(t) => setDialog({ mode: 'edit', transaction: t })}
             selection={selection}
           />
-          {selecting && <div className="h-20" aria-hidden="true" />}
+          {hasSelection && <div className="h-20" aria-hidden="true" />}
         </>
       )}
 
       {/* Atalho no celular */}
-      {selecting && spaceId && (
+      {hasSelection && spaceId && (
         <SelectionBar
           spaceId={spaceId}
           selected={selectedVisible}
@@ -369,7 +360,7 @@ export function TransactionsPage() {
         />
       )}
 
-      {spaceId && !selecting && (
+      {spaceId && !hasSelection && (
         <Button
           size="icon"
           onClick={() => setDialog({ mode: 'create' })}

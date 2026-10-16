@@ -89,7 +89,7 @@ export function TransactionRow({ t, names, onSelect, showDate = false, selection
   names: NameLookup
   onSelect?: (t: Transaction) => void
   showDate?: boolean
-  /** Modo de seleção: o clique marca/desmarca em vez de abrir a edição. */
+  /** Caixa de seleção ao lado da movimentação (ações em massa). */
   selection?: Selection
 }) {
   const pending = t.status === 'pending'
@@ -113,22 +113,33 @@ export function TransactionRow({ t, names, onSelect, showDate = false, selection
   )
 
   if (selection) {
+    // Caixa de seleção fixa ao lado; o resto da linha continua abrindo a edição.
     const checked = selection.selected.has(t.id)
     return (
-      <button
-        type="button"
-        role="checkbox"
-        aria-checked={checked}
-        onClick={(e) => selection.onToggle(t, { shiftKey: e.shiftKey })}
-        className={cn(
-          '-mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-          checked && 'bg-secondary/70',
+      <div className={cn('-mx-2 flex w-[calc(100%+1rem)] items-stretch rounded-md transition-colors', checked && 'bg-secondary/70')}>
+        <button
+          type="button"
+          role="checkbox"
+          aria-checked={checked}
+          aria-label={`Selecionar ${t.description}`}
+          onClick={(e) => selection.onToggle(t, { shiftKey: e.shiftKey })}
+          className="flex shrink-0 items-start rounded-md py-3 pl-2 pr-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <CheckBox state={checked ? 'on' : 'off'} />
+        </button>
+        {onSelect ? (
+          <button
+            type="button"
+            onClick={() => onSelect(t)}
+            className="flex min-w-0 flex-1 items-start gap-3 rounded-md py-3 pl-2 pr-2 text-left transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label={`Editar ${t.description}`}
+          >
+            {content}
+          </button>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-start gap-3 py-3 pl-2 pr-2">{content}</div>
         )}
-        aria-label={`Selecionar ${t.description}`}
-      >
-        <CheckBox state={checked ? 'on' : 'off'} />
-        {content}
-      </button>
+      </div>
     )
   }
 
