@@ -1,6 +1,6 @@
-import { lazy, Suspense, useMemo, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, FileSpreadsheet, ListOrdered, Plus, Search } from 'lucide-react'
+import { CheckSquare, ChevronLeft, ChevronRight, FileSpreadsheet, ListOrdered, Plus, Search } from 'lucide-react'
 import { EmptyState, ErrorState } from '@/components/feedback'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/button'
@@ -12,7 +12,9 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { useCategories } from '@/features/categories/api'
 import { summarize, useMonthTransactions, type Transaction } from '@/features/transactions/api'
 import { TransactionDialog } from '@/features/transactions/TransactionDialog'
-import { buildLookup, TransactionList } from '@/features/transactions/TransactionList'
+import { buildLookup, TransactionList, type Selection } from '@/features/transactions/TransactionList'
+import { SelectionBar } from '@/features/transactions/selection/SelectionBar'
+import { rangeIds } from '@/features/transactions/selection/rules'
 import { useAccounts } from '@/features/accounts/api'
 import { currentYearMonth, formatMonth, isYearMonth, shiftMonth, todayISO } from '@/lib/dates'
 import { formatMoney } from '@/lib/money'
@@ -68,6 +70,9 @@ export function TransactionsPage() {
   const [accountFilter, setAccountFilter] = useState('')
   const [search, setSearch] = useState('')
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [selecting, setSelecting] = useState(false)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const anchorRef = useRef<string | null>(null)
   const [dialog, setDialog] = useState<{ mode: 'create' } | { mode: 'edit'; transaction: Transaction } | null>(null)
 
   const all = useMemo(() => transactions.data ?? [], [transactions.data])
@@ -101,6 +106,53 @@ export function TransactionsPage() {
   // Nova movimentação no mês exibido: hoje se for o mês atual, senão o dia 1.
   const defaultDate = isCurrentMonth ? todayISO() : `${month}-01`
   const canDeleteAny = current?.role === 'owner' || current?.role === 'admin'
+
+  // Seleção: só vale para o que está visível (mês e filtros atuais).
+  const selectedVisible = useMemo(() => filtered.filter((t) => selectedIds.has(t.id)), [filtered, selectedIds])
+  const exitSelection = () => {
+    setSelecting(false)
+    setSelectedIds(new Set())
+    anchorRef.current = null
+  }
+  useEffect(() => {
+    if (!selecting) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !document.querySelector('[role="dialog"], [role="alertdialog"]')) exitSelection()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [selecting])
+  useEffect(() => exitSelection(), [month, spaceId])
+
+  const selection: Selection | undefined = selecting
+    ? {
+        selected: selectedIds,
+        onToggle: (t, { shiftKey }) => {
+          setSelectedIds((prev) => {
+            const next = new Set(prev)
+            const anchor = anchorRef.current
+            if (shiftKey && anchor) {
+              const ids = rangeIds(
+                filtered.map((x) => x.id),
+                anchor,
+                t.id,
+              )
+              const select = !prev.has(t.id)
+              ids.forEach((id) => (select ? next.add(id) : next.delete(id)))
+            } else if (next.has(t.id)) next.delete(t.id)
+            else next.add(t.id)
+            return next
+          })
+          anchorRef.current = t.id
+        },
+        onToggleMany: (ids, select) =>
+          setSelectedIds((prev) => {
+            const next = new Set(prev)
+            ids.forEach((id) => (select ? next.add(id) : next.delete(id)))
+            return next
+          }),
+      }
+    : undefined
 
   const categoryOptions = categories.filter((c) => kindFilter === 'all' || c.kind === kindFilter)
   const accountOptions = accounts.filter((a) => !a.archived || all.some((t) => t.account_id === a.id))
@@ -280,21 +332,44 @@ export function TransactionsPage() {
         />
       ) : (
         <>
-          {filtering && (
-            <p className="mb-3 text-xs text-muted-foreground">
-              {filtered.length} de {all.length} movimentações
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <p className="text-xs text-muted-foreground">
+              {filtering ? `${filtered.length} de ${all.length} movimentações` : selecting ? 'Toque nas movimentações para selecionar. Shift+clique seleciona um intervalo.' : ''}
             </p>
-          )}
+            {!selecting && (
+              <Button variant="ghost" size="sm" onClick={() => setSelecting(true)} className="text-muted-foreground hover:text-foreground">
+                <CheckSquare aria-hidden="true" />
+                Selecionar
+              </Button>
+            )}
+          </div>
           <TransactionList
             items={filtered}
             names={names}
             onSelect={(t) => setDialog({ mode: 'edit', transaction: t })}
+            selection={selection}
           />
+          {selecting && <div className="h-20" aria-hidden="true" />}
         </>
       )}
 
       {/* Atalho no celular */}
-      {spaceId && (
+      {selecting && spaceId && (
+        <SelectionBar
+          spaceId={spaceId}
+          selected={selectedVisible}
+          visibleCount={filtered.length}
+          accounts={accounts}
+          categories={categories}
+          userId={user.id}
+          canDeleteAny={canDeleteAny}
+          onSelectAll={() => setSelectedIds(new Set(filtered.map((t) => t.id)))}
+          onClear={() => setSelectedIds(new Set())}
+          onExit={exitSelection}
+        />
+      )}
+
+      {spaceId && !selecting && (
         <Button
           size="icon"
           onClick={() => setDialog({ mode: 'create' })}

@@ -22,6 +22,7 @@ Implementado:
 - **Transferências** entre contas (não contam como receita nem despesa), lançamentos ligados a uma conta ou cartão e filtro por conta na lista de movimentações.
 - **Dashboard com dados reais:** receitas, despesas e resultado do mês (com o que ainda está pendente), movimentações recentes, lista de contas a pagar e a receber (destacando as atrasadas) e gráfico de receitas x despesas dos últimos 6 meses.
 - **Interface:** menu lateral no desktop, barra inferior + "Mais" no celular. Todas as áreas do menu estão implementadas.
+- **Ações em massa na lista:** em Movimentações, "Selecionar" ativa caixas de seleção (por linha, por dia, "Selecionar todas" e Shift+clique para intervalo). A barra de ações permite **excluir**, **alterar conta** e **alterar categoria** de todas as selecionadas de uma vez — tudo ou nada, pelas funções `delete_transactions_batch` e `update_transactions_batch`. Regras: categoria só com receitas ou só despesas (sem transferências); nas transferências a conta alterada é a de origem e não pode ser igual ao destino; mover para cartão deixa as compras como pagas (fatura); membro só exclui o que lançou; em parcelas e repetições vale só para as selecionadas.
 - **Lançamento em massa:** em Movimentações, botão "Lançamento em massa" abre uma planilha editável (Data, Tipo, Descrição, Valor, Conta, Categoria/destino, Situação, Repetição, Observações). Adicionar 1 ou 10 linhas, duplicar, excluir, repetir data/conta/categoria/situação para baixo, navegação por teclado e colagem direto do Excel/Google Planilhas. Valida cada célula com as mesmas regras do formulário, mostra resumo ao vivo, revisão com alerta de possíveis duplicados e grava tudo de uma vez (tudo ou nada). No celular, cada linha vira um cartão.
 - **Assistente Financeiro (sem IA generativa):** chat que consulta os dados reais do espaço atual, registra movimentações com prévia e confirmação e explica conceitos financeiros. Detalhes em [Assistente Financeiro](#assistente-financeiro).
 
@@ -100,6 +101,7 @@ Migrações, em ordem:
 6. [`20261014230000_wealth.sql`](supabase/migrations/20261014230000_wealth.sql) — bens, dívidas e histórico do patrimônio.
 7. [`20261015010000_assistant.sql`](supabase/migrations/20261015010000_assistant.sql) — histórico do Assistente Financeiro e funções de consulta agregada.
 8. [`20261015030000_transactions_batch.sql`](supabase/migrations/20261015030000_transactions_batch.sql) — função `create_transactions_batch` do lançamento em massa.
+9. [`20261016120000_transactions_bulk_actions.sql`](supabase/migrations/20261016120000_transactions_bulk_actions.sql) — funções de exclusão e alteração em massa.
 
 A primeira **não altera nem remove** as tabelas do CashBot antigo (`lancamentos`, `saldos`, `categorias`, `pessoas`, ...). A única mudança em objeto existente é a troca do gatilho de cadastro (`on_auth_user_created` → `on_auth_user_created_v2`).
 
@@ -152,7 +154,7 @@ npm test            # Vitest: permissões, erros, rotas, valores em reais, datas
 npm run build       # build de produção
 ```
 
-Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql) e [`supabase/tests/rls_assistant.sql`](supabase/tests/rls_assistant.sql) e [`supabase/tests/rls_batch.sql`](supabase/tests/rls_batch.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
+Testes de autorização no banco: execute no SQL Editor [`supabase/tests/rls_spaces.sql`](supabase/tests/rls_spaces.sql), [`supabase/tests/rls_transactions.sql`](supabase/tests/rls_transactions.sql) e [`supabase/tests/rls_accounts.sql`](supabase/tests/rls_accounts.sql) , [`supabase/tests/rls_series.sql`](supabase/tests/rls_series.sql), [`supabase/tests/rls_planning.sql`](supabase/tests/rls_planning.sql) e [`supabase/tests/rls_wealth.sql`](supabase/tests/rls_wealth.sql) e [`supabase/tests/rls_assistant.sql`](supabase/tests/rls_assistant.sql) [`supabase/tests/rls_batch.sql`](supabase/tests/rls_batch.sql) e [`supabase/tests/rls_bulk_actions.sql`](supabase/tests/rls_bulk_actions.sql). Eles criam usuários de teste dentro de uma transação, verificam as regras e terminam com um erro proposital começando por `OK:`, que garante o rollback (nada fica gravado). Qualquer falha aparece como `FALHA: <descrição>`.
 
 Sem acesso ao registro do npm, os testes puros (sem React) também rodam direto no Node:
 

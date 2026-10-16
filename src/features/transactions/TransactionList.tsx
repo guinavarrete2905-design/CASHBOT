@@ -1,3 +1,4 @@
+import { Check, Minus } from 'lucide-react'
 import type { Account } from '@/features/accounts/api'
 import type { Category } from '@/features/categories/api'
 import { formatDayHeading } from '@/lib/dates'
@@ -61,11 +62,35 @@ const DOT: Record<Transaction['kind'], string> = {
   transfer: 'bg-muted-foreground/50',
 }
 
-export function TransactionRow({ t, names, onSelect, showDate = false }: {
+export type Selection = {
+  selected: Set<string>
+  onToggle: (t: Transaction, e: { shiftKey: boolean }) => void
+  onToggleMany: (ids: string[], select: boolean) => void
+}
+
+/** Caixa de seleção visual (o elemento clicável é o pai, com role="checkbox"). */
+export function CheckBox({ state }: { state: 'on' | 'off' | 'mixed' }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn(
+        'mt-0.5 flex size-4 shrink-0 items-center justify-center rounded border transition-colors',
+        state === 'off' ? 'border-input bg-surface' : 'border-primary bg-primary text-primary-foreground',
+      )}
+    >
+      {state === 'on' && <Check className="size-3" strokeWidth={3} />}
+      {state === 'mixed' && <Minus className="size-3" strokeWidth={3} />}
+    </span>
+  )
+}
+
+export function TransactionRow({ t, names, onSelect, showDate = false, selection }: {
   t: Transaction
   names: NameLookup
   onSelect?: (t: Transaction) => void
   showDate?: boolean
+  /** Modo de seleção: o clique marca/desmarca em vez de abrir a edição. */
+  selection?: Selection
 }) {
   const pending = t.status === 'pending'
 
@@ -87,6 +112,26 @@ export function TransactionRow({ t, names, onSelect, showDate = false }: {
     </>
   )
 
+  if (selection) {
+    const checked = selection.selected.has(t.id)
+    return (
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={checked}
+        onClick={(e) => selection.onToggle(t, { shiftKey: e.shiftKey })}
+        className={cn(
+          '-mx-2 flex w-[calc(100%+1rem)] items-start gap-3 rounded-md px-2 py-3 text-left transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+          checked && 'bg-secondary/70',
+        )}
+        aria-label={`Selecionar ${t.description}`}
+      >
+        <CheckBox state={checked ? 'on' : 'off'} />
+        {content}
+      </button>
+    )
+  }
+
   if (!onSelect) return <div className="flex items-start gap-3 py-3">{content}</div>
 
   return (
@@ -101,10 +146,11 @@ export function TransactionRow({ t, names, onSelect, showDate = false }: {
   )
 }
 
-export function TransactionList({ items, names, onSelect }: {
+export function TransactionList({ items, names, onSelect, selection }: {
   items: Transaction[]
   names: NameLookup
   onSelect: (t: Transaction) => void
+  selection?: Selection
 }) {
   return (
     <div className="grid gap-6">
@@ -113,9 +159,29 @@ export function TransactionList({ items, names, onSelect }: {
         return (
           <section key={day} aria-label={formatDayHeading(day)}>
             <header className="mb-1 flex items-baseline justify-between gap-3 border-b pb-2">
-              <h3 className="font-sans text-xs font-medium uppercase tracking-wider text-muted-foreground">
-                {formatDayHeading(day)}
-              </h3>
+              {selection ? (
+                (() => {
+                  const ids = dayItems.map((t) => t.id)
+                  const count = ids.filter((id) => selection.selected.has(id)).length
+                  const state = count === 0 ? 'off' : count === ids.length ? 'on' : 'mixed'
+                  return (
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={state === 'mixed' ? 'mixed' : state === 'on'}
+                      onClick={() => selection.onToggleMany(ids, state !== 'on')}
+                      className="-ml-0.5 flex items-center gap-2 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    >
+                      <CheckBox state={state} />
+                      <span className="font-sans text-xs font-medium uppercase tracking-wider text-muted-foreground">{formatDayHeading(day)}</span>
+                    </button>
+                  )
+                })()
+              ) : (
+                <h3 className="font-sans text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  {formatDayHeading(day)}
+                </h3>
+              )}
               <span className="tabular text-xs text-muted-foreground">
                 {balance >= 0 ? '+' : '−'}
                 {formatMoney(Math.abs(balance))}
@@ -124,7 +190,7 @@ export function TransactionList({ items, names, onSelect }: {
             <ul>
               {dayItems.map((t) => (
                 <li key={t.id}>
-                  <TransactionRow t={t} names={names} onSelect={onSelect} />
+                  <TransactionRow t={t} names={names} onSelect={onSelect} selection={selection} />
                 </li>
               ))}
             </ul>

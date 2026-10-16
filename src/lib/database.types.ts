@@ -558,6 +558,21 @@ export type Database = {
           status: string
         }[]
       }
+      delete_transactions_batch: {
+        Args: { p_ids: string[]; p_space_id: string }
+        Returns: number
+      }
+      update_transactions_batch: {
+        Args: {
+          p_account_id: string | null
+          p_category_id: string | null
+          p_ids: string[]
+          p_set_account: boolean
+          p_set_category: boolean
+          p_space_id: string
+        }
+        Returns: number
+      }
       create_transactions_batch: {
         Args: { p_batch_id: string; p_rows: Json; p_space_id: string }
         Returns: { already_saved: boolean; inserted: number }[]
